@@ -1,14 +1,14 @@
-\# License
+# License
 
 
 
-\*\*Ossl4Pas\*\* is dual-licensed. You may use this software under the terms of either:
+**Ossl4Pas** is dual-licensed. You may use this software under the terms of either:
 
 
 
-1\.  \*\*The Modified BSD License (3-Clause)\*\*
+1.  **The Modified BSD License (3-Clause)**
 
-2\.  \*\*The Mozilla Public License 1.1 (MPL 1.1)\*\*
+2.  **The Mozilla Public License 1.1 (MPL 1.1)**
 
 
 
@@ -16,7 +16,7 @@
 
 
 
-\## Option 1: The Modified BSD License (3-Clause)
+## Option 1: The Modified BSD License (3-Clause)
 
 
 
@@ -30,11 +30,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 
 
-1\. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
-2\. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-3\. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 
 
@@ -46,7 +46,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 
-\## Option 2: The Mozilla Public License 1.1 (MPL 1.1)
+## Option 2: The Mozilla Public License 1.1 (MPL 1.1)
 
 
 
