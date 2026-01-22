@@ -6,10 +6,13 @@ __recovery/
 *.dcpil
 *.bpl
 *.bpi
+*.lib
+*.a
 *.dsk
 *.ident
 *.local
 *.rsm
+*.res
 *.tvsconfig
 Win32/
 Win64/
