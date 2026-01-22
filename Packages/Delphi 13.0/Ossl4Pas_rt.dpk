@@ -1,0 +1,43 @@
+package Ossl4Pas_rt;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE RELEASE}
+{$ENDIF IMPLICITBUILDING}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl;
+
+contains
+  Ossl4Pas.Api.Bio in '..\..\Source\Ossl4Pas.Api.Bio.pas',
+  Ossl4Pas.Api.Err in '..\..\Source\Ossl4Pas.Api.Err.pas',
+  Ossl4Pas.Api.Types in '..\..\Source\Ossl4Pas.Api.Types.pas',
+  Ossl4Pas.Binding in '..\..\Source\Ossl4Pas.Binding.pas',
+  Ossl4Pas.CTypes in '..\..\Source\Ossl4Pas.CTypes.pas',
+  Ossl4Pas.Loader in '..\..\Source\Ossl4Pas.Loader.pas',
+  Ossl4Pas.ResStrings in '..\..\Source\Ossl4Pas.ResStrings.pas',
+  Ossl4Pas.Types in '..\..\Source\Ossl4Pas.Types.pas';
+
+end.
