@@ -1,0 +1,42 @@
+# Delphi
+__history/
+__recovery/
+*.dcu
+*.dcp
+*.dcpil
+*.bpl
+*.bpi
+*.dsk
+*.ident
+*.local
+*.rsm
+*.tvsconfig
+Win32/
+Win64/
+Linux64/
+Android/
+Android32/
+Android64/
+OSX64/
+OSXARM64/
+iOSDevice64/
+iOSSimARM64/
+iOSSimulator/
+
+# Free Pascal
+backup/
+*.o
+*.ppu
+*.compiled
+*.a
+lib/
+
+# Test/Output
+*.dll
+*.so
+*.dylib
+*.exe
+*.log
+*.stat
+*.ver
+Test/
