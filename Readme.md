@@ -1,6 +1,3 @@
-Here is the updated **`README.md`** reflecting your specific adjustments regarding project status, design philosophy, and future distribution models.
-
-```markdown
 # Ossl4Pas
 
 **Ossl4Pas** is a modern, robust Object Pascal wrapper for the **OpenSSL 3.x** cryptography library.
