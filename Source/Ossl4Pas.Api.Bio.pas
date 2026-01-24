@@ -627,6 +627,22 @@ type
     class constructor Create;
   end;
 
+  /// <summary>Wrapper for BIO_s_dgram_pair(). UDP support.</summary>
+  TOsslBioMethodDatagramPair = class(TOsslBioCustomMethod)
+  private class var
+    FMethod: TOsslBioCustomMethod.TRoutine_METHOD;
+  const
+    cBindings: array[0..0] of TOsslBindEntry =
+      ((Name: 'BIO_s_dgram_pair'; VarPtr: @@TOsslBioMethodDatagramPair.FMethod; MinVer: $302000));
+  private
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  protected
+    class function GetMethodHandle: PBIO_METHOD; override;
+  public
+    class constructor Create;
+  end;
+
   /// <summary>Wrapper for BIO_s_datagram(). UDP support.</summary>
   TOsslBioMethodDatagram = class(TOsslBioCustomMethod)
   private class var
@@ -1148,6 +1164,30 @@ begin
 end;
 
 class function TOsslBioMethodCore.GetMethodHandle: PBIO_METHOD;
+begin
+  Result := FMethod();
+end;
+
+{ TOsslBioMethodDatagramPair }
+
+class constructor TOsslBioMethodDatagramPair.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslBioMethodDatagramPair.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslBioMethodDatagramPair.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+class function TOsslBioMethodDatagramPair.GetMethodHandle: PBIO_METHOD;
 begin
   Result := FMethod();
 end;
