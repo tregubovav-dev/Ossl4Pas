@@ -351,46 +351,8 @@ type
     class function GetErrorStrings(out AFileName, AFunc, AData: string;
       var line, flags: cint): culong;
       overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-
   end;
 
-  (*
-  PERR_string_data = ^TERR_string_data;
-  TERR_string_data = record
-    error: culong;
-    string_: PAnsiChar;
-  end;
-
-
-  TOsslAPIErrStringsLoader = class sealed
-  public type
-    TRoutine_ERR_load_strings     = function(lib: cint; str: PERR_string_data): cint; cdecl;
-    TRoutine_ERR_load_ERR_strings = function: cint; cdecl;
-
-  strict private class var
-    FIntialized: boolean;
-
-    F_ERR_load_strings:     TRoutine_ERR_load_strings;
-    F_ERR_load_ERR_strings: TRoutine_ERR_load_ERR_strings;
-
-  const
-    cBindings: array[0..1] of TOsslBindEntry = (
-      (Name: 'ERR_load_strings';     VarPtr: @@TOsslAPIErrStringsLoader.F_ERR_load_strings;     MinVer: 0),
-      (Name: 'ERR_load_ERR_strings'; VarPtr: @@TOsslAPIErrStringsLoader.F_ERR_load_ERR_strings; MinVer: 0)
-    );
-
-  strict private
-    class procedure Bind(const ALibHandle: TLibHandle;
-      const AVersion: TOsslVersion); static;
-    class procedure UnBind; static;
-
-  public
-    class constructor Create;
-
-    class function ERR_load_strings(lib: cint; str: PERR_string_data): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class function ERR_load_ERR_strings: cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-  end;
-*)
   // ---------------------------------------------------------------------------
   // GROUP 3: SYSTEM & ADVANCED (Stack, Print, Put)
   // Used for advanced error handling, printing to BIO, or custom errors.
@@ -786,41 +748,6 @@ begin
     Result:=GetErrorStringsA(AFileName, AFunc, AData, line, flags);
   {$ENDIF}
 end;
-
-(*
-{ TOsslAPIErrStringsLoader }
-
-class constructor TOsslAPIErrStringsLoader.Create;
-begin
-  UnBind;
-  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
-end;
-
-class procedure TOsslAPIErrStringsLoader.Bind(const ALibHandle: TLibHandle;
-  const AVersion: TOsslVersion);
-begin
-  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
-
-  // Optional: Auto-load strings if this unit is used
-  if Assigned(F_ERR_load_ERR_strings) then
-    F_ERR_load_ERR_strings();
-end;
-
-class procedure TOsslAPIErrStringsLoader.UnBind;
-begin
-  TOsslBinding.Reset(cBindings);
-end;
-
-class function TOsslAPIErrStringsLoader.ERR_load_strings(lib: cint; str: PERR_string_data): cint;
-begin
-  Result:=F_ERR_load_strings(lib, str);
-end;
-
-class function TOsslAPIErrStringsLoader.ERR_load_ERR_strings: cint;
-begin
-  Result:=F_ERR_load_ERR_strings();
-end;
-*)
 
 { TOsslAPIErrSystem }
 
