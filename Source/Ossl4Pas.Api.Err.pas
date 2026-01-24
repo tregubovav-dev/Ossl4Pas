@@ -147,7 +147,7 @@ type
   // GROUP 1: READER (Essential)
   // Used for retrieving and formatting errors.
   // ---------------------------------------------------------------------------
-  TOsslAPIErrCodes = class sealed
+  TOsslApiErrCodes = class sealed
   public type
     TRoutine_ERR_get_error           = function: culong; cdecl;
     TRoutine_ERR_peek_error          = function: culong; cdecl;
@@ -164,10 +164,10 @@ type
 
   const
     cBindings: array[0..3] of TOsslBindEntry = (
-      (Name: 'ERR_get_error';             VarPtr: @@TOsslAPIErrCodes.F_ERR_get_error;            MinVer: 0),
-      (Name: 'ERR_peek_error';            VarPtr: @@TOsslAPIErrCodes.F_ERR_peek_error;           MinVer: 0),
-      (Name: 'ERR_peek_last_error';       VarPtr: @@TOsslAPIErrCodes.F_ERR_peek_last_error;      MinVer: 0),
-      (Name: 'ERR_clear_error';           VarPtr: @@TOsslAPIErrCodes.F_ERR_clear_error;          MinVer: 0)
+      (Name: 'ERR_get_error';             VarPtr: @@TOsslApiErrCodes.F_ERR_get_error;            MinVer: 0),
+      (Name: 'ERR_peek_error';            VarPtr: @@TOsslApiErrCodes.F_ERR_peek_error;           MinVer: 0),
+      (Name: 'ERR_peek_last_error';       VarPtr: @@TOsslApiErrCodes.F_ERR_peek_last_error;      MinVer: 0),
+      (Name: 'ERR_clear_error';           VarPtr: @@TOsslApiErrCodes.F_ERR_clear_error;          MinVer: 0)
     );
 
   strict private
@@ -190,7 +190,7 @@ type
   // GROUP 2: Textual error description
   // Used for retrieving and formatting error strings.
   // ---------------------------------------------------------------------------
-  TOsslAPIErrStrings = class sealed
+  TOsslApiErrStrings = class sealed
   public type
     TRoutine_ERR_error_string        = function(e: culong;
       buf: PAnsiChar): PAnsiChar; cdecl;
@@ -233,17 +233,17 @@ type
 
   const
     cBindings: array[0..10] of TOsslBindEntry = (
-      (Name: 'ERR_error_string';          VarPtr: @@TOsslAPIErrStrings.F_ERR_error_string;         MinVer: 0),
-      (Name: 'ERR_error_string_n';        VarPtr: @@TOsslAPIErrStrings.F_ERR_error_string_n;       MinVer: 0),
-      (Name: 'ERR_lib_error_string';      VarPtr: @@TOsslAPIErrStrings.F_ERR_lib_error_string;     MinVer: 0),
-      (Name: 'ERR_reason_error_string';   VarPtr: @@TOsslAPIErrStrings.F_ERR_reason_error_string;  MinVer: 0),
-      (Name: 'ERR_peek_error_func';       VarPtr: @@TOsslAPIErrStrings.F_ERR_peek_error_func;      MinVer: 0),
-      (Name: 'ERR_peek_last_error_func';  VarPtr: @@TOsslAPIErrStrings.F_ERR_peek_last_error_func; MinVer: 0),
-      (Name: 'ERR_peek_error_data';       VarPtr: @@TOsslAPIErrStrings.F_ERR_peek_error_data;      MinVer: 0),
-      (Name: 'ERR_peek_last_error_data';  VarPtr: @@TOsslAPIErrStrings.F_ERR_peek_last_error_data; MinVer: 0),
-      (Name: 'ERR_get_error_all';         VarPtr: @@TOsslAPIErrStrings.F_ERR_get_error_all;        MinVer: 0),
-      (Name: 'ERR_peek_error_all';        VarPtr: @@TOsslAPIErrStrings.F_ERR_peek_error_all;       MinVer: 0),
-      (Name: 'ERR_peek_last_error_all';   VarPtr: @@TOsslAPIErrStrings.F_ERR_peek_last_error_all;  MinVer: 0)
+      (Name: 'ERR_error_string';          VarPtr: @@TOsslApiErrStrings.F_ERR_error_string;         MinVer: 0),
+      (Name: 'ERR_error_string_n';        VarPtr: @@TOsslApiErrStrings.F_ERR_error_string_n;       MinVer: 0),
+      (Name: 'ERR_lib_error_string';      VarPtr: @@TOsslApiErrStrings.F_ERR_lib_error_string;     MinVer: 0),
+      (Name: 'ERR_reason_error_string';   VarPtr: @@TOsslApiErrStrings.F_ERR_reason_error_string;  MinVer: 0),
+      (Name: 'ERR_peek_error_func';       VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_func;      MinVer: 0),
+      (Name: 'ERR_peek_last_error_func';  VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_func; MinVer: 0),
+      (Name: 'ERR_peek_error_data';       VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_data;      MinVer: 0),
+      (Name: 'ERR_peek_last_error_data';  VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_data; MinVer: 0),
+      (Name: 'ERR_get_error_all';         VarPtr: @@TOsslApiErrStrings.F_ERR_get_error_all;        MinVer: 0),
+      (Name: 'ERR_peek_error_all';        VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_all;       MinVer: 0),
+      (Name: 'ERR_peek_last_error_all';   VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_all;  MinVer: 0)
     );
 
   strict private
@@ -311,7 +311,7 @@ type
     class property Initialized: boolean read FIntialized;
  end;
 
-  TOsslAPIErrStringsHelper = class helper for TOsslAPIErrStrings
+  TOsslApiErrStringsHelper = class helper for TOsslApiErrStrings
   public
     class function GetLibNameA(e: culong): RawByteString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -357,7 +357,7 @@ type
   // GROUP 3: SYSTEM & ADVANCED (Stack, Print, Put)
   // Used for advanced error handling, printing to BIO, or custom errors.
   // ---------------------------------------------------------------------------
-  TOsslAPIErrSystem = class sealed
+  TOsslApiErrSystem = class sealed
   public type
     TRoutine_ERR_set_mark       = function: cint; cdecl;
     TRoutine_ERR_pop_to_mark    = function: cint; cdecl;
@@ -374,10 +374,10 @@ type
 
   const
     cBindings: array[0..3] of TOsslBindEntry = (
-      (Name: 'ERR_set_mark';       VarPtr: @@TOsslAPIErrSystem.F_ERR_set_mark;       MinVer: 0),
-      (Name: 'ERR_pop_to_mark';    VarPtr: @@TOsslAPIErrSystem.F_ERR_pop_to_mark;    MinVer: 0),
-      (Name: 'ERR_print_errors';   VarPtr: @@TOsslAPIErrSystem.F_ERR_print_errors;   MinVer: 0),
-      (Name: 'ERR_put_error';      VarPtr: @@TOsslAPIErrSystem.F_ERR_put_error;      MinVer: 0)
+      (Name: 'ERR_set_mark';       VarPtr: @@TOsslApiErrSystem.F_ERR_set_mark;       MinVer: 0),
+      (Name: 'ERR_pop_to_mark';    VarPtr: @@TOsslApiErrSystem.F_ERR_pop_to_mark;    MinVer: 0),
+      (Name: 'ERR_print_errors';   VarPtr: @@TOsslApiErrSystem.F_ERR_print_errors;   MinVer: 0),
+      (Name: 'ERR_put_error';      VarPtr: @@TOsslApiErrSystem.F_ERR_put_error;      MinVer: 0)
     );
 
   strict private
@@ -416,14 +416,14 @@ begin
 end;
 
 
-{ TOsslAPIErrCodes }
+{ TOsslApiErrCodes }
 
-class constructor TOsslAPIErrCodes.Create;
+class constructor TOsslApiErrCodes.Create;
 begin
   TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
 end;
 
-class procedure TOsslAPIErrCodes.Bind(const ALibHandle: TLibHandle;
+class procedure TOsslApiErrCodes.Bind(const ALibHandle: TLibHandle;
   const AVersion: TOsslVersion);
 begin
   try
@@ -433,7 +433,7 @@ begin
   end;
 end;
 
-class procedure TOsslAPIErrCodes.UnBind;
+class procedure TOsslApiErrCodes.UnBind;
 begin
   try
     TOsslBinding.Reset(cBindings, False);
@@ -442,7 +442,7 @@ begin
   end;
 end;
 
-class function TOsslAPIErrCodes.ERR_get_error: culong;
+class function TOsslApiErrCodes.ERR_get_error: culong;
 begin
   if Assigned(F_ERR_get_error) then
     Result:=F_ERR_get_error
@@ -450,7 +450,7 @@ begin
     Result:=0;
 end;
 
-class function TOsslAPIErrCodes.ERR_peek_error: culong;
+class function TOsslApiErrCodes.ERR_peek_error: culong;
 begin
   if Assigned(F_ERR_peek_error) then
     Result:=F_ERR_peek_error()
@@ -458,7 +458,7 @@ begin
     Result:=0;
 end;
 
-class function TOsslAPIErrCodes.ERR_peek_last_error: culong;
+class function TOsslApiErrCodes.ERR_peek_last_error: culong;
 begin
   if Assigned(F_ERR_peek_last_error) then
     Result:=F_ERR_peek_last_error()
@@ -466,26 +466,26 @@ begin
     Result:=F_ERR_peek_last_error;
 end;
 
-class procedure TOsslAPIErrCodes.ERR_clear_error;
+class procedure TOsslApiErrCodes.ERR_clear_error;
 begin
   if Assigned(F_ERR_clear_error) then
     F_ERR_clear_error();
 end;
 
-{ TOsslAPIErrStrings }
+{ TOsslApiErrStrings }
 
-class constructor TOsslAPIErrStrings.Create;
+class constructor TOsslApiErrStrings.Create;
 begin
   UnBind;
   TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
 end;
 
-class procedure TOsslAPIErrStrings.SetMsgBindErr;
+class procedure TOsslApiErrStrings.SetMsgBindErr;
 begin
   FMsgBindErr:=AnsiString(@resErrRoutineNotBound);
 end;
 
-class function TOsslAPIErrStrings.GetMsgBindErrBuf(buf: PAnsiChar;
+class function TOsslApiErrStrings.GetMsgBindErrBuf(buf: PAnsiChar;
   len: size_t): PAnsiChar;
 var
   lCopyLen: size_t;
@@ -505,12 +505,12 @@ begin
   buf[lCopyLen]:=#0;
 end;
 
-class function TOsslAPIErrStrings.GetMsgBindErrBuf: PAnsiChar;
+class function TOsslApiErrStrings.GetMsgBindErrBuf: PAnsiChar;
 begin
   Result:=PAnsiChar(FMsgBindErr);
 end;
 
-class function TOsslAPIErrStrings.GetMsgBindErrBufFlag(data: PPAnsiChar;
+class function TOsslApiErrStrings.GetMsgBindErrBufFlag(data: PPAnsiChar;
   flags: pcint): cint;
 begin
   Result:=0;
@@ -520,7 +520,7 @@ begin
     flags^:=ERR_TXT_STRING;
 end;
 
-class function TOsslAPIErrStrings.GetMsgBindErrBufFlagAll(file_, func,
+class function TOsslApiErrStrings.GetMsgBindErrBufFlagAll(file_, func,
   data: PPAnsiChar; line, flags: pcint): cint;
 begin
   Result:=GetMsgBindErrBufFlag(data, flags);
@@ -532,7 +532,7 @@ begin
     line^:=0;
 end;
 
-class procedure TOsslAPIErrStrings.Bind(const ALibHandle: TLibHandle;
+class procedure TOsslApiErrStrings.Bind(const ALibHandle: TLibHandle;
   const AVersion: TOsslVersion);
 begin
   try
@@ -542,7 +542,7 @@ begin
   end;
 end;
 
-class procedure TOsslAPIErrStrings.UnBind;
+class procedure TOsslApiErrStrings.UnBind;
 begin
   try
     TOsslBinding.Reset(cBindings, False);
@@ -551,7 +551,7 @@ begin
   end;
 end;
 
-class function TOsslAPIErrStrings.ERR_error_string(e: culong;
+class function TOsslApiErrStrings.ERR_error_string(e: culong;
   buf: PAnsiChar): PAnsiChar;
 begin
   if Assigned(F_ERR_error_string) then
@@ -560,7 +560,7 @@ begin
     Result:=GetMsgBindErrBuf(buf, cErrorStringBufSize);
 end;
 
-class procedure TOsslAPIErrStrings.ERR_error_string_n(e: culong;
+class procedure TOsslApiErrStrings.ERR_error_string_n(e: culong;
   buf: PAnsiChar; len: size_t);
 begin
   if Assigned(F_ERR_error_string_n) then
@@ -569,7 +569,7 @@ begin
     GetMsgBindErrBuf(buf, len);
 end;
 
-class function TOsslAPIErrStrings.ERR_lib_error_string(e: culong): PAnsiChar;
+class function TOsslApiErrStrings.ERR_lib_error_string(e: culong): PAnsiChar;
 begin
   if Assigned(F_ERR_lib_error_string) then
     Result:=F_ERR_lib_error_string(e)
@@ -577,7 +577,7 @@ begin
     Result:=GetMsgBindErrBuf;
 end;
 
-class function TOsslAPIErrStrings.ERR_reason_error_string(e: culong): PAnsiChar;
+class function TOsslApiErrStrings.ERR_reason_error_string(e: culong): PAnsiChar;
 begin
   if Assigned(F_ERR_reason_error_string) then
     Result:=F_ERR_reason_error_string(e)
@@ -585,7 +585,7 @@ begin
     Result:=GetMsgBindErrBuf;
 end;
 
-class function TOsslAPIErrStrings.ERR_peek_error_func(func: PPAnsiChar): culong;
+class function TOsslApiErrStrings.ERR_peek_error_func(func: PPAnsiChar): culong;
 begin
   if Assigned(F_ERR_peek_error_func) then
     Exit(F_ERR_peek_error_func(func));
@@ -595,7 +595,7 @@ begin
     func^:=GetMsgBindErrBuf;
 end;
 
-class function TOsslAPIErrStrings.ERR_peek_last_error_func(func: PPAnsiChar): culong;
+class function TOsslApiErrStrings.ERR_peek_last_error_func(func: PPAnsiChar): culong;
 begin
   if Assigned(F_ERR_peek_last_error_func) then
     Exit(F_ERR_peek_last_error_func(func));
@@ -605,7 +605,7 @@ begin
     func^:=GetMsgBindErrBuf;
 end;
 
-class function TOsslAPIErrStrings.ERR_peek_error_data(data: PPAnsiChar;
+class function TOsslApiErrStrings.ERR_peek_error_data(data: PPAnsiChar;
   flags: pcint): culong;
 begin
   if Assigned(F_ERR_peek_error_data) then
@@ -614,7 +614,7 @@ begin
     Result:=GetMsgBindErrBufFlag(data, flags);
 end;
 
-class function TOsslAPIErrStrings.ERR_peek_last_error_data(data: PPAnsiChar;
+class function TOsslApiErrStrings.ERR_peek_last_error_data(data: PPAnsiChar;
   flags: pcint): culong;
 begin
   if Assigned(F_ERR_peek_last_error_data) then
@@ -623,7 +623,7 @@ begin
     Result:=GetMsgBindErrBufFlag(data, flags);
 end;
 
-class function TOsslAPIErrStrings.ERR_get_error_all(file_: PPAnsiChar;
+class function TOsslApiErrStrings.ERR_get_error_all(file_: PPAnsiChar;
   line: pcint; func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
 begin
   if Assigned(F_ERR_get_error_all) then
@@ -632,7 +632,7 @@ begin
     Result:=GetMsgBindErrBufFlagAll(file_, func, data, line, flags);
 end;
 
-class function TOsslAPIErrStrings.ERR_peek_error_all(file_: PPAnsiChar;
+class function TOsslApiErrStrings.ERR_peek_error_all(file_: PPAnsiChar;
   line: pcint; func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
 begin
   if Assigned(F_ERR_peek_error_all) then
@@ -641,15 +641,15 @@ begin
     Result:=GetMsgBindErrBufFlagAll(file_, func, data, line, flags);
 end;
 
-class function TOsslAPIErrStrings.ERR_peek_last_error_all(file_: PPAnsiChar;
+class function TOsslApiErrStrings.ERR_peek_last_error_all(file_: PPAnsiChar;
   line: pcint; func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
 begin
   Result := F_ERR_peek_last_error_all(file_, line, func, data, flags);
 end;
 
-{ TOsslAPIErrStringsHelper }
+{ TOsslApiErrStringsHelper }
 
-class function TOsslAPIErrStringsHelper.GetErrorStringA(e: culong;
+class function TOsslApiErrStringsHelper.GetErrorStringA(e: culong;
   AMaxlen: size_t): RawByteString;
 begin
   if AMaxLen = 0 then
@@ -659,13 +659,13 @@ begin
   ERR_error_string_n(e, @Result[1], AMaxLen);
 end;
 
-class function TOsslAPIErrStringsHelper.GetErrorStringW(e: culong;
+class function TOsslApiErrStringsHelper.GetErrorStringW(e: culong;
   AMaxlen: size_t): UnicodeString;
 begin
   Result:=UnicodeString(GetErrorStringA(e, AMaxLen));
 end;
 
-class function TOsslAPIErrStringsHelper.GetErrorString(e: culong;
+class function TOsslApiErrStringsHelper.GetErrorString(e: culong;
   AMaxlen: size_t): string;
 begin
   {$IFDEF UNICODE_DEFAULT}
@@ -675,17 +675,17 @@ begin
   {$ENDIF}
 end;
 
-class function TOsslAPIErrStringsHelper.GetLibNameA(e: culong): RawByteString;
+class function TOsslApiErrStringsHelper.GetLibNameA(e: culong): RawByteString;
 begin
   Result:=RawByteString(ERR_lib_error_string(e));
 end;
 
-class function TOsslAPIErrStringsHelper.GetLibNameW(e: culong): UnicodeString;
+class function TOsslApiErrStringsHelper.GetLibNameW(e: culong): UnicodeString;
 begin
   Result:=UnicodeString(ERR_lib_error_string(e));
 end;
 
-class function TOsslAPIErrStringsHelper.GetLibName(e: culong): string;
+class function TOsslApiErrStringsHelper.GetLibName(e: culong): string;
 begin
   {$IFDEF UNICODE_DEFAULT}
     Result:=GetLibNameW(e);
@@ -694,17 +694,17 @@ begin
   {$ENDIF}
 end;
 
-class function TOsslAPIErrStringsHelper.GetReasonA(e: culong): RawByteString;
+class function TOsslApiErrStringsHelper.GetReasonA(e: culong): RawByteString;
 begin
   Result:=RawByteString(ERR_reason_error_string(e));
 end;
 
-class function TOsslAPIErrStringsHelper.GetReasonW(e: culong): UnicodeString;
+class function TOsslApiErrStringsHelper.GetReasonW(e: culong): UnicodeString;
 begin
   Result:=UnicodeString(ERR_reason_error_string(e));
 end;
 
-class function TOsslAPIErrStringsHelper.GetReason(e: culong): string;
+class function TOsslApiErrStringsHelper.GetReason(e: culong): string;
 begin
   {$IFDEF UNICODE_DEFAULT}
     Result:=GetReasonW(e);
@@ -713,33 +713,33 @@ begin
   {$ENDIF}
 end;
 
-class function TOsslAPIErrStringsHelper.GetErrorStringsA(out AFileName, AFunc,
+class function TOsslApiErrStringsHelper.GetErrorStringsA(out AFileName, AFunc,
   AData: RawByteString; var line, flags: cint): culong;
 var
   lFileName, lFunc, lData: PAnsiChar;
 
 begin
-  Result:=TOsslAPIErrStrings.ERR_get_error_all(@lFileName, @line, @lFunc,
+  Result:=TOsslApiErrStrings.ERR_get_error_all(@lFileName, @line, @lFunc,
     @lData, @flags);
   AFileName:=RawByteString(lFileName);
   AFunc:=RawByteString(lFunc);
   AData:=RawByteString(lData);
 end;
 
-class function TOsslAPIErrStringsHelper.GetErrorStringsW(out AFileName, AFunc,
+class function TOsslApiErrStringsHelper.GetErrorStringsW(out AFileName, AFunc,
   AData: UnicodeString; var line, flags: cint): culong;
 var
   lFileName, lFunc, lData: PAnsiChar;
 
 begin
-  Result:=TOsslAPIErrStrings.ERR_get_error_all(@lFileName, @line, @lFunc,
+  Result:=TOsslApiErrStrings.ERR_get_error_all(@lFileName, @line, @lFunc,
     @lData, @flags);
   AFileName:=UnicodeString(lFileName);
   AFunc:=UnicodeString(lFunc);
   AData:=UnicodeString(lData);
 end;
 
-class function TOsslAPIErrStringsHelper.GetErrorStrings(out AFileName, AFunc,
+class function TOsslApiErrStringsHelper.GetErrorStrings(out AFileName, AFunc,
   AData: string; var line, flags: cint): culong;
 begin
   {$IFDEF UNICODE_DEFAULT}
@@ -749,15 +749,15 @@ begin
   {$ENDIF}
 end;
 
-{ TOsslAPIErrSystem }
+{ TOsslApiErrSystem }
 
-class constructor TOsslAPIErrSystem.Create;
+class constructor TOsslApiErrSystem.Create;
 begin
   UnBind;
   TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
 end;
 
-class procedure TOsslAPIErrSystem.Bind(const ALibHandle: TLibHandle;
+class procedure TOsslApiErrSystem.Bind(const ALibHandle: TLibHandle;
   const AVersion: TOsslVersion);
 begin
   try
@@ -767,7 +767,7 @@ begin
   end;
 end;
 
-class procedure TOsslAPIErrSystem.UnBind;
+class procedure TOsslApiErrSystem.UnBind;
 begin
   try
     TOsslBinding.Reset(cBindings);
@@ -776,7 +776,7 @@ begin
   end;
 end;
 
-class function TOsslAPIErrSystem.ERR_set_mark: cint;
+class function TOsslApiErrSystem.ERR_set_mark: cint;
 begin
   if Assigned(F_ERR_set_mark) then
     Result:=F_ERR_set_mark()
@@ -784,7 +784,7 @@ begin
     Result:=0;
 end;
 
-class function TOsslAPIErrSystem.ERR_pop_to_mark: cint;
+class function TOsslApiErrSystem.ERR_pop_to_mark: cint;
 begin
   if Assigned(F_ERR_pop_to_mark) then
     Result:=F_ERR_pop_to_mark()
@@ -792,13 +792,13 @@ begin
     Result:=0;
 end;
 
-class procedure TOsslAPIErrSystem.ERR_print_errors(bp: PBIO);
+class procedure TOsslApiErrSystem.ERR_print_errors(bp: PBIO);
 begin
   if Assigned(F_ERR_print_errors) then
     F_ERR_print_errors(bp);
 end;
 
-class procedure TOsslAPIErrSystem.ERR_put_error(lib, func, reason: cint;
+class procedure TOsslApiErrSystem.ERR_put_error(lib, func, reason: cint;
   file_: PAnsiChar; line: cint);
 begin
   if Assigned(F_ERR_put_error) then
