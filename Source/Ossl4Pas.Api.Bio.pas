@@ -29,6 +29,396 @@ uses
   Ossl4Pas.Loader,
   Ossl4Pas.Binding;
 
+const
+  { There are the classes of BIOs }
+  BIO_TYPE_DESCRIPTOR     = $0100; // socket, fd, connect or accept
+  BIO_TYPE_FILTER         = $0200;
+  BIO_TYPE_SOURCE_SINK    = $0400;
+
+  { These are the 'types' of BIOs }
+  BIO_TYPE_NONE           = 0;
+  BIO_TYPE_MEM            = (1 or BIO_TYPE_SOURCE_SINK);
+  BIO_TYPE_FILE           = (2 or BIO_TYPE_SOURCE_SINK);
+
+  BIO_TYPE_FD             = (4 or BIO_TYPE_SOURCE_SINK or BIO_TYPE_DESCRIPTOR);
+  BIO_TYPE_SOCKET         = (5 or BIO_TYPE_SOURCE_SINK or BIO_TYPE_DESCRIPTOR);
+  BIO_TYPE_NULL           = (6 or BIO_TYPE_SOURCE_SINK);
+  BIO_TYPE_SSL            = (7 or BIO_TYPE_FILTER);
+  BIO_TYPE_MD             = (8 or BIO_TYPE_FILTER);
+  BIO_TYPE_BUFFER         = (9 or BIO_TYPE_FILTER);
+  BIO_TYPE_CIPHER         = (10 or BIO_TYPE_FILTER);
+  BIO_TYPE_BASE64         = (11 or BIO_TYPE_FILTER);
+  BIO_TYPE_CONNECT        = (12 or BIO_TYPE_SOURCE_SINK or BIO_TYPE_DESCRIPTOR);
+  BIO_TYPE_ACCEPT         = (13 or BIO_TYPE_SOURCE_SINK or BIO_TYPE_DESCRIPTOR);
+
+  BIO_TYPE_NBIO_TEST      = (16 or BIO_TYPE_FILTER); // server proxy BIO
+  BIO_TYPE_NULL_FILTER    = (17 or BIO_TYPE_FILTER);
+  BIO_TYPE_BIO            = (19 or BIO_TYPE_SOURCE_SINK); // half a BIO pair
+  BIO_TYPE_LINEBUFFER     = (20 or BIO_TYPE_FILTER);
+  BIO_TYPE_DGRAM          = (21 or BIO_TYPE_SOURCE_SINK or BIO_TYPE_DESCRIPTOR);
+  BIO_TYPE_ASN1           = (22 or BIO_TYPE_FILTER);
+  BIO_TYPE_COMP           = (23 or BIO_TYPE_FILTER);
+
+  {$IFNDEF OPENSSL_NO_SCTP}
+  BIO_TYPE_DGRAM_SCTP     = (24 or BIO_TYPE_SOURCE_SINK or BIO_TYPE_DESCRIPTOR);
+  {$ENDIF}
+  BIO_TYPE_CORE_TO_PROV   = (25 or BIO_TYPE_SOURCE_SINK);
+  BIO_TYPE_DGRAM_PAIR     = (26 or BIO_TYPE_SOURCE_SINK);
+  BIO_TYPE_DGRAM_MEM      = (27 or BIO_TYPE_SOURCE_SINK);
+
+  { Custom type starting index returned by BIO_get_new_index() }
+  BIO_TYPE_START          = 128;
+  { Custom type maximum index that can be returned by BIO_get_new_index() }
+  BIO_TYPE_MASK           = $FF;
+
+const
+  {
+    BIO_FILENAME_READ|BIO_CLOSE to open or close on free.
+    BIO_set_fp(in,stdin,BIO_NOCLOSE);
+  }
+  BIO_NOCLOSE             = $00;
+  BIO_CLOSE               = $01;
+
+const
+  { These are used in the following macros and are passed to BIO_ctrl() }
+  BIO_CTRL_RESET          = 1;  // opt - rewind/zero etc
+  BIO_CTRL_EOF            = 2;  // opt - are we at the eof
+  BIO_CTRL_INFO           = 3;  // opt - extra tit-bits
+  BIO_CTRL_SET            = 4;  // man - set the 'IO' type
+  BIO_CTRL_GET            = 5;  // man - get the 'IO' type
+  BIO_CTRL_PUSH           = 6;  // opt - internal, used to signify change
+  BIO_CTRL_POP            = 7;  // opt - internal, used to signify change
+  BIO_CTRL_GET_CLOSE      = 8;  // man - set the 'close' on free
+  BIO_CTRL_SET_CLOSE      = 9;  // man - set the 'close' on free
+  BIO_CTRL_PENDING        = 10; // opt - is their more data buffered
+  BIO_CTRL_FLUSH          = 11; // opt - 'flush' buffered output
+  BIO_CTRL_DUP            = 12; // man - extra stuff for 'duped' BIO
+  BIO_CTRL_WPENDING       = 13; // opt - number of bytes still to write
+  BIO_CTRL_SET_CALLBACK   = 14; // opt - set callback function
+  BIO_CTRL_GET_CALLBACK   = 15; // opt - set callback function
+
+  BIO_CTRL_PEEK           = 29; // BIO_f_buffer special
+  BIO_CTRL_SET_FILENAME   = 30; // BIO_s_file special
+
+  { dgram BIO stuff }
+  BIO_CTRL_DGRAM_CONNECT            = 31; // BIO dgram special
+  BIO_CTRL_DGRAM_SET_CONNECTED      = 32; // allow for an externally connected socket to be passed in
+  BIO_CTRL_DGRAM_SET_RECV_TIMEOUT   = 33; // setsockopt, essentially
+  BIO_CTRL_DGRAM_GET_RECV_TIMEOUT   = 34; // getsockopt, essentially
+  BIO_CTRL_DGRAM_SET_SEND_TIMEOUT   = 35; // setsockopt, essentially
+  BIO_CTRL_DGRAM_GET_SEND_TIMEOUT   = 36; // getsockopt, essentially
+
+  BIO_CTRL_DGRAM_GET_RECV_TIMER_EXP = 37; // flag whether the last
+  BIO_CTRL_DGRAM_GET_SEND_TIMER_EXP = 38; // I/O operation timed out
+
+  { #ifdef IP_MTU_DISCOVER }
+  BIO_CTRL_DGRAM_MTU_DISCOVER       = 39; // set DF bit on egress packets
+  { #endif }
+
+  BIO_CTRL_DGRAM_QUERY_MTU          = 40; // as kernel for current MTU
+  BIO_CTRL_DGRAM_GET_FALLBACK_MTU   = 47;
+  BIO_CTRL_DGRAM_GET_MTU            = 41; // get cached value for MTU
+  BIO_CTRL_DGRAM_SET_MTU            = 42; // set cached value for MTU. want to use this if asking the kernel fails
+
+  BIO_CTRL_DGRAM_MTU_EXCEEDED       = 43; // check whether the MTU was exceed in the previous write operation
+
+  BIO_CTRL_DGRAM_GET_PEER           = 46;
+  BIO_CTRL_DGRAM_SET_PEER           = 44; // Destination for the data
+
+  BIO_CTRL_DGRAM_SET_NEXT_TIMEOUT   = 45; // Next DTLS handshake timeout to adjust socket timeouts
+  BIO_CTRL_DGRAM_SET_DONT_FRAG      = 48;
+
+  BIO_CTRL_DGRAM_GET_MTU_OVERHEAD   = 49;
+
+  { Deliberately outside of OPENSSL_NO_SCTP - used in bss_dgram.c }
+  BIO_CTRL_DGRAM_SCTP_SET_IN_HANDSHAKE = 50;
+
+  { SCTP stuff }
+  BIO_CTRL_DGRAM_SCTP_ADD_AUTH_KEY  = 51;
+  BIO_CTRL_DGRAM_SCTP_NEXT_AUTH_KEY = 52;
+  BIO_CTRL_DGRAM_SCTP_AUTH_CCS_RCVD = 53;
+  BIO_CTRL_DGRAM_SCTP_GET_SNDINFO   = 60;
+  BIO_CTRL_DGRAM_SCTP_SET_SNDINFO   = 61;
+  BIO_CTRL_DGRAM_SCTP_GET_RCVINFO   = 62;
+  BIO_CTRL_DGRAM_SCTP_SET_RCVINFO   = 63;
+  BIO_CTRL_DGRAM_SCTP_GET_PRINFO    = 64;
+  BIO_CTRL_DGRAM_SCTP_SET_PRINFO    = 65;
+  BIO_CTRL_DGRAM_SCTP_SAVE_SHUTDOWN = 70;
+
+  BIO_CTRL_DGRAM_SET_PEEK_MODE      = 71;
+
+  {
+   internal BIO:
+   # define BIO_CTRL_SET_KTLS_SEND                 72
+   # define BIO_CTRL_SET_KTLS_SEND_CTRL_MSG        74
+   # define BIO_CTRL_CLEAR_KTLS_CTRL_MSG           75
+  }
+
+  BIO_CTRL_GET_KTLS_SEND            = 73;
+  BIO_CTRL_GET_KTLS_RECV            = 76;
+
+  BIO_CTRL_DGRAM_SCTP_WAIT_FOR_DRY  = 77;
+  BIO_CTRL_DGRAM_SCTP_MSG_WAITING   = 78;
+
+  { BIO_f_prefix controls }
+  BIO_CTRL_SET_PREFIX               = 79;
+  BIO_CTRL_SET_INDENT               = 80;
+  BIO_CTRL_GET_INDENT               = 81;
+
+  BIO_CTRL_DGRAM_GET_LOCAL_ADDR_CAP    = 82;
+  BIO_CTRL_DGRAM_GET_LOCAL_ADDR_ENABLE = 83;
+  BIO_CTRL_DGRAM_SET_LOCAL_ADDR_ENABLE = 84;
+  BIO_CTRL_DGRAM_GET_EFFECTIVE_CAPS    = 85;
+  BIO_CTRL_DGRAM_GET_CAPS              = 86;
+  BIO_CTRL_DGRAM_SET_CAPS              = 87;
+  BIO_CTRL_DGRAM_GET_NO_TRUNC          = 88;
+  BIO_CTRL_DGRAM_SET_NO_TRUNC          = 89;
+
+  {
+   internal BIO:
+   # define BIO_CTRL_SET_KTLS_TX_ZEROCOPY_SENDFILE 90
+  }
+
+  BIO_CTRL_GET_RPOLL_DESCRIPTOR      = 91;
+  BIO_CTRL_GET_WPOLL_DESCRIPTOR      = 92;
+  BIO_CTRL_DGRAM_DETECT_PEER_ADDR    = 93;
+  BIO_CTRL_DGRAM_SET0_LOCAL_ADDR     = 94;
+
+const
+  { modifiers }
+  BIO_FP_READ             = $02;
+  BIO_FP_WRITE            = $04;
+  BIO_FP_APPEND           = $08;
+  BIO_FP_TEXT             = $10;
+
+  BIO_FLAGS_READ          = $01;
+  BIO_FLAGS_WRITE         = $02;
+  BIO_FLAGS_IO_SPECIAL    = $04;
+  BIO_FLAGS_RWS           = (BIO_FLAGS_READ or BIO_FLAGS_WRITE or BIO_FLAGS_IO_SPECIAL);
+  BIO_FLAGS_SHOULD_RETRY  = $08;
+
+  BIO_FLAGS_UPLINK        = 0;
+
+  BIO_FLAGS_BASE64_NO_NL  = $100;
+
+  {
+   This is used with memory BIOs:
+   BIO_FLAGS_MEM_RDONLY means we shouldn't free up or change the data in any way;
+   BIO_FLAGS_NONCLEAR_RST means we shouldn't clear data on reset.
+  }
+  BIO_FLAGS_MEM_RDONLY    = $200;
+  BIO_FLAGS_NONCLEAR_RST  = $400;
+  BIO_FLAGS_IN_EOF        = $800;
+
+  { the BIO FLAGS values 0x1000 to 0x8000 are reserved for internal KTLS flags }
+
+const
+  {
+    The next three are used in conjunction with the BIO_should_io_special()
+    condition.  After this returns true, BIO *BIO_get_retry_BIO(BIO *bio, int
+    *reason); will walk the BIO stack and return the 'reason' for the special
+    and the offending BIO. Given a BIO, BIO_get_retry_reason(bio) will return
+    the code.
+  }
+
+  { Returned from the SSL bio when the certificate retrieval code had an error }
+  BIO_RR_SSL_X509_LOOKUP  = $01;
+  { Returned from the connect BIO when a connect would have blocked }
+  BIO_RR_CONNECT          = $02;
+  { Returned from the accept BIO when an accept would have blocked }
+  BIO_RR_ACCEPT           = $03;
+
+  { These are passed by the BIO callback }
+  BIO_CB_FREE             = $01;
+  BIO_CB_READ             = $02;
+  BIO_CB_WRITE            = $03;
+  BIO_CB_PUTS             = $04;
+  BIO_CB_GETS             = $05;
+  BIO_CB_CTRL             = $06;
+  BIO_CB_RECVMMSG         = $07;
+  BIO_CB_SENDMMSG         = $08;
+
+  {
+   The callback is called before and after the underling operation, The
+   BIO_CB_RETURN flag indicates if it is after the call
+  }
+  BIO_CB_RETURN           = $80;
+
+const
+  BIO_POLL_DESCRIPTOR_TYPE_NONE    = 0;
+  BIO_POLL_DESCRIPTOR_TYPE_SOCK_FD = 1;
+  BIO_POLL_DESCRIPTOR_TYPE_SSL     = 2;
+  BIO_POLL_DESCRIPTOR_CUSTOM_START = 8192;
+
+const
+  BIO_C_SET_CONNECT                 = 100;
+  BIO_C_DO_STATE_MACHINE            = 101;
+  BIO_C_SET_NBIO                    = 102;
+  // # define BIO_C_SET_PROXY_PARAM                   103
+  BIO_C_SET_FD                      = 104;
+  BIO_C_GET_FD                      = 105;
+  BIO_C_SET_FILE_PTR                = 106;
+  BIO_C_GET_FILE_PTR                = 107;
+  BIO_C_SET_FILENAME                = 108;
+  BIO_C_SET_SSL                     = 109;
+  BIO_C_GET_SSL                     = 110;
+  BIO_C_SET_MD                      = 111;
+  BIO_C_GET_MD                      = 112;
+  BIO_C_GET_CIPHER_STATUS           = 113;
+  BIO_C_SET_BUF_MEM                 = 114;
+  BIO_C_GET_BUF_MEM_PTR             = 115;
+  BIO_C_GET_BUFF_NUM_LINES          = 116;
+  BIO_C_SET_BUFF_SIZE               = 117;
+  BIO_C_SET_ACCEPT                  = 118;
+  BIO_C_SSL_MODE                    = 119;
+  BIO_C_GET_MD_CTX                  = 120;
+  // # define BIO_C_GET_PROXY_PARAM                   121
+  BIO_C_SET_BUFF_READ_DATA          = 122; // data to read first
+  BIO_C_GET_CONNECT                 = 123;
+  BIO_C_GET_ACCEPT                  = 124;
+  BIO_C_SET_SSL_RENEGOTIATE_BYTES   = 125;
+  BIO_C_GET_SSL_NUM_RENEGOTIATES    = 126;
+  BIO_C_SET_SSL_RENEGOTIATE_TIMEOUT = 127;
+  BIO_C_FILE_SEEK                   = 128;
+  BIO_C_GET_CIPHER_CTX              = 129;
+  BIO_C_SET_BUF_MEM_EOF_RETURN      = 130; // return end of input value
+  BIO_C_SET_BIND_MODE               = 131;
+  BIO_C_GET_BIND_MODE               = 132;
+  BIO_C_FILE_TELL                   = 133;
+  BIO_C_GET_SOCKS                   = 134;
+  BIO_C_SET_SOCKS                   = 135;
+
+  BIO_C_SET_WRITE_BUF_SIZE          = 136; // for BIO_s_bio
+  BIO_C_GET_WRITE_BUF_SIZE          = 137;
+  BIO_C_MAKE_BIO_PAIR               = 138;
+  BIO_C_DESTROY_BIO_PAIR            = 139;
+  BIO_C_GET_WRITE_GUARANTEE         = 140;
+  BIO_C_GET_READ_REQUEST            = 141;
+  BIO_C_SHUTDOWN_WR                 = 142;
+  BIO_C_NREAD0                      = 143;
+  BIO_C_NREAD                       = 144;
+  BIO_C_NWRITE0                     = 145;
+  BIO_C_NWRITE                      = 146;
+  BIO_C_RESET_READ_REQUEST          = 147;
+  BIO_C_SET_MD_CTX                  = 148;
+
+  BIO_C_SET_PREFIX                  = 149;
+  BIO_C_GET_PREFIX                  = 150;
+  BIO_C_SET_SUFFIX                  = 151;
+  BIO_C_GET_SUFFIX                  = 152;
+
+  BIO_C_SET_EX_ARG                  = 153;
+  BIO_C_GET_EX_ARG                  = 154;
+
+  BIO_C_SET_CONNECT_MODE            = 155;
+
+  BIO_C_SET_TFO                     = 156; // like BIO_C_SET_NBIO
+
+  BIO_C_SET_SOCK_TYPE               = 157;
+  BIO_C_GET_SOCK_TYPE               = 158;
+  BIO_C_GET_DGRAM_BIO               = 159;
+
+const
+  // IP families we support, for BIO_s_connect() and BIO_s_accept()
+  // Note: the underlying operating system may not support some of them
+  BIO_FAMILY_IPV4                   = 4;
+  BIO_FAMILY_IPV6                   = 6;
+  BIO_FAMILY_IPANY                  = 256;
+
+const
+  BIO_SOCK_REUSEADDR              = $01;
+  BIO_SOCK_V6_ONLY                = $02;
+  BIO_SOCK_KEEPALIVE              = $04;
+  BIO_SOCK_NONBLOCK               = $08;
+  BIO_SOCK_NODELAY                = $10;
+  BIO_SOCK_TFO                    = $20; // TCP Fast Open
+
+const
+  // Aliases kept for backward compatibility
+  BIO_BIND_NORMAL                 = 0;
+  BIO_BIND_REUSEADDR              = BIO_SOCK_REUSEADDR;
+  BIO_BIND_REUSEADDR_IF_UNUSED    = BIO_SOCK_REUSEADDR;
+
+const
+  // If set, BIO_lookup_ex() will not resolve the address to a name
+  BIO_LOOKUP_FLAG_NO_RES_ADDR     = 1;
+
+type
+  BIO_hostserv_priorities = (
+    BIO_PARSE_PRIO_HOST,
+    BIO_PARSE_PRIO_SERV
+  );
+
+  BIO_lookup_type = (
+    BIO_LOOKUP_CLIENT,
+    BIO_LOOKUP_SERVER
+  );
+
+{ ============================================================================ }
+{   BIO TYPES & STRUCTS                                                        }
+{ ============================================================================ }
+
+  // Opaque types (Forward definitions in C)
+  // typedef union bio_addr_st BIO_ADDR;
+  TBIO_ADDR_st = record end;
+  PBIO_ADDR = ^TBIO_ADDR_st;
+
+  // typedef struct bio_addrinfo_st BIO_ADDRINFO;
+  TBIO_ADDRINFO_st = record end;
+  PBIO_ADDRINFO = ^TBIO_ADDRINFO_st;
+
+  // typedef struct bio_method_st BIO_METHOD;
+  TBIO_METHOD_st = record end;
+  PBIO_METHOD = ^TBIO_METHOD_st;
+
+{ ============================================================================ }
+{  SCTP PARAMETER STRUCTS                                                      }
+{  These are public structures used with BIO_ctrl (DTLS/SCTP).                 }
+{ ============================================================================ }
+
+  PBIO_dgram_sctp_sndinfo = ^TBIO_dgram_sctp_sndinfo;
+  TBIO_dgram_sctp_sndinfo = record
+    snd_sid: cuint16;
+    snd_flags: cuint16;
+    snd_ppid: cuint32;
+    snd_context: cuint32;
+  end;
+
+  PBIO_dgram_sctp_rcvinfo = ^TBIO_dgram_sctp_rcvinfo;
+  TBIO_dgram_sctp_rcvinfo = record
+    rcv_sid: cuint16;
+    rcv_ssn: cuint16;
+    rcv_flags: cuint16;
+    rcv_ppid: cuint32;
+    rcv_tsn: cuint32;
+    rcv_cumtsn: cuint32;
+    rcv_context: cuint32;
+  end;
+
+  PBIO_dgram_sctp_prinfo = ^TBIO_dgram_sctp_prinfo;
+  TBIO_dgram_sctp_prinfo = record
+    pr_policy: cuint16;
+    pr_value: cuint32;
+  end;
+
+type
+{ ============================================================================ }
+{  BIO callbacks                                                               }
+{ ============================================================================ }
+
+  TBIO_callback_fn_ex = function(b: PBIO; oper: cint; const argp: pointer;
+    len: csize_t; argi: cint; argl: clong; ret: cint;
+    processed: psize_t): clong; cdecl;
+
+  TBIO_info_cb = function(b: PBIO; state: cint; res: cint): cint; cdecl;
+
+  // Prefix and suffix callback in ASN1 BIO
+  Tasn1_ps_func = function(b: PBIO; pbuf: PPointer; plen: pcint;
+    parg: pointer): cint; cdecl;
+
+  TBIO_dgram_sctp_notification_handler_fn = procedure(b: PBIO;
+    context, buf: pointer); cdecl;
+
 type
   /// <summary>
   ///   Metaclass type for BIO Methods, used for passing types to factories.
