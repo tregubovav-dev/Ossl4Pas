@@ -53,7 +53,7 @@ type
 {$REGION 'TOsslLoader declaration'}
 
   /// <summary>Base exception class for all OpenSSL Loader errors.</summary>
-  EOsslLoader = class(Exception) (*(EOsslBase) *);
+  EOsslLoader = class(Exception);
 
   /// <summary>Exception raised when an OS-level library loading error occurs.</summary>
   EOsslLib  = class(EOSError)
@@ -610,7 +610,6 @@ type
 
   private
     class function GetRegistry: TBindParamList;
-(*    class procedure Clear; *)
 
   public
     class constructor Create;
@@ -657,13 +656,6 @@ begin
     lRegistry.Free; // some other thread installed the singleton.
   Result:=FRegistry;
 end;
-
-(*
-class procedure TOsslLoaderRegistry.Clear;
-begin
-  FRegistry.Clear;
-end;
-*)
 
 class function TOsslLoaderRegistry.GetSnapshot(ALibTypes: TLibTypes): TBindSnapshot;
 var
@@ -863,26 +855,12 @@ begin
 end;
 
 {$IFDEF UNITTEST}
-(*
-type
-  TOsslLoaderRegistryHelpers = class helper for TOsslLoaderRegistry
-    class procedure ResetRegistry;
-  end;
-
-// FOR UNIT TEST USAGE ONLY
-// This method clears Binding Registry instantly
-class procedure TOsslLoaderRegistryHelpers.ResetRegistry;
-begin
-  Clear;
-end;
-*)
 // FOR UNIT TEST USAGE ONLY
 // This method resets singleton instantly
 class procedure TOsslCustomLoader.ResetSingleton;
 begin
   FreeAndNil(FLoader);
   FLoaderClass:=nil;
-(*  TOsslLoaderRegistry.ResetRegistry; *)
 end;
 
 {$ENDIF}
