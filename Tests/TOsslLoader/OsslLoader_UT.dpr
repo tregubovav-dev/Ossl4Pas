@@ -41,7 +41,8 @@ uses
   Ossl4Pas.UT.Utils in '..\Common\Ossl4Pas.UT.Utils.pas',
   Ossl4Pas.UT.Loader.CustomFixtures in '..\Common\Ossl4Pas.UT.Loader.CustomFixtures.pas',
   Ossl4Pas.Loader in '..\..\Source\Ossl4Pas.Loader.pas',
-  Ossl4Pas.UT.Loader.TOsslLoader.Integration in 'Ossl4Pas.UT.Loader.TOsslLoader.Integration.pas';
+  Ossl4Pas.UT.Loader.TOsslLoader.Integration in 'Ossl4Pas.UT.Loader.TOsslLoader.Integration.pas',
+  Ossl4Pas.UT.Binding.Behavior in 'Ossl4Pas.UT.Binding.Behavior.pas';
 
 { keep comment here to protect the following conditional from being removed by the IDE when adding a unit }
 {$IFNDEF TESTINSIGHT}
