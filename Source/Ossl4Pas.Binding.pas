@@ -49,6 +49,11 @@ type
     VarPtr: PPointer;
     /// <summary>Minimum OpenSSL version required. 0 = Any.</summary>
     MinVer: culong;
+    /// <summary>
+    ///   Optional custom address to assign if the symbol is missing or incompatible.
+    ///   If nil, the default behavior (Stub or nil) is used.
+    /// </summary>
+    FallbackPtr: Pointer;
   end;
 
   /// <summary>
@@ -150,10 +155,15 @@ begin
     if Assigned(lProcAddr) then
       lPVar^:=lProcAddr
     else
-      if ASetStub then  // Symbol missing in DLL
+    begin
+      // Symbol missing or Version incompatible
+      if Assigned(lEntry.FallbackPtr) then
+        lPVar^:=lEntry.FallbackPtr  // <--- Use Custom Fallback
+      else if ASetStub then
         lPVar^:=@Stub_FuncNotAvailable
       else
         lPVar^:=nil;
+    end;
   end;
 end;
 
@@ -167,13 +177,17 @@ begin
   for i:=Low(AEntries) to High(AEntries) do
   begin
     lPVar:=AEntries[i].VarPtr;
-    if not Assigned(lPVar) then
-      continue;
-    if ASetStub then
-      // Assign the stub address so calls raise a clean exception
-      lPVar^:=@Stub_FuncNotAvailable
-    else
-      lPVar^:=nil;
+
+    if Assigned(lPVar) then
+    begin
+      // Reset logic: Prefer Fallback if available, otherwise Stub/Nil
+      if Assigned(AEntries[i].FallbackPtr) then
+        lPVar^:=AEntries[i].FallbackPtr
+      else if ASetStub then
+        lPVar^:=@Stub_FuncNotAvailable
+      else
+        lPVar^:=nil;
+    end;
   end;
 end;
 
