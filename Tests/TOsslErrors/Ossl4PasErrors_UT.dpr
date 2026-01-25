@@ -16,7 +16,7 @@
 {                                                                              }
 {******************************************************************************}
 
-program OsslErrors_UT;
+program Ossl4PasErrors_UT;
 
 {$IFNDEF TESTINSIGHT}
 {$APPTYPE CONSOLE}

@@ -16,7 +16,7 @@
 {                                                                              }
 {******************************************************************************}
 
-program OsslLoader_UT;
+program Ossl4PasLoader_UT;
 
 {$IFNDEF TESTINSIGHT}
 {$APPTYPE CONSOLE}
