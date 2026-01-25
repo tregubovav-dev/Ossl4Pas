@@ -440,6 +440,7 @@ type
     ///   Returns the raw OpenSSL BIO_METHOD pointer.
     /// </summary>
     class function GetMethodHandle: PBIO_METHOD; virtual; abstract;
+    class function NilMethod: PBIO_METHOD; static; cdecl;
   public
     property MethodHandle: PBIO_METHOD read GetMethodHandle;
   end;
@@ -633,7 +634,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_dgram_pair'; VarPtr: @@TOsslApiBioMethodDatagramPair.FMethod; MinVer: $30200000));
+      ((Name: 'BIO_s_dgram_pair'; VarPtr: @@TOsslApiBioMethodDatagramPair.FMethod;
+        MinVer: $30200000; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -954,6 +956,13 @@ type
   end;
 
 implementation
+
+{ TOsslApiBioCustomMethod }
+
+class function TOsslApiBioCustomMethod.NilMethod: PBIO_METHOD;
+begin
+  Result:=nil;
+end;
 
 { ============================================================================
   TOsslApiBioMethodMem (Memory)
