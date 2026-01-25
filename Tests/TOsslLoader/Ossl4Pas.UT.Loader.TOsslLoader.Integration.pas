@@ -100,11 +100,9 @@ type
     [AutoNameTestCase('$3000000F,$3060000F,False')]
     procedure LoadVersionDiff(ACryptoVer, ASslVer: culong; AExpected: boolean);
 
-    [Category('Debug')]
     [AutoNameTestCase('$3060000F')]
     procedure LoadAndBindLibCrypto(AVersion: culong); overload;
 
-    [Category('Debug')]
     [AutoNameTestCase('$3060000F')]
     procedure LoadAndBindLibSsl(AVersion: culong); overload;
   end;

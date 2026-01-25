@@ -93,7 +93,7 @@
         <UsingDelphiRTL>true</UsingDelphiRTL>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <DCC_UnitSearchPath>..\..\Source;..\Common;$(DUnitX);$(FASTMM5);$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\..\Source;..\Common;..\Mocks;..\Mocks\MockLibs;$(DUnitX);$(FASTMM5);$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <SanitizedProjectName>OsslLoader_UT</SanitizedProjectName>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -157,7 +157,7 @@
         <Debugger_RunParams>-exit:Pause  --mocklib-path:Z:\Projects\Embarcadero\Delphi\Libs\projects\Ossl4Pas\Tests\Mocks\mockLibs\Win32\Debug\mocklib.dll -mkw:Temp\</Debugger_RunParams>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
-        <Debugger_RunParams>-exit:Pause --mocklib-path:&quot;Z:\Projects\Embarcadero\Delphi\Libs\projects\Ossl4Pas\Tests\Mocks\mockLibs\Win64\Debug\mocklib.dll&quot; -mkw:Temp\ --fmd:&quot;Z:\Projects\Embarcadero\Delphi\Libs\projects\FastMM5\FullDebugMode DLL\Precompiled&quot; --fme:true </Debugger_RunParams>
+        <Debugger_RunParams>-exit:Pause --mocklib-path:&quot;$(OSSL4PAS)\Tests\Mocks\mockLibs\Win64\Debug\mocklib.dll&quot; -mkw:Temp\ --fmd:&quot;$(FASTMM5)\FullDebugMode DLL\Precompiled&quot; --fme:true  -i:OsslBinderBehavior</Debugger_RunParams>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -176,6 +176,7 @@
         <DCCReference Include="..\Common\Ossl4Pas.UT.Loader.CustomFixtures.pas"/>
         <DCCReference Include="..\..\Source\Ossl4Pas.Loader.pas"/>
         <DCCReference Include="Ossl4Pas.UT.Loader.TOsslLoader.Integration.pas"/>
+        <DCCReference Include="Ossl4Pas.UT.Binding.Behavior.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
