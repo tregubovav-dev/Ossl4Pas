@@ -436,13 +436,12 @@ type
   protected type
     TRoutine_METHOD = function: PBIO_METHOD; cdecl;
   protected
+    class function NilMethod: PBIO_METHOD; static; cdecl;
+  public
     /// <summary>
     ///   Returns the raw OpenSSL BIO_METHOD pointer.
     /// </summary>
     class function GetMethodHandle: PBIO_METHOD; virtual; abstract;
-    class function NilMethod: PBIO_METHOD; static; cdecl;
-  public
-    property MethodHandle: PBIO_METHOD read GetMethodHandle;
   end;
 
   // ---------------------------------------------------------------------------
@@ -463,10 +462,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_file: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_mem(). Read/Write to memory buffer.</summary>
@@ -479,10 +478,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_mem: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_secmem(). Like Mem, but uses secure heap.</summary>
@@ -495,10 +494,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_secmem: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_socket(). Raw OS socket I/O.</summary>
@@ -510,10 +509,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_socket: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_connect(). TCP Client connection.</summary>
@@ -526,10 +525,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_connect: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_accept(). TCP Server acceptor.</summary>
@@ -542,10 +541,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_accept: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_fd(). Raw File Descriptor I/O.</summary>
@@ -558,10 +557,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_fd: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_log(). System logging (syslog/eventlog).</summary>
@@ -574,10 +573,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_log: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_bio(). Internal BIO pair (pipe).</summary>
@@ -590,10 +589,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_bio: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_null(). Discards data (Sink) / EOF (Source).</summary>
@@ -606,10 +605,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_null: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_core(). OpenSSL 3.0 Core Provider integration.</summary>
@@ -622,10 +621,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_core: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_dgram_pair(). UDP support.</summary>
@@ -639,10 +638,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_dgram_pair: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_datagram(). UDP support.</summary>
@@ -655,10 +654,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_datagram: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_datagram_sctp(). SCTP support.</summary>
@@ -671,10 +670,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_datagram_sctp: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   // ---------------------------------------------------------------------------
@@ -691,10 +690,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_null: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_buffer(). Buffering filter.</summary>
@@ -707,10 +706,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_buffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_readbuffer(). Read-only buffering filter.</summary>
@@ -723,10 +722,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_readbuffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_linebuffer(). Line-oriented buffering.</summary>
@@ -739,10 +738,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_linebuffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_nbio_test(). Non-blocking I/O test filter.</summary>
@@ -755,10 +754,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_nbio_test: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_prefix(). Prefix/Indentation filter.</summary>
@@ -771,10 +770,10 @@ type
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_prefix: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
 type
@@ -987,6 +986,11 @@ end;
 
 class function TOsslApiBioMethodMem.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_mem;
+end;
+
+class function TOsslApiBioMethodMem.BIO_s_mem: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1012,6 +1016,11 @@ begin
 end;
 
 class function TOsslApiBioMethodFile.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_file;
+end;
+
+class function TOsslApiBioMethodFile.BIO_s_file: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1039,6 +1048,11 @@ end;
 
 class function TOsslApiBioMethodSocket.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_socket;
+end;
+
+class function TOsslApiBioMethodSocket.BIO_s_socket: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1065,6 +1079,11 @@ end;
 
 class function TOsslApiBioMethodNull.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_null;
+end;
+
+class function TOsslApiBioMethodNull.BIO_s_null: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1088,6 +1107,11 @@ begin
 end;
 
 class function TOsslApiBioMethodSecMem.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_secmem;
+end;
+
+class function TOsslApiBioMethodSecMem.BIO_s_secmem: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1113,6 +1137,11 @@ end;
 
 class function TOsslApiBioMethodConnect.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_connect;
+end;
+
+class function TOsslApiBioMethodConnect.BIO_s_connect: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1136,6 +1165,11 @@ begin
 end;
 
 class function TOsslApiBioMethodAccept.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_accept;
+end;
+
+class function TOsslApiBioMethodAccept.BIO_s_accept: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1161,9 +1195,13 @@ end;
 
 class function TOsslApiBioMethodFd.GetMethodHandle: PBIO_METHOD;
 begin
-  Result:=FMethod();
+  Result:=BIO_s_fd;
 end;
 
+class function TOsslApiBioMethodFd.BIO_s_fd: PBIO_METHOD;
+begin
+  Result:=FMethod();
+end;
 
 { TOsslApiBioMethodLog }
 
@@ -1185,6 +1223,11 @@ begin
 end;
 
 class function TOsslApiBioMethodLog.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_log;
+end;
+
+class function TOsslApiBioMethodLog.BIO_s_log: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1211,6 +1254,11 @@ end;
 
 class function TOsslApiBioMethodBio.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_bio;
+end;
+
+class function TOsslApiBioMethodBio.BIO_s_bio: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1234,6 +1282,11 @@ begin
 end;
 
 class function TOsslApiBioMethodCore.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_core;
+end;
+
+class function TOsslApiBioMethodCore.BIO_s_core: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1259,6 +1312,11 @@ end;
 
 class function TOsslApiBioMethodDatagramPair.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_dgram_pair;
+end;
+
+class function TOsslApiBioMethodDatagramPair.BIO_s_dgram_pair: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1283,6 +1341,11 @@ end;
 
 class function TOsslApiBioMethodDatagram.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_datagram;
+end;
+
+class function TOsslApiBioMethodDatagram.BIO_s_datagram: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1306,6 +1369,11 @@ begin
 end;
 
 class function TOsslApiBioMethodDatagramSctp.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_datagram_sctp;
+end;
+
+class function TOsslApiBioMethodDatagramSctp.BIO_s_datagram_sctp: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1335,6 +1403,11 @@ end;
 
 class function TOsslApiBioFilterNull.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_f_null;
+end;
+
+class function TOsslApiBioFilterNull.BIO_f_null: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1358,6 +1431,11 @@ begin
 end;
 
 class function TOsslApiBioFilterBuffer.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_f_buffer();
+end;
+
+class function TOsslApiBioFilterBuffer.BIO_f_buffer: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1383,6 +1461,11 @@ end;
 
 class function TOsslApiBioFilterReadBuffer.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_f_readbuffer;
+end;
+
+class function TOsslApiBioFilterReadBuffer.BIO_f_readbuffer: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1407,6 +1490,11 @@ end;
 
 class function TOsslApiBioFilterLineBuffer.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_f_linebuffer;
+end;
+
+class function TOsslApiBioFilterLineBuffer.BIO_f_linebuffer: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1430,6 +1518,11 @@ begin
 end;
 
 class function TOsslApiBioFilterNbioTest.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_f_nbio_test;
+end;
+
+class function TOsslApiBioFilterNbioTest.BIO_f_nbio_test: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1458,7 +1551,12 @@ begin
   Result:=FMethod();
 end;
 
-{ TOsslApiBio }
+class function TOsslApiBioFilterPrefix.BIO_f_prefix: PBIO_METHOD;
+begin
+  Result:=BIO_f_prefix;
+end;
+
+{ TOsslApiBioBase }
 
 class constructor TOsslApiBioBase.Create;
 begin
