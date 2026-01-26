@@ -97,6 +97,25 @@ type
     class property MockWorkDir: string read FMockWorkDir;
   end;
 
+  TOsslLibPathConfig = class
+  public const
+    cEnvVarNameOsslLibPath    = 'OSSL4PAS_OSSL_PATH';
+    cLongOptNameOsslLibPath   = 'ossl-path';
+    cShortOptNameOsslLibPath  = 'osp';
+
+  private class var
+    FOsslLibPath: string;
+
+  private
+    class procedure RegisterOptions; static;
+    class procedure SetOSslLibPath(Value: string);
+  public
+    class constructor Create;
+
+    class property OsslLibPath: string read FOsslLibPath;
+
+  end;
+
 resourcestring
   rcFastMMDebugEnableHelp = 'Enable or disable detailed memory leak';
   rcFastMMLogHelp         = 'Memory leak report file name.';
@@ -110,6 +129,8 @@ resourcestring
 {$ENDIF}
   rcMockLibPathHelp       = 'Full path to mock library.';
   rcMockLibWorkDirHelp    = 'Full path to mock library working directory.';
+
+  rcOsslLibPathHelp       = 'Path to OpenSSL shared library.';
 
 implementation
 
@@ -256,6 +277,33 @@ end;
 class function TMockLibConfig.GetWorkMockLibPath(ALibName: string): string;
 begin
   Result:=TPath.Combine(FMockWorkDir, TPath.ChangeExtension(ALibName, cLibExt));
+end;
+
+{ TOsslLibPathConfig }
+
+class constructor TOsslLibPathConfig.Create;
+begin
+  SetOSslLibPath(GetEnvironmentVariable(cEnvVarNameOsslLibPath));
+  RegisterOptions;
+end;
+
+class procedure TOsslLibPathConfig.RegisterOptions;
+begin
+  TOptionsRegistry.RegisterOption<string>(cLongOptNameOsslLibPath,
+    cShortOptNameOsslLibPath, rcOsslLibPathHelp,
+    procedure(Value: string)
+    begin
+      SetOSslLibPath(Value);
+    end
+  );
+end;
+
+class procedure TOsslLibPathConfig.SetOSslLibPath(Value: string);
+begin
+  if string.IsNullOrWhiteSpace(Value) then
+    FOsslLibPath:=''
+  else
+    FOsslLibPath:=TPath.GetFullPath(Value);
 end;
 
 end.
