@@ -1010,6 +1010,64 @@ type
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
+type
+  { TODO :
+This is preliminary implementtation.
+Needs review and include all text-bases BIO routines. }
+
+  /// <summary>
+  ///   API wrapper for OpenSSL BIO Text and Formatting routines.
+  ///   Includes String I/O (gets/puts) and Indentation.
+  /// </summary>
+  TOsslApiBioText = class sealed(TOsslApiBioBase)
+  public type
+    TRoutine_BIO_gets   = function(b: PBIO; buf: PAnsiChar; size: cint): cint; cdecl;
+    TRoutine_BIO_puts   = function(b: PBIO; buf: PAnsiChar): cint; cdecl;
+    TRoutine_BIO_indent = function(b: PBIO; indent, max: cint): cint; cdecl;
+
+  strict private class var
+    F_BIO_gets:   TRoutine_BIO_gets;
+    F_BIO_puts:   TRoutine_BIO_puts;
+    F_BIO_indent: TRoutine_BIO_indent;
+
+  strict protected const
+    cBindings: array[0..2] of TOsslBindEntry = (
+      (Name: 'BIO_gets';   VarPtr: @@TOsslApiBioText.F_BIO_gets;   MinVer: 0),
+      (Name: 'BIO_puts';   VarPtr: @@TOsslApiBioText.F_BIO_puts;   MinVer: 0),
+      (Name: 'BIO_indent'; VarPtr: @@TOsslApiBioText.F_BIO_indent; MinVer: 0)
+    );
+
+  strict private
+    class procedure Bind(const ALibHandle: TLibHandle;
+      const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+
+  public
+    class constructor Create;
+
+    /// <summary>
+    ///   Reads a line of text from the BIO.
+    ///   <para>
+    ///     Reads up to <c>size-1</c> bytes, or until a newline is found.
+    ///     The buffer is always null-terminated.
+    ///   </para>
+    /// </summary>
+    class function BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Writes a null-terminated string to the BIO.
+    /// </summary>
+    class function BIO_puts(b: PBIO; buf: PAnsiChar): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Writes indentation (spaces) to the BIO.
+    /// </summary>
+    class function BIO_indent(b: PBIO; indent, max: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
 implementation
 
 { TOsslApiBioCustomMethod }
@@ -1800,6 +1858,40 @@ end;
 class function TOsslApiBioBase.BIO_get_ex_data(bio: PBIO; idx: cint): Pointer;
 begin
   Result := F_BIO_get_ex_data(bio, idx);
+end;
+
+{ TOsslApiBioText }
+
+class constructor TOsslApiBioText.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiBioText.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiBioText.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+class function TOsslApiBioText.BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint;
+begin
+  Result := F_BIO_gets(b, buf, size);
+end;
+
+class function TOsslApiBioText.BIO_puts(b: PBIO; buf: PAnsiChar): cint;
+begin
+  Result := F_BIO_puts(b, buf);
+end;
+
+class function TOsslApiBioText.BIO_indent(b: PBIO; indent, max: cint): cint;
+begin
+  Result := F_BIO_indent(b, indent, max);
 end;
 
 end.
