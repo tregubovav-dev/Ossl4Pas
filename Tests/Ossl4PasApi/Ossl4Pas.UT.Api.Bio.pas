@@ -154,6 +154,24 @@ type
   end;
 
   [TestFixture]
+  TOsslApiBioLifecycleFixture = class(TOsslApiCustomFixture)
+  public
+    [Test]
+    [AutoNameTestCase('mtsMem,3.0')]
+    [AutoNameTestCase('mtsNull,3.0')]
+    [AutoNameTestCase('mtsSocket,3.0')]
+    // Just creation, no connection
+    procedure Test_Cycle(AMethod: TBIOMethodEnum; ALibPathSuffix: string);
+
+    [Test]
+    [AutoNameTestCase('3.0')]
+    [AutoNameTestCase('3.2')]
+    [AutoNameTestCase('3.6')]
+    // Just creation, no connection
+    procedure Test_RefCounting(ALibPathSuffix: string);
+  end;
+
+  [TestFixture]
   TOsslApiBioBaseFixture = class(TOsslApiCustomFixture)
   public
   end;
@@ -255,8 +273,61 @@ begin
   cMethods[AMethod].CheckMethod(LibVersion[ltCrypto], ANullExpected);
 end;
 
+{ TOsslApiBioLifecycleFixture }
+
+procedure TOsslApiBioLifecycleFixture.Test_Cycle(AMethod: TBIOMethodEnum;
+  ALibPathSuffix: string);
+begin
+  LoadOsslLib(ALibPathSuffix);
+
+  var lMethod:=AMethod.MethodClass.GetMethodHandle;
+  Assert.IsNotNull(lMethod, 'BIO Method factory returned nil');
+
+  // 2. Create (BIO_new binding check)
+  var lBio := TOsslApiBioBase.BIO_new(lMethod);
+  Assert.IsNotNull(lBio, 'BIO_new returned nil');
+
+  try
+    // 3. Basic usage check (optional, proves the object is valid)
+    // Writing 0 bytes should generally be safe and return 0 or -1 depending on type
+    // This confirms the VMT inside the C structure is valid.
+    if AMethod <> mtsNull then
+    begin
+      // Just a sanity check that we can call a method on the instance
+      TOsslApiBioBase.BIO_pending(lBio);
+    end;
+
+  finally
+    // 4. Free (BIO_free binding check)
+    var lRet := TOsslApiBioBase.BIO_free(lBio);
+    // BIO_free returns 1 on success, 0 on failure
+    Assert.AreEqual(1, lRet, 'BIO_free failed');
+  end;
+end;
+
+procedure TOsslApiBioLifecycleFixture.Test_RefCounting(ALibPathSuffix: string);
+begin
+  LoadOsslLib(ALibPathSuffix);
+
+  // 1. Get Method (Factory binding check)
+  var lMethod := TOsslApiBioMethodMem.BIO_s_mem;
+  var lBio := TOsslApiBioBase.BIO_new(lMethod);
+  Assert.IsNotNull(lBio);
+
+  // Ref Count is 1
+  // UpRef -> Ref Count 2
+  Assert.AreEqual(1, TOsslApiBioBase.BIO_up_ref(lBio), 'UpRef should return 1 (True)');
+
+  // Free -> Ref Count 1 (Object still alive)
+  Assert.AreEqual(1, TOsslApiBioBase.BIO_free(lBio), 'First free should succeed');
+
+  // Real Free -> Ref Count 0 (Object destroyed)
+  Assert.AreEqual(1, TOsslApiBioBase.BIO_free(lBio), 'Second free should succeed');
+end;
+
 initialization
   TDUnitX.RegisterTestFixture(TOsslApiBioMethodFixture);
+  TDUnitX.RegisterTestFixture(TOsslApiBioLifecycleFixture);
   //  TDUnitX.RegisterTestFixture(TOsslApiBioBaseFixture);
 
 end.
