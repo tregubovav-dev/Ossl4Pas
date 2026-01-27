@@ -458,7 +458,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_file'; VarPtr: @@TOsslApiBioMethodFile.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_file'; VarPtr: @@TOsslApiBioMethodFile.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -474,7 +475,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_mem'; VarPtr: @@TOsslApiBioMethodMem.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_mem'; VarPtr: @@TOsslApiBioMethodMem.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -490,7 +492,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_secmem'; VarPtr: @@TOsslApiBioMethodSecMem.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_secmem'; VarPtr: @@TOsslApiBioMethodSecMem.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -506,7 +509,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-    ((Name: 'BIO_s_socket'; VarPtr: @@TOsslApiBioMethodSocket.FMethod; MinVer: 0));
+    ((Name: 'BIO_s_socket'; VarPtr: @@TOsslApiBioMethodSocket.FMethod;
+      MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -522,7 +526,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_connect'; VarPtr: @@TOsslApiBioMethodConnect.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_connect'; VarPtr: @@TOsslApiBioMethodConnect.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -538,7 +543,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_accept'; VarPtr: @@TOsslApiBioMethodAccept.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_accept'; VarPtr: @@TOsslApiBioMethodAccept.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -554,7 +560,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_fd'; VarPtr: @@TOsslApiBioMethodFd.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_fd'; VarPtr: @@TOsslApiBioMethodFd.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -570,7 +577,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_log'; VarPtr: @@TOsslApiBioMethodLog.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_log'; VarPtr: @@TOsslApiBioMethodLog.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -586,7 +594,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_bio'; VarPtr: @@TOsslApiBioMethodBio.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_bio'; VarPtr: @@TOsslApiBioMethodBio.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -602,7 +611,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_null'; VarPtr: @@TOsslApiBioMethodNull.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_null'; VarPtr: @@TOsslApiBioMethodNull.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -618,7 +628,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_core'; VarPtr: @@TOsslApiBioMethodCore.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_core'; VarPtr: @@TOsslApiBioMethodCore.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -651,7 +662,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_datagram'; VarPtr: @@TOsslApiBioMethodDatagram.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_datagram'; VarPtr: @@TOsslApiBioMethodDatagram.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -667,7 +679,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_datagram_sctp'; VarPtr: @@TOsslApiBioMethodDatagramSctp.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_datagram_sctp'; VarPtr: @@TOsslApiBioMethodDatagramSctp.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -687,7 +700,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_null'; VarPtr: @@TOsslApiBioFilterNull.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_null'; VarPtr: @@TOsslApiBioFilterNull.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -703,7 +717,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_buffer'; VarPtr: @@TOsslApiBioFilterBuffer.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_buffer'; VarPtr: @@TOsslApiBioFilterBuffer.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -719,7 +734,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_readbuffer'; VarPtr: @@TOsslApiBioFilterReadBuffer.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_readbuffer'; VarPtr: @@TOsslApiBioFilterReadBuffer.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -735,7 +751,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_linebuffer'; VarPtr: @@TOsslApiBioFilterLineBuffer.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_linebuffer'; VarPtr: @@TOsslApiBioFilterLineBuffer.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -751,7 +768,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_nbio_test'; VarPtr: @@TOsslApiBioFilterNbioTest.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_nbio_test'; VarPtr: @@TOsslApiBioFilterNbioTest.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -767,7 +785,8 @@ type
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
   strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_prefix'; VarPtr: @@TOsslApiBioFilterPrefix.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_prefix'; VarPtr: @@TOsslApiBioFilterPrefix.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
