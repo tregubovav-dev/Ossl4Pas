@@ -76,7 +76,7 @@ type
     {$ELSEIF Defined(LINUX) or Defined(ANDROID)}
     cLibExt               = 'so';
     {$ELSEIF Defined(OSX)}
-    cLibExt               = 'dlyb';
+    cLibExt               = 'dylyb';
     {$ENDIF}
     cVerExt               = 'ver';
 
