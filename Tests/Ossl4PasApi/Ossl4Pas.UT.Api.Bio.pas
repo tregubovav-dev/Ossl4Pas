@@ -39,7 +39,7 @@ type
     Name: string;
     ClassType: TOsslApiBioMethodClass;
     MinVer: culong;
-    procedure CheckMethod(AVer: TOsslVersion);
+    procedure CheckMethod(AVer: TOsslVersion; ANullExpected: boolean);
   end;
 
  const
@@ -67,8 +67,56 @@ cMethods: array[0..19] of TOsslMethod = (
   );
 
  public
-    [AutoNameTestCase('BIO_s_file,3.0')]
-    procedure Method(AMethodName, ALibPathSuffix: string);
+    [AutoNameTestCase('BIO_s_file,3.0,False')]
+    [AutoNameTestCase('BIO_s_file,3.6,False')]
+    [AutoNameTestCase('BIO_s_mem,3.0,False')]
+    [AutoNameTestCase('BIO_s_mem,3.6,False')]
+    [AutoNameTestCase('BIO_s_secmem,3.0,False')]
+    [AutoNameTestCase('BIO_s_secmem,3.6,False')]
+    [AutoNameTestCase('BIO_s_socket,3.0,False')]
+    [AutoNameTestCase('BIO_s_socket,3.6,False')]
+    [AutoNameTestCase('BIO_s_connect,3.0,False')]
+    [AutoNameTestCase('BIO_s_connect,3.6,False')]
+    [AutoNameTestCase('BIO_s_accept,3.0,False')]
+    [AutoNameTestCase('BIO_s_accept,3.6,False')]
+    [AutoNameTestCase('BIO_s_fd,3.0,False')]
+    [AutoNameTestCase('BIO_s_fd,3.6,False')]
+    [AutoNameTestCase('BIO_s_log,3.0,False')]
+{$IFDEF MSWINDOWS}
+    [AutoNameTestCase('BIO_s_log,3.6,True')]
+{$ENDIF}
+{$IFDEF POSIX}
+    [AutoNameTestCase('BIO_s_log,3.6,False')]
+{$ENDIF}
+    [AutoNameTestCase('BIO_s_bio,3.0,False')]
+    [AutoNameTestCase('BIO_s_bio,3.6,False')]
+    [AutoNameTestCase('BIO_s_null,3.0,False')]
+    [AutoNameTestCase('BIO_s_null,3.6,False')]
+    [AutoNameTestCase('BIO_s_core,3.0,False')]
+    [AutoNameTestCase('BIO_s_core,3.6,False')]
+    [AutoNameTestCase('BIO_s_datagram,3.0,False')]
+    [AutoNameTestCase('BIO_s_datagram,3.6,False')]
+{$IFDEF POSIX}
+    [AutoNameTestCase('BIO_s_datagram_sctp,3.0,False')]
+    [AutoNameTestCase('BIO_s_datagram_sctp,3.6,False')]
+{$ENDIF}
+    [AutoNameTestCase('BIO_s_dgram_pair,3.0,True')]
+    [AutoNameTestCase('BIO_s_dgram_pair,3.2,False')]
+    [AutoNameTestCase('BIO_s_dgram_pair,3.6,False')]
+    [AutoNameTestCase('BIO_f_null,3.0,False')]
+    [AutoNameTestCase('BIO_f_null,3.6,False')]
+    [AutoNameTestCase('BIO_f_buffer,3.0,False')]
+    [AutoNameTestCase('BIO_f_buffer,3.6,False')]
+    [AutoNameTestCase('BIO_f_readbuffer,3.0,False')]
+    [AutoNameTestCase('BIO_f_readbuffer,3.6,False')]
+    [AutoNameTestCase('BIO_f_linebuffer,3.0,False')]
+    [AutoNameTestCase('BIO_f_linebuffer,3.6,False')]
+    [AutoNameTestCase('BIO_f_nbio_test,3.0,False')]
+    [AutoNameTestCase('BIO_f_nbio_test,3.6,False')]
+    [AutoNameTestCase('BIO_f_prefix,3.0,False')]
+    [AutoNameTestCase('BIO_f_prefix,3.6,False')]
+    procedure Method(AMethodName, ALibPathSuffix: string;
+      ANullExpected: boolean = False);
  end;
 
  TOsslApiBioBaseFixture = class(TOsslApiCustomFixture)
@@ -94,6 +142,7 @@ end;
 procedure TOsslApiCustomFixture.TearDown;
 begin
   TOsslLoader.Unload([ltCrypto]);
+  TOsslLoader.ResetSingleton;
 end;
 
 procedure TOsslApiCustomFixture.TearDownFixture;
@@ -134,19 +183,21 @@ end;
 
 { TOsslApiBioMethodFixture.TOsslMethod }
 
-procedure TOsslApiBioMethodFixture.TOsslMethod.CheckMethod(AVer: TOsslVersion);
+procedure TOsslApiBioMethodFixture.TOsslMethod.CheckMethod(AVer: TOsslVersion;
+  ANullExpected: boolean);
 begin
   var lErrStr:=Format('OpenSsl routine "%s" (class ''%s'').',
     [Name, ClassType.ClassName]);
-  if AVer.AreCompatible(MinVer) then
-    Assert.IsNotNull(ClassType.GetMethodHandle, lErrStr)
+  if ANullExpected then
+    Assert.IsNull(ClassType.GetMethodHandle, lErrStr)
   else
-    Assert.IsNull(ClassType.GetMethodHandle, lErrStr);
+    Assert.IsNotNull(ClassType.GetMethodHandle, lErrStr);
 end;
 
 { TOsslApiBioMethodFixture }
 
-procedure TOsslApiBioMethodFixture.Method(AMethodName, ALibPathSuffix: string);
+procedure TOsslApiBioMethodFixture.Method(AMethodName, ALibPathSuffix: string;
+  ANullExpected: boolean);
 begin
   var lMethodIdx: integer := -1;
   LoadOsslLib(ALibPathSuffix);
@@ -158,7 +209,7 @@ begin
     end;
   Assert. AreNotEqual(-1, lMethodIdx,
     Format('Method "%s" not found.', [AMethodName]));
-  cMethods[lMethodIdx].CheckMethod(LibVersion[ltCrypto]);
+  cMethods[lMethodIdx].CheckMethod(LibVersion[ltCrypto], ANullExpected);
 end;
 
 initialization
