@@ -456,7 +456,7 @@ type
   TOsslApiBioMethodFile = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_file'; VarPtr: @@TOsslApiBioMethodFile.FMethod; MinVer: 0));
   private
@@ -472,7 +472,7 @@ type
   TOsslApiBioMethodMem = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_mem'; VarPtr: @@TOsslApiBioMethodMem.FMethod; MinVer: 0));
   private
@@ -488,7 +488,7 @@ type
   TOsslApiBioMethodSecMem = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_secmem'; VarPtr: @@TOsslApiBioMethodSecMem.FMethod; MinVer: 0));
   private
@@ -504,7 +504,8 @@ type
   TOsslApiBioMethodSocket = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const cBindings: array[0..0] of TOsslBindEntry =
+  strict private const
+    cBindings: array[0..0] of TOsslBindEntry =
     ((Name: 'BIO_s_socket'; VarPtr: @@TOsslApiBioMethodSocket.FMethod; MinVer: 0));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
@@ -519,7 +520,7 @@ type
   TOsslApiBioMethodConnect = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_connect'; VarPtr: @@TOsslApiBioMethodConnect.FMethod; MinVer: 0));
   private
@@ -535,7 +536,7 @@ type
   TOsslApiBioMethodAccept = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_accept'; VarPtr: @@TOsslApiBioMethodAccept.FMethod; MinVer: 0));
   private
@@ -551,7 +552,7 @@ type
   TOsslApiBioMethodFd = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_fd'; VarPtr: @@TOsslApiBioMethodFd.FMethod; MinVer: 0));
   private
@@ -567,7 +568,7 @@ type
   TOsslApiBioMethodLog = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_log'; VarPtr: @@TOsslApiBioMethodLog.FMethod; MinVer: 0));
   private
@@ -583,7 +584,7 @@ type
   TOsslApiBioMethodBio = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_bio'; VarPtr: @@TOsslApiBioMethodBio.FMethod; MinVer: 0));
   private
@@ -599,7 +600,7 @@ type
   TOsslApiBioMethodNull = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_null'; VarPtr: @@TOsslApiBioMethodNull.FMethod; MinVer: 0));
   private
@@ -615,7 +616,7 @@ type
   TOsslApiBioMethodCore = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_core'; VarPtr: @@TOsslApiBioMethodCore.FMethod; MinVer: 0));
   private
@@ -631,7 +632,7 @@ type
   TOsslApiBioMethodDatagramPair = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_dgram_pair'; VarPtr: @@TOsslApiBioMethodDatagramPair.FMethod;
         MinVer: $30200000; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
@@ -648,7 +649,7 @@ type
   TOsslApiBioMethodDatagram = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_datagram'; VarPtr: @@TOsslApiBioMethodDatagram.FMethod; MinVer: 0));
   private
@@ -664,7 +665,7 @@ type
   TOsslApiBioMethodDatagramSctp = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_datagram_sctp'; VarPtr: @@TOsslApiBioMethodDatagramSctp.FMethod; MinVer: 0));
   private
@@ -684,7 +685,7 @@ type
   TOsslApiBioFilterNull = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_f_null'; VarPtr: @@TOsslApiBioFilterNull.FMethod; MinVer: 0));
   private
@@ -700,7 +701,7 @@ type
   TOsslApiBioFilterBuffer = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_f_buffer'; VarPtr: @@TOsslApiBioFilterBuffer.FMethod; MinVer: 0));
   private
@@ -716,7 +717,7 @@ type
   TOsslApiBioFilterReadBuffer = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_f_readbuffer'; VarPtr: @@TOsslApiBioFilterReadBuffer.FMethod; MinVer: 0));
   private
@@ -732,7 +733,7 @@ type
   TOsslApiBioFilterLineBuffer = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_f_linebuffer'; VarPtr: @@TOsslApiBioFilterLineBuffer.FMethod; MinVer: 0));
   private
@@ -748,7 +749,7 @@ type
   TOsslApiBioFilterNbioTest = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_f_nbio_test'; VarPtr: @@TOsslApiBioFilterNbioTest.FMethod; MinVer: 0));
   private
@@ -764,7 +765,7 @@ type
   TOsslApiBioFilterPrefix = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_f_prefix'; VarPtr: @@TOsslApiBioFilterPrefix.FMethod; MinVer: 0));
   private
@@ -838,36 +839,35 @@ type
     F_BIO_method_name:  TRoutine_BIO_method_name;
     F_BIO_method_type:  TRoutine_BIO_method_type;
 
-  protected
-    const
+  strict protected const
       // Define bindings in the Base class so descendants can inherit or extend logic if needed.
       // Note: In Pascal, descendants share these static vars.
-      cBindings: array[0..16] of TOsslBindEntry = (
-        (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0),
-        (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000), // 3.0+ Only
-        (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0),
-        (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0),
-        (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0),
+    cBindings: array[0..16] of TOsslBindEntry = (
+      (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0),
+      (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000), // 3.0+ Only
+      (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0),
+      (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0),
+      (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0),
 
-        (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0),
-        (Name: 'BIO_write';         VarPtr: @@TOsslApiBioBase.F_BIO_write;         MinVer: 0),
-        (Name: 'BIO_read_ex';       VarPtr: @@TOsslApiBioBase.F_BIO_read_ex;       MinVer: 0),
-        (Name: 'BIO_write_ex';      VarPtr: @@TOsslApiBioBase.F_BIO_write_ex;      MinVer: 0),
+      (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0),
+      (Name: 'BIO_write';         VarPtr: @@TOsslApiBioBase.F_BIO_write;         MinVer: 0),
+      (Name: 'BIO_read_ex';       VarPtr: @@TOsslApiBioBase.F_BIO_read_ex;       MinVer: 0),
+      (Name: 'BIO_write_ex';      VarPtr: @@TOsslApiBioBase.F_BIO_write_ex;      MinVer: 0),
 
-        (Name: 'BIO_ctrl';          VarPtr: @@TOsslApiBioBase.F_BIO_ctrl;          MinVer: 0),
-        (Name: 'BIO_callback_ctrl'; VarPtr: @@TOsslApiBioBase.F_BIO_callback_ctrl; MinVer: 0),
+      (Name: 'BIO_ctrl';          VarPtr: @@TOsslApiBioBase.F_BIO_ctrl;          MinVer: 0),
+      (Name: 'BIO_callback_ctrl'; VarPtr: @@TOsslApiBioBase.F_BIO_callback_ctrl; MinVer: 0),
 
-        (Name: 'BIO_push';          VarPtr: @@TOsslApiBioBase.F_BIO_push;          MinVer: 0),
-        (Name: 'BIO_pop';           VarPtr: @@TOsslApiBioBase.F_BIO_pop;           MinVer: 0),
-        (Name: 'BIO_next';          VarPtr: @@TOsslApiBioBase.F_BIO_next;          MinVer: 0),
-        (Name: 'BIO_find_type';     VarPtr: @@TOsslApiBioBase.F_BIO_find_type;     MinVer: 0),
+      (Name: 'BIO_push';          VarPtr: @@TOsslApiBioBase.F_BIO_push;          MinVer: 0),
+      (Name: 'BIO_pop';           VarPtr: @@TOsslApiBioBase.F_BIO_pop;           MinVer: 0),
+      (Name: 'BIO_next';          VarPtr: @@TOsslApiBioBase.F_BIO_next;          MinVer: 0),
+      (Name: 'BIO_find_type';     VarPtr: @@TOsslApiBioBase.F_BIO_find_type;     MinVer: 0),
 
         // Introspection
-        (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0),
+      (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0),
         // BIO_method_type is sometimes a macro in older versions, but function in 3.x
         // We will bind it dynamically.
-        (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0)
-      );
+      (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0)
+    );
 
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
