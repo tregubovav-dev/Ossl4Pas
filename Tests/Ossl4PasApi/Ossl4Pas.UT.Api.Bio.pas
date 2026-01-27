@@ -51,40 +51,41 @@ type
 
   end;
 
- TOsslApiBioMethodFixture = class(TOsslApiCustomFixture)
- protected type
-  TOsslMethod = record
-    Name: string;
-    ClassType: TOsslApiBioMethodClass;
-    MinVer: culong;
-    procedure CheckMethod(AVer: TOsslVersion; ANullExpected: boolean);
-  end;
+  [TestFixture]
+  TOsslApiBioMethodFixture = class(TOsslApiCustomFixture)
+  protected type
+    TOsslMethod = record
+      Name: string;
+      ClassType: TOsslApiBioMethodClass;
+      MinVer: culong;
+      procedure CheckMethod(AVer: TOsslVersion; ANullExpected: boolean);
+    end;
 
- const
-cMethods: array[0..19] of TOsslMethod = (
-    (Name: 'BIO_s_file'; ClassType: TOsslApiBioMethodFile; MinVer: 0),
-    (Name: 'BIO_s_mem'; ClassType: TOsslApiBioMethodMem; MinVer: 0),
-    (Name: 'BIO_s_secmem'; ClassType: TOsslApiBioMethodSecMem; MinVer: 0),
-    (Name: 'BIO_s_socket'; ClassType: TOsslApiBioMethodSocket; MinVer: 0),
-    (Name: 'BIO_s_connect'; ClassType: TOsslApiBioMethodConnect; MinVer: 0),
-    (Name: 'BIO_s_accept'; ClassType: TOsslApiBioMethodAccept; MinVer: 0),
-    (Name: 'BIO_s_fd'; ClassType: TOsslApiBioMethodFd; MinVer: 0),
-    (Name: 'BIO_s_log'; ClassType: TOsslApiBioMethodLog; MinVer: 0),
-    (Name: 'BIO_s_bio'; ClassType: TOsslApiBioMethodBio; MinVer: 0),
-    (Name: 'BIO_s_null'; ClassType: TOsslApiBioMethodNull; MinVer: 0),
-    (Name: 'BIO_s_core'; ClassType: TOsslApiBioMethodCore; MinVer: 0),
-    (Name: 'BIO_s_datagram'; ClassType: TOsslApiBioMethodDatagram; MinVer: 0),
-    (Name: 'BIO_s_datagram_sctp'; ClassType: TOsslApiBioMethodDatagramSctp; MinVer: 0),
-    (Name: 'BIO_s_dgram_pair'; ClassType: TOsslApiBioMethodDatagramPair; MinVer: $30200000), // OpenSSL 3.2+
-    (Name: 'BIO_f_null'; ClassType: TOsslApiBioFilterNull; MinVer: 0),
-    (Name: 'BIO_f_buffer'; ClassType: TOsslApiBioFilterBuffer; MinVer: 0),
-    (Name: 'BIO_f_readbuffer'; ClassType: TOsslApiBioFilterReadBuffer; MinVer: 0),
-    (Name: 'BIO_f_linebuffer'; ClassType: TOsslApiBioFilterLineBuffer; MinVer: 0),
-    (Name: 'BIO_f_nbio_test'; ClassType: TOsslApiBioFilterNbioTest; MinVer: 0),
-    (Name: 'BIO_f_prefix'; ClassType: TOsslApiBioFilterPrefix; MinVer: 0)
-  );
+  const
+    cMethods: array[0..19] of TOsslMethod = (
+      (Name: 'BIO_s_file'; ClassType: TOsslApiBioMethodFile; MinVer: 0),
+      (Name: 'BIO_s_mem'; ClassType: TOsslApiBioMethodMem; MinVer: 0),
+      (Name: 'BIO_s_secmem'; ClassType: TOsslApiBioMethodSecMem; MinVer: 0),
+      (Name: 'BIO_s_socket'; ClassType: TOsslApiBioMethodSocket; MinVer: 0),
+      (Name: 'BIO_s_connect'; ClassType: TOsslApiBioMethodConnect; MinVer: 0),
+      (Name: 'BIO_s_accept'; ClassType: TOsslApiBioMethodAccept; MinVer: 0),
+      (Name: 'BIO_s_fd'; ClassType: TOsslApiBioMethodFd; MinVer: 0),
+      (Name: 'BIO_s_log'; ClassType: TOsslApiBioMethodLog; MinVer: 0),
+      (Name: 'BIO_s_bio'; ClassType: TOsslApiBioMethodBio; MinVer: 0),
+      (Name: 'BIO_s_null'; ClassType: TOsslApiBioMethodNull; MinVer: 0),
+      (Name: 'BIO_s_core'; ClassType: TOsslApiBioMethodCore; MinVer: 0),
+      (Name: 'BIO_s_datagram'; ClassType: TOsslApiBioMethodDatagram; MinVer: 0),
+      (Name: 'BIO_s_datagram_sctp'; ClassType: TOsslApiBioMethodDatagramSctp; MinVer: 0),
+      (Name: 'BIO_s_dgram_pair'; ClassType: TOsslApiBioMethodDatagramPair; MinVer: $30200000), // OpenSSL 3.2+
+      (Name: 'BIO_f_null'; ClassType: TOsslApiBioFilterNull; MinVer: 0),
+      (Name: 'BIO_f_buffer'; ClassType: TOsslApiBioFilterBuffer; MinVer: 0),
+      (Name: 'BIO_f_readbuffer'; ClassType: TOsslApiBioFilterReadBuffer; MinVer: 0),
+      (Name: 'BIO_f_linebuffer'; ClassType: TOsslApiBioFilterLineBuffer; MinVer: 0),
+      (Name: 'BIO_f_nbio_test'; ClassType: TOsslApiBioFilterNbioTest; MinVer: 0),
+      (Name: 'BIO_f_prefix'; ClassType: TOsslApiBioFilterPrefix; MinVer: 0)
+    );
 
- public
+  public
     [AutoNameTestCase('BIO_s_file,3.0,False')]
     [AutoNameTestCase('BIO_s_file,3.6,False')]
     [AutoNameTestCase('BIO_s_mem,3.0,False')]
@@ -137,11 +138,12 @@ cMethods: array[0..19] of TOsslMethod = (
     [AutoNameTestCase('BIO_f_prefix,3.6,False')]
     procedure Method(AMethodName, ALibPathSuffix: string;
       ANullExpected: boolean = False);
- end;
+  end;
 
- TOsslApiBioBaseFixture = class(TOsslApiCustomFixture)
- public
- end;
+  [TestFixture]
+  TOsslApiBioBaseFixture = class(TOsslApiCustomFixture)
+  public
+  end;
 
 implementation
 
