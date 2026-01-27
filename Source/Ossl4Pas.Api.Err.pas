@@ -162,7 +162,7 @@ type
     F_ERR_peek_last_error:     TRoutine_ERR_peek_last_error;
     F_ERR_clear_error:         TRoutine_ERR_clear_error;
 
-  const
+  strict private const
     cBindings: array[0..3] of TOsslBindEntry = (
       (Name: 'ERR_get_error';             VarPtr: @@TOsslApiErrCodes.F_ERR_get_error;            MinVer: 0),
       (Name: 'ERR_peek_error';            VarPtr: @@TOsslApiErrCodes.F_ERR_peek_error;           MinVer: 0),
@@ -231,7 +231,7 @@ type
     F_ERR_peek_error_all:       TRoutine_ERR_peek_error_all;
     F_ERR_peek_last_error_all:  TRoutine_ERR_peek_last_error_all;
 
-  const
+  strict private const
     cBindings: array[0..10] of TOsslBindEntry = (
       (Name: 'ERR_error_string';          VarPtr: @@TOsslApiErrStrings.F_ERR_error_string;         MinVer: 0),
       (Name: 'ERR_error_string_n';        VarPtr: @@TOsslApiErrStrings.F_ERR_error_string_n;       MinVer: 0),
@@ -372,7 +372,7 @@ type
     F_ERR_print_errors:   TRoutine_ERR_print_errors;
     F_ERR_put_error:      TRoutine_ERR_put_error;
 
-  const
+  strict private const
     cBindings: array[0..3] of TOsslBindEntry = (
       (Name: 'ERR_set_mark';       VarPtr: @@TOsslApiErrSystem.F_ERR_set_mark;       MinVer: 0),
       (Name: 'ERR_pop_to_mark';    VarPtr: @@TOsslApiErrSystem.F_ERR_pop_to_mark;    MinVer: 0),
