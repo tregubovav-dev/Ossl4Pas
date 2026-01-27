@@ -436,13 +436,12 @@ type
   protected type
     TRoutine_METHOD = function: PBIO_METHOD; cdecl;
   protected
+    class function NilMethod: PBIO_METHOD; static; cdecl;
+  public
     /// <summary>
     ///   Returns the raw OpenSSL BIO_METHOD pointer.
     /// </summary>
     class function GetMethodHandle: PBIO_METHOD; virtual; abstract;
-    class function NilMethod: PBIO_METHOD; static; cdecl;
-  public
-    property MethodHandle: PBIO_METHOD read GetMethodHandle;
   end;
 
   // ---------------------------------------------------------------------------
@@ -457,224 +456,239 @@ type
   TOsslApiBioMethodFile = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_file'; VarPtr: @@TOsslApiBioMethodFile.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_file'; VarPtr: @@TOsslApiBioMethodFile.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_file: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_mem(). Read/Write to memory buffer.</summary>
   TOsslApiBioMethodMem = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_mem'; VarPtr: @@TOsslApiBioMethodMem.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_mem'; VarPtr: @@TOsslApiBioMethodMem.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_mem: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_secmem(). Like Mem, but uses secure heap.</summary>
   TOsslApiBioMethodSecMem = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_secmem'; VarPtr: @@TOsslApiBioMethodSecMem.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_secmem'; VarPtr: @@TOsslApiBioMethodSecMem.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_secmem: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_socket(). Raw OS socket I/O.</summary>
   TOsslApiBioMethodSocket = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const cBindings: array[0..0] of TOsslBindEntry =
-    ((Name: 'BIO_s_socket'; VarPtr: @@TOsslApiBioMethodSocket.FMethod; MinVer: 0));
+  strict private const
+    cBindings: array[0..0] of TOsslBindEntry =
+    ((Name: 'BIO_s_socket'; VarPtr: @@TOsslApiBioMethodSocket.FMethod;
+      MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_socket: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_connect(). TCP Client connection.</summary>
   TOsslApiBioMethodConnect = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_connect'; VarPtr: @@TOsslApiBioMethodConnect.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_connect'; VarPtr: @@TOsslApiBioMethodConnect.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_connect: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_accept(). TCP Server acceptor.</summary>
   TOsslApiBioMethodAccept = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_accept'; VarPtr: @@TOsslApiBioMethodAccept.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_accept'; VarPtr: @@TOsslApiBioMethodAccept.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_accept: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_fd(). Raw File Descriptor I/O.</summary>
   TOsslApiBioMethodFd = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_fd'; VarPtr: @@TOsslApiBioMethodFd.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_fd'; VarPtr: @@TOsslApiBioMethodFd.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_fd: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_log(). System logging (syslog/eventlog).</summary>
   TOsslApiBioMethodLog = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_log'; VarPtr: @@TOsslApiBioMethodLog.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_log'; VarPtr: @@TOsslApiBioMethodLog.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_log: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_bio(). Internal BIO pair (pipe).</summary>
   TOsslApiBioMethodBio = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_bio'; VarPtr: @@TOsslApiBioMethodBio.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_bio'; VarPtr: @@TOsslApiBioMethodBio.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_bio: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_null(). Discards data (Sink) / EOF (Source).</summary>
   TOsslApiBioMethodNull = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_null'; VarPtr: @@TOsslApiBioMethodNull.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_null'; VarPtr: @@TOsslApiBioMethodNull.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_null: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_core(). OpenSSL 3.0 Core Provider integration.</summary>
   TOsslApiBioMethodCore = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_core'; VarPtr: @@TOsslApiBioMethodCore.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_core'; VarPtr: @@TOsslApiBioMethodCore.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_core: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_dgram_pair(). UDP support.</summary>
   TOsslApiBioMethodDatagramPair = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
       ((Name: 'BIO_s_dgram_pair'; VarPtr: @@TOsslApiBioMethodDatagramPair.FMethod;
         MinVer: $30200000; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_dgram_pair: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_datagram(). UDP support.</summary>
   TOsslApiBioMethodDatagram = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_datagram'; VarPtr: @@TOsslApiBioMethodDatagram.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_datagram'; VarPtr: @@TOsslApiBioMethodDatagram.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_datagram: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_s_datagram_sctp(). SCTP support.</summary>
+  /// <remarks>This <c>OpenSsl BIO method</c> is not available in Windows</remarks>
   TOsslApiBioMethodDatagramSctp = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_s_datagram_sctp'; VarPtr: @@TOsslApiBioMethodDatagramSctp.FMethod; MinVer: 0));
+      ((Name: 'BIO_s_datagram_sctp'; VarPtr: @@TOsslApiBioMethodDatagramSctp.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_s_datagram_sctp: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   // ---------------------------------------------------------------------------
@@ -685,96 +699,102 @@ type
   TOsslApiBioFilterNull = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_null'; VarPtr: @@TOsslApiBioFilterNull.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_null'; VarPtr: @@TOsslApiBioFilterNull.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_null: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_buffer(). Buffering filter.</summary>
   TOsslApiBioFilterBuffer = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_buffer'; VarPtr: @@TOsslApiBioFilterBuffer.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_buffer'; VarPtr: @@TOsslApiBioFilterBuffer.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_buffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_readbuffer(). Read-only buffering filter.</summary>
   TOsslApiBioFilterReadBuffer = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_readbuffer'; VarPtr: @@TOsslApiBioFilterReadBuffer.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_readbuffer'; VarPtr: @@TOsslApiBioFilterReadBuffer.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_readbuffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_linebuffer(). Line-oriented buffering.</summary>
   TOsslApiBioFilterLineBuffer = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_linebuffer'; VarPtr: @@TOsslApiBioFilterLineBuffer.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_linebuffer'; VarPtr: @@TOsslApiBioFilterLineBuffer.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_linebuffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_nbio_test(). Non-blocking I/O test filter.</summary>
   TOsslApiBioFilterNbioTest = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_nbio_test'; VarPtr: @@TOsslApiBioFilterNbioTest.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_nbio_test'; VarPtr: @@TOsslApiBioFilterNbioTest.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_nbio_test: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   /// <summary>Wrapper for BIO_f_prefix(). Prefix/Indentation filter.</summary>
   TOsslApiBioFilterPrefix = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
-  const
+  strict private const
     cBindings: array[0..0] of TOsslBindEntry =
-      ((Name: 'BIO_f_prefix'; VarPtr: @@TOsslApiBioFilterPrefix.FMethod; MinVer: 0));
+      ((Name: 'BIO_f_prefix'; VarPtr: @@TOsslApiBioFilterPrefix.FMethod;
+        MinVer: 0; FallbackPtr: @TOsslApiBioCustomMethod.NilMethod));
   private
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
-  protected
-    class function GetMethodHandle: PBIO_METHOD; override;
   public
     class constructor Create;
+    class function GetMethodHandle: PBIO_METHOD; override;
+    class function BIO_f_prefix: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
 type
@@ -839,36 +859,35 @@ type
     F_BIO_method_name:  TRoutine_BIO_method_name;
     F_BIO_method_type:  TRoutine_BIO_method_type;
 
-  protected
-    const
+  strict protected const
       // Define bindings in the Base class so descendants can inherit or extend logic if needed.
       // Note: In Pascal, descendants share these static vars.
-      cBindings: array[0..16] of TOsslBindEntry = (
-        (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0),
-        (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000), // 3.0+ Only
-        (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0),
-        (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0),
-        (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0),
+    cBindings: array[0..16] of TOsslBindEntry = (
+      (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0),
+      (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000), // 3.0+ Only
+      (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0),
+      (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0),
+      (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0),
 
-        (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0),
-        (Name: 'BIO_write';         VarPtr: @@TOsslApiBioBase.F_BIO_write;         MinVer: 0),
-        (Name: 'BIO_read_ex';       VarPtr: @@TOsslApiBioBase.F_BIO_read_ex;       MinVer: 0),
-        (Name: 'BIO_write_ex';      VarPtr: @@TOsslApiBioBase.F_BIO_write_ex;      MinVer: 0),
+      (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0),
+      (Name: 'BIO_write';         VarPtr: @@TOsslApiBioBase.F_BIO_write;         MinVer: 0),
+      (Name: 'BIO_read_ex';       VarPtr: @@TOsslApiBioBase.F_BIO_read_ex;       MinVer: 0),
+      (Name: 'BIO_write_ex';      VarPtr: @@TOsslApiBioBase.F_BIO_write_ex;      MinVer: 0),
 
-        (Name: 'BIO_ctrl';          VarPtr: @@TOsslApiBioBase.F_BIO_ctrl;          MinVer: 0),
-        (Name: 'BIO_callback_ctrl'; VarPtr: @@TOsslApiBioBase.F_BIO_callback_ctrl; MinVer: 0),
+      (Name: 'BIO_ctrl';          VarPtr: @@TOsslApiBioBase.F_BIO_ctrl;          MinVer: 0),
+      (Name: 'BIO_callback_ctrl'; VarPtr: @@TOsslApiBioBase.F_BIO_callback_ctrl; MinVer: 0),
 
-        (Name: 'BIO_push';          VarPtr: @@TOsslApiBioBase.F_BIO_push;          MinVer: 0),
-        (Name: 'BIO_pop';           VarPtr: @@TOsslApiBioBase.F_BIO_pop;           MinVer: 0),
-        (Name: 'BIO_next';          VarPtr: @@TOsslApiBioBase.F_BIO_next;          MinVer: 0),
-        (Name: 'BIO_find_type';     VarPtr: @@TOsslApiBioBase.F_BIO_find_type;     MinVer: 0),
+      (Name: 'BIO_push';          VarPtr: @@TOsslApiBioBase.F_BIO_push;          MinVer: 0),
+      (Name: 'BIO_pop';           VarPtr: @@TOsslApiBioBase.F_BIO_pop;           MinVer: 0),
+      (Name: 'BIO_next';          VarPtr: @@TOsslApiBioBase.F_BIO_next;          MinVer: 0),
+      (Name: 'BIO_find_type';     VarPtr: @@TOsslApiBioBase.F_BIO_find_type;     MinVer: 0),
 
         // Introspection
-        (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0),
+      (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0),
         // BIO_method_type is sometimes a macro in older versions, but function in 3.x
         // We will bind it dynamically.
-        (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0)
-      );
+      (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0)
+    );
 
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
@@ -987,6 +1006,11 @@ end;
 
 class function TOsslApiBioMethodMem.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_mem;
+end;
+
+class function TOsslApiBioMethodMem.BIO_s_mem: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1012,6 +1036,11 @@ begin
 end;
 
 class function TOsslApiBioMethodFile.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_file;
+end;
+
+class function TOsslApiBioMethodFile.BIO_s_file: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1039,6 +1068,11 @@ end;
 
 class function TOsslApiBioMethodSocket.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_socket;
+end;
+
+class function TOsslApiBioMethodSocket.BIO_s_socket: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1065,6 +1099,11 @@ end;
 
 class function TOsslApiBioMethodNull.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_null;
+end;
+
+class function TOsslApiBioMethodNull.BIO_s_null: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1088,6 +1127,11 @@ begin
 end;
 
 class function TOsslApiBioMethodSecMem.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_secmem;
+end;
+
+class function TOsslApiBioMethodSecMem.BIO_s_secmem: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1113,6 +1157,11 @@ end;
 
 class function TOsslApiBioMethodConnect.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_connect;
+end;
+
+class function TOsslApiBioMethodConnect.BIO_s_connect: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1136,6 +1185,11 @@ begin
 end;
 
 class function TOsslApiBioMethodAccept.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_accept;
+end;
+
+class function TOsslApiBioMethodAccept.BIO_s_accept: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1161,9 +1215,13 @@ end;
 
 class function TOsslApiBioMethodFd.GetMethodHandle: PBIO_METHOD;
 begin
-  Result:=FMethod();
+  Result:=BIO_s_fd;
 end;
 
+class function TOsslApiBioMethodFd.BIO_s_fd: PBIO_METHOD;
+begin
+  Result:=FMethod();
+end;
 
 { TOsslApiBioMethodLog }
 
@@ -1185,6 +1243,11 @@ begin
 end;
 
 class function TOsslApiBioMethodLog.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_log;
+end;
+
+class function TOsslApiBioMethodLog.BIO_s_log: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1211,6 +1274,11 @@ end;
 
 class function TOsslApiBioMethodBio.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_bio;
+end;
+
+class function TOsslApiBioMethodBio.BIO_s_bio: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1234,6 +1302,11 @@ begin
 end;
 
 class function TOsslApiBioMethodCore.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_core;
+end;
+
+class function TOsslApiBioMethodCore.BIO_s_core: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1259,6 +1332,11 @@ end;
 
 class function TOsslApiBioMethodDatagramPair.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_dgram_pair;
+end;
+
+class function TOsslApiBioMethodDatagramPair.BIO_s_dgram_pair: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1283,6 +1361,11 @@ end;
 
 class function TOsslApiBioMethodDatagram.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_s_datagram;
+end;
+
+class function TOsslApiBioMethodDatagram.BIO_s_datagram: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1306,6 +1389,11 @@ begin
 end;
 
 class function TOsslApiBioMethodDatagramSctp.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_s_datagram_sctp;
+end;
+
+class function TOsslApiBioMethodDatagramSctp.BIO_s_datagram_sctp: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1335,6 +1423,11 @@ end;
 
 class function TOsslApiBioFilterNull.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_f_null;
+end;
+
+class function TOsslApiBioFilterNull.BIO_f_null: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1358,6 +1451,11 @@ begin
 end;
 
 class function TOsslApiBioFilterBuffer.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_f_buffer();
+end;
+
+class function TOsslApiBioFilterBuffer.BIO_f_buffer: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1383,6 +1481,11 @@ end;
 
 class function TOsslApiBioFilterReadBuffer.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_f_readbuffer;
+end;
+
+class function TOsslApiBioFilterReadBuffer.BIO_f_readbuffer: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1407,6 +1510,11 @@ end;
 
 class function TOsslApiBioFilterLineBuffer.GetMethodHandle: PBIO_METHOD;
 begin
+  Result:=BIO_f_linebuffer;
+end;
+
+class function TOsslApiBioFilterLineBuffer.BIO_f_linebuffer: PBIO_METHOD;
+begin
   Result:=FMethod();
 end;
 
@@ -1430,6 +1538,11 @@ begin
 end;
 
 class function TOsslApiBioFilterNbioTest.GetMethodHandle: PBIO_METHOD;
+begin
+  Result:=BIO_f_nbio_test;
+end;
+
+class function TOsslApiBioFilterNbioTest.BIO_f_nbio_test: PBIO_METHOD;
 begin
   Result:=FMethod();
 end;
@@ -1458,7 +1571,12 @@ begin
   Result:=FMethod();
 end;
 
-{ TOsslApiBio }
+class function TOsslApiBioFilterPrefix.BIO_f_prefix: PBIO_METHOD;
+begin
+  Result:=BIO_f_prefix;
+end;
+
+{ TOsslApiBioBase }
 
 class constructor TOsslApiBioBase.Create;
 begin
