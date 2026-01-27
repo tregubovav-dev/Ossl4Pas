@@ -86,6 +86,7 @@ cMethods: array[0..19] of TOsslMethod = (
     [AutoNameTestCase('BIO_s_log,3.6,True')]
 {$ENDIF}
 {$IFDEF POSIX}
+    // This method always return "null" in latest OpenSsl versions
     [AutoNameTestCase('BIO_s_log,3.6,False')]
 {$ENDIF}
     [AutoNameTestCase('BIO_s_bio,3.0,False')]
@@ -97,6 +98,7 @@ cMethods: array[0..19] of TOsslMethod = (
     [AutoNameTestCase('BIO_s_datagram,3.0,False')]
     [AutoNameTestCase('BIO_s_datagram,3.6,False')]
 {$IFDEF POSIX}
+    // this method is not available for Windows
     [AutoNameTestCase('BIO_s_datagram_sctp,3.0,False')]
     [AutoNameTestCase('BIO_s_datagram_sctp,3.6,False')]
 {$ENDIF}

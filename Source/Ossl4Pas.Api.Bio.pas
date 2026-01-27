@@ -674,6 +674,7 @@ type
   end;
 
   /// <summary>Wrapper for BIO_s_datagram_sctp(). SCTP support.</summary>
+  /// <remarks>This <c>OpenSsl BIO method</c> is not available in Windows</remarks>
   TOsslApiBioMethodDatagramSctp = class(TOsslApiBioCustomMethod)
   private class var
     FMethod: TOsslApiBioCustomMethod.TRoutine_METHOD;
