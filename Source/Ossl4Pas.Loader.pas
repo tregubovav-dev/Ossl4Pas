@@ -1191,7 +1191,7 @@ begin
   end
   else if not CheckLibVersion(Result, ALibVer) then
   begin
-    Result.LibFree;
+    FreeLibrary(Result);
 
     RaiseExceptionResFmt(@resNoVersionFound, [ALibName]);
   end;
@@ -1418,7 +1418,7 @@ begin
 
   except
     if not Result.IsEmpty then
-      Result.LibFree;
+      FreeLibrary(Result);
     raise
   end;
 end;
@@ -1474,7 +1474,11 @@ begin
   DoUnBind(ALibTypes);
   for lLibType:=High(TLibType) downto Low(TLibType) do
     if InstIsLibLoaded[lLibType] then
-      InstLibHandle[lLibType].LibFree;
+    try
+      FreeLibrary(InstLibHandle[lLibType]);
+    finally
+      InstLibHandle[lLibType]:=TLibHandle.cNilHandle;
+    end;
 end;
 
 {$ENDREGION 'TOsslLoader Instance methods'}

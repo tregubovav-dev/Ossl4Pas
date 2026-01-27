@@ -228,9 +228,6 @@ type
     /// <summary>Retrieves the address of an exported function.</summary>
     property ProcAddress[const AProcName: string]: pointer read DoGetProcAddress;
 
-    /// <summary>Unloads the library and releases handle.</summary>
-    procedure LibFree; {$IFDEF INLINE_ON}inline;{$ENDIF}
-
     /// <summary>Retrieves the file name of the loaded module.</summary>
     property FileName: string read DoGetFileName;
   end;
@@ -416,16 +413,6 @@ begin
   if Self = 0 then
     Exit;
   Result:=GetProcAddress(Self, PChar(AProcName));
-end;
-
-procedure TLibHandleHelper.LibFree;
-begin
-  if not Self.IsEmpty then
-  try
-    FreeLibrary(Self);
-  finally
-    Self:=cNilHandle;
-  end;
 end;
 
 function TLibHandleHelper.DoGetFileName: string;
