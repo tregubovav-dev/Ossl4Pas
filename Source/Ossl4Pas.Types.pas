@@ -398,7 +398,12 @@ constructor TLibHandleHelper.Create(
     cErrMode = 0;
   {$ENDIF}
 begin
+  {$IFDEF DCC}
   Self:=SafeLoadLibrary(ALibName, cErrMode);
+  {$ENDIF}
+  {$IFDEF FPC}
+  Self:=SafeLoadLibrary(ALibName);
+  {$ENDIF}
 end;
 
 function TLibHandleHelper.IsEmpty: boolean;
