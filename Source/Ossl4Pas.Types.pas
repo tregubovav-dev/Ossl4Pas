@@ -23,19 +23,18 @@ unit Ossl4Pas.Types;
 interface
 
 uses
-{$IF Defined(FPC)}
+{$IFDEF FPC}
   CTypes,
   SysUtils,
   DynLibs,
   {$IFDEF T_WINDOWS}Windows, {$ENDIF}
   {$IFDEF T_POSIX}dl, {$ENDIF}
   SyncObjs,
-{$ELSEIF Defined(DCC)}
+{$ENDIF}
+{$IFDEF DCC}
   System.SysUtils,
   {$IFDEF T_WINDOWS}Winapi.Windows,{$ENDIF}
   {$IFDEF POSIX}Posix.Dlfcn,{$ENDIF}
-{$ELSE}
-  {$MESSAGE Warning 'Unknown platfrom. May not be supported'}
 {$ENDIF}
   Ossl4Pas.CTypes;
 

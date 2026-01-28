@@ -23,7 +23,12 @@ unit Ossl4Pas.Api.Err;
 interface
 
 uses
+{$IFDEF DCC}
   System.SysUtils,
+{$ENDIF}
+{$IFDEF FPC}
+  SysUtils,
+{$ENDIF}
   Ossl4Pas.Api.Types,  // Defines PBIO
   Ossl4Pas.CTypes,
   Ossl4Pas.Types,
@@ -400,7 +405,9 @@ type
 implementation
 
 uses
+  {$IFDEF DCC}
   System.AnsiStrings,
+  {$ENDIF}
   Ossl4Pas.Loader,
   Ossl4Pas.ResStrings;
 

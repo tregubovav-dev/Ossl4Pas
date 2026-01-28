@@ -23,8 +23,14 @@ unit Ossl4Pas.Err;
 interface
 
 uses
+  {$IFDEF DCC}
   System.SysUtils,
   System.SyncObjs,
+  {$ENDIF}
+  {$IFDEF FPC}
+  SysUtils,
+  SyncObjs,
+  {$ENDIF}
   System.Generics.Collections,
   Ossl4Pas.CTypes,
   Ossl4Pas.Types,
