@@ -120,6 +120,11 @@ type
   {$IF not Declared(csize_t)} csize_t = ptruint; pcsize_t   = pptruint;{$ENDIF}
   {$IF not Declared(size_t)} size_t   = csize_t; psize_t    = ^size_t;{$ENDIF}
 
+  // 5. time_t (Native Pointer Size)
+  {$IF not Declared(ctime_t)} ctime_t = Int64; pctime_t     = ^ctime_t;{$ENDIF}
+  {$IF not Declared(time_t)} time_t   = ctime_t; ptime_t    = ^time_t;{$ENDIF}
+
+
 implementation
 
 end.

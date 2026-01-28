@@ -60,7 +60,6 @@ Needs to add more helper functions }
     // -------------------------------------------------------------------------
 
     /// <summary>Reads a line into a RawByteString.</summary>
-    /// <param name="MaxLen">Maximum bytes to read (buffer size).</param>
     class function BIO_getsA(b: PBIO; AMaxLen: cint; out AStr: RawByteString): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -209,6 +208,7 @@ end;
 
 class function TOsslApiBioTextHelper.BIO_printfW(b: PBIO; const AStr: UnicodeString;
   const Args: array of const): cint;
+{$IFDEF DCC}
 var
   lStr: UnicodeString;
 
@@ -216,6 +216,11 @@ begin
   lStr:=Format(AStr, Args);
   Result:=BIO_putsW(b, lStr);
 end;
+{$ENDIF}
+{$IFDEF FPC}
+{ TODO : Implement FPC Unicode Format handling }
+{$ENDIF}
+
 
 class function TOsslApiBioTextHelper.BIO_printf(b: PBIO; const AStr: string;
   const Args: array of const): cint;

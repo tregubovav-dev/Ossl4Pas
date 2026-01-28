@@ -1124,7 +1124,8 @@ type
     // Hex Dumping
     TRoutine_BIO_dump       = function(b: PBIO; data: Pointer; len: cint): cint; cdecl;
     TRoutine_BIO_dump_indent= function(b: PBIO; data: Pointer; len: cint; indent: cint): cint; cdecl;
-    TRoutine_BIO_hex_string = function(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint; cdecl;
+    TRoutine_BIO_hex_string = function(out_: PBIO; indent, width: cint; data: Pointer;
+      len: cint): cint; cdecl;
 
   strict private class var
     F_BIO_gets:        TRoutine_BIO_gets;
@@ -1199,6 +1200,279 @@ type
     /// <param name="data">Data buffer.</param>
     /// <param name="len">Length of data.</param>
     class function BIO_hex_string(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+type
+  // ---------------------------------------------------------------------------
+  // ADDRESS & LOOKUP
+  // ---------------------------------------------------------------------------
+
+  /// <summary>
+  ///   API wrapper for OpenSSL Network Address and DNS lookup routines.
+  ///   Manages BIO_ADDR and BIO_ADDRINFO structures.
+  /// </summary>
+  TOsslApiBioAddr = class sealed(TOsslApiBioBase)
+  public type
+    TRoutine_BIO_addr_new       = function: PBIO_ADDR; cdecl;
+    TRoutine_BIO_addr_free      = procedure(ap: PBIO_ADDR); cdecl;
+    TRoutine_BIO_addr_clear     = procedure(ap: PBIO_ADDR); cdecl;
+    TRoutine_BIO_addr_family    = function(ap: PBIO_ADDR): cint; cdecl;
+
+    // DNS / Lookup
+    TRoutine_BIO_lookup_ex      = function(host: PAnsiChar; service: PAnsiChar;
+                                           lookup_type: cint; family: cint; socktype: cint;
+                                           protocol: cint; out res: PBIO_ADDRINFO): cint; cdecl;
+
+    // AddrInfo Navigation & Accessors
+    TRoutine_BIO_addrinfo_next     = function(bai: PBIO_ADDRINFO): PBIO_ADDRINFO; cdecl;
+    TRoutine_BIO_addrinfo_free     = procedure(bai: PBIO_ADDRINFO); cdecl;
+    TRoutine_BIO_addrinfo_family   = function(bai: PBIO_ADDRINFO): cint; cdecl;
+    TRoutine_BIO_addrinfo_socktype = function(bai: PBIO_ADDRINFO): cint; cdecl;
+    TRoutine_BIO_addrinfo_protocol = function(bai: PBIO_ADDRINFO): cint; cdecl;
+    TRoutine_BIO_addrinfo_address  = function(bai: PBIO_ADDRINFO): PBIO_ADDR; cdecl;
+
+  strict private class var
+    F_BIO_addr_new:       TRoutine_BIO_addr_new;
+    F_BIO_addr_free:      TRoutine_BIO_addr_free;
+    F_BIO_addr_clear:     TRoutine_BIO_addr_clear;
+    F_BIO_addr_family:    TRoutine_BIO_addr_family;
+    F_BIO_lookup_ex:      TRoutine_BIO_lookup_ex;
+    F_BIO_addrinfo_next:     TRoutine_BIO_addrinfo_next;
+    F_BIO_addrinfo_free:     TRoutine_BIO_addrinfo_free;
+    F_BIO_addrinfo_family:   TRoutine_BIO_addrinfo_family;
+    F_BIO_addrinfo_socktype: TRoutine_BIO_addrinfo_socktype;
+    F_BIO_addrinfo_protocol: TRoutine_BIO_addrinfo_protocol;
+    F_BIO_addrinfo_address:  TRoutine_BIO_addrinfo_address;
+
+  strict protected const
+    cBindings: array[0..10] of TOsslBindEntry = (
+      (Name: 'BIO_addr_new';          VarPtr: @@TOsslApiBioAddr.F_BIO_addr_new;          MinVer: 0),
+      (Name: 'BIO_addr_free';         VarPtr: @@TOsslApiBioAddr.F_BIO_addr_free;         MinVer: 0),
+      (Name: 'BIO_addr_clear';        VarPtr: @@TOsslApiBioAddr.F_BIO_addr_clear;        MinVer: 0),
+      (Name: 'BIO_addr_family';       VarPtr: @@TOsslApiBioAddr.F_BIO_addr_family;       MinVer: 0),
+      (Name: 'BIO_lookup_ex';         VarPtr: @@TOsslApiBioAddr.F_BIO_lookup_ex;         MinVer: 0),
+      (Name: 'BIO_addrinfo_next';     VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_next;     MinVer: 0),
+      (Name: 'BIO_addrinfo_free';     VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_free;     MinVer: 0),
+      (Name: 'BIO_addrinfo_family';   VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_family;   MinVer: 0),
+      (Name: 'BIO_addrinfo_socktype'; VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_socktype; MinVer: 0),
+      (Name: 'BIO_addrinfo_protocol'; VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_protocol; MinVer: 0),
+      (Name: 'BIO_addrinfo_address';  VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_address;  MinVer: 0)
+    );
+
+  strict private
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+
+  public
+    class constructor Create;
+
+    class function BIO_addr_new: PBIO_ADDR; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class procedure BIO_addr_free(ap: PBIO_ADDR); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class procedure BIO_addr_clear(ap: PBIO_ADDR); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_addr_family(ap: PBIO_ADDR): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Looks up an address (DNS resolution).
+    /// </summary>
+    /// <param name="host">The hostname or literal IP address string.</param>
+    /// <param name="service">The service name (e.g. "http") or port number string.</param>
+    /// <param name="lookup_type">BIO_LOOKUP_CLIENT or BIO_LOOKUP_SERVER.</param>
+    /// <param name="family">BIO_FAMILY_IPV4, BIO_FAMILY_IPV6, or BIO_FAMILY_IPANY.</param>
+    /// <param name="socktype">Socket type (e.g. SOCK_STREAM or SOCK_DGRAM).</param>
+    /// <param name="protocol">Protocol to use (usually 0).</param>
+    /// <param name="res">Output: A pointer to the linked list of results.</param>
+    /// <returns>1 on success, 0 on error.</returns>
+    class function BIO_lookup_ex(host: PAnsiChar; service: PAnsiChar;
+                                 lookup_type: cint; family: cint; socktype: cint;
+                                 protocol: cint; out res: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    class function BIO_addrinfo_next(bai: PBIO_ADDRINFO): PBIO_ADDRINFO; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class procedure BIO_addrinfo_free(bai: PBIO_ADDRINFO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    class function BIO_addrinfo_family(bai: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_addrinfo_socktype(bai: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_addrinfo_protocol(bai: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Returns the BIO_ADDR pointer contained within the info structure.</summary>
+    class function BIO_addrinfo_address(bai: PBIO_ADDRINFO): PBIO_ADDR; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+type
+  // ---------------------------------------------------------------------------
+  // SOCKETS
+  // ---------------------------------------------------------------------------
+
+  /// <summary>
+  ///   API wrapper for OpenSSL Low-Level Socket routines.
+  ///   Handles socket creation, connection, binding, and error checking.
+  /// </summary>
+  TOsslApiBioSock = class sealed(TOsslApiBioBase)
+  public type
+    TRoutine_BIO_socket          = function(domain: cint; socktype: cint; protocol: cint; options: cint): cint; cdecl;
+    TRoutine_BIO_connect         = function(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl;
+    TRoutine_BIO_bind            = function(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl;
+    TRoutine_BIO_listen          = function(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl;
+    TRoutine_BIO_accept_ex       = function(accept_sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl;
+    TRoutine_BIO_closesocket     = function(sock: cint): cint; cdecl;
+
+    // Info & Errors
+    TRoutine_BIO_sock_info       = function(sock: cint; type_: cint; info: Pointer): cint; cdecl;
+    TRoutine_BIO_sock_error      = function(sock: cint): cint; cdecl;
+    TRoutine_BIO_sock_non_fatal_error = function(error: cint): cint; cdecl;
+
+  strict private class var
+    F_BIO_socket:               TRoutine_BIO_socket;
+    F_BIO_connect:              TRoutine_BIO_connect;
+    F_BIO_bind:                 TRoutine_BIO_bind;
+    F_BIO_listen:               TRoutine_BIO_listen;
+    F_BIO_accept_ex:            TRoutine_BIO_accept_ex;
+    F_BIO_closesocket:          TRoutine_BIO_closesocket;
+    F_BIO_sock_info:            TRoutine_BIO_sock_info;
+    F_BIO_sock_error:           TRoutine_BIO_sock_error;
+    F_BIO_sock_non_fatal_error: TRoutine_BIO_sock_non_fatal_error;
+
+  strict protected const
+    cBindings: array[0..8] of TOsslBindEntry = (
+      (Name: 'BIO_socket';               VarPtr: @@TOsslApiBioSock.F_BIO_socket;               MinVer: 0),
+      (Name: 'BIO_connect';              VarPtr: @@TOsslApiBioSock.F_BIO_connect;              MinVer: 0),
+      (Name: 'BIO_bind';                 VarPtr: @@TOsslApiBioSock.F_BIO_bind;                 MinVer: 0),
+      (Name: 'BIO_listen';               VarPtr: @@TOsslApiBioSock.F_BIO_listen;               MinVer: 0),
+      (Name: 'BIO_accept_ex';            VarPtr: @@TOsslApiBioSock.F_BIO_accept_ex;            MinVer: 0),
+      (Name: 'BIO_closesocket';          VarPtr: @@TOsslApiBioSock.F_BIO_closesocket;          MinVer: 0),
+      (Name: 'BIO_sock_info';            VarPtr: @@TOsslApiBioSock.F_BIO_sock_info;            MinVer: 0),
+      (Name: 'BIO_sock_error';           VarPtr: @@TOsslApiBioSock.F_BIO_sock_error;           MinVer: 0),
+      (Name: 'BIO_sock_non_fatal_error'; VarPtr: @@TOsslApiBioSock.F_BIO_sock_non_fatal_error; MinVer: 0)
+    );
+
+  strict private
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+
+  public
+    class constructor Create;
+
+    /// <summary>Creates a raw socket.</summary>
+    /// <param name="domain">Address family (e.g. BIO_FAMILY_IPV4).</param>
+    /// <param name="socktype">Socket type (e.g. SOCK_STREAM).</param>
+    /// <param name="protocol">Protocol (0 for default).</param>
+    /// <param name="options">Combination of BIO_SOCK_* flags.</param>
+    /// <returns>Socket handle (int) or INVALID_SOCKET (-1) on error.</returns>
+    class function BIO_socket(domain, socktype, protocol, options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Connects a socket to an address.</summary>
+    class function BIO_connect(sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Binds a socket to a local address.</summary>
+    class function BIO_bind(sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Listens on a bound socket.</summary>
+    class function BIO_listen(sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Accepts a connection on a listening socket.</summary>
+    /// <param name="accept_sock">The listening socket.</param>
+    /// <param name="addr">Returns the peer address (optional).</param>
+    /// <param name="options">Combination of BIO_SOCK_* flags.</param>
+    class function BIO_accept_ex(accept_sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Closes the socket.</summary>
+    class function BIO_closesocket(sock: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Retrieves info about the socket (type, family, etc).</summary>
+    class function BIO_sock_info(sock: cint; type_: cint; info: Pointer): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Returns the last socket error code.</summary>
+    class function BIO_sock_error(sock: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Checks if the error is recoverable (e.g. EWOULDBLOCK).</summary>
+    class function BIO_sock_non_fatal_error(error: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+type
+  // ---------------------------------------------------------------------------
+  // DATAGRAM
+  // ---------------------------------------------------------------------------
+
+  /// <summary>
+  ///   API wrapper for OpenSSL Datagram (UDP) and Polling routines.
+  ///   Includes high-performance mmsg I/O and async polling (OpenSSL 3.2+).
+  /// </summary>
+  TOsslApiBioDgram = class sealed(TOsslApiBioBase)
+  public type
+    TRoutine_BIO_dgram_non_fatal_error = function(error: cint): cint; cdecl;
+
+    // OpenSSL 3.2+
+    TRoutine_BIO_sendmmsg = function(b: PBIO; msg: PBIO_MSG; stride: size_t;
+      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; cdecl;
+    TRoutine_BIO_recvmmsg = function(b: PBIO; msg: PBIO_MSG; stride: size_t;
+      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; cdecl;
+
+    TRoutine_BIO_get_rpoll_descriptor = function(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl;
+    TRoutine_BIO_get_wpoll_descriptor = function(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl;
+    TRoutine_BIO_wait = function(b: PBIO; max_time: time_t; flags: cuint): cint; cdecl;
+
+  strict private class var
+    F_BIO_dgram_non_fatal_error: TRoutine_BIO_dgram_non_fatal_error;
+
+    F_BIO_sendmmsg:              TRoutine_BIO_sendmmsg;
+    F_BIO_recvmmsg:              TRoutine_BIO_recvmmsg;
+    F_BIO_get_rpoll_descriptor:  TRoutine_BIO_get_rpoll_descriptor;
+    F_BIO_get_wpoll_descriptor:  TRoutine_BIO_get_wpoll_descriptor;
+    F_BIO_wait:                  TRoutine_BIO_wait;
+
+  strict protected const
+    cBindings: array[0..5] of TOsslBindEntry = (
+      // Available in 3.0
+      (Name: 'BIO_dgram_non_fatal_error'; VarPtr: @@TOsslApiBioDgram.F_BIO_dgram_non_fatal_error; MinVer: 0; FallbackPtr: nil),
+
+      // Available in 3.2+ ($30200000)
+      (Name: 'BIO_sendmmsg';              VarPtr: @@TOsslApiBioDgram.F_BIO_sendmmsg;              MinVer: $30200000),
+      (Name: 'BIO_recvmmsg';              VarPtr: @@TOsslApiBioDgram.F_BIO_recvmmsg;              MinVer: $30200000),
+      (Name: 'BIO_get_rpoll_descriptor';  VarPtr: @@TOsslApiBioDgram.F_BIO_get_rpoll_descriptor;  MinVer: $30200000),
+      (Name: 'BIO_get_wpoll_descriptor';  VarPtr: @@TOsslApiBioDgram.F_BIO_get_wpoll_descriptor;  MinVer: $30200000),
+      (Name: 'BIO_wait';                  VarPtr: @@TOsslApiBioDgram.F_BIO_wait;                  MinVer: $30200000)
+    );
+
+  strict private
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+
+  public
+    class constructor Create;
+
+    // -------------------------------------------------------------------------
+    // DATAGRAM UTILITIES
+    // -------------------------------------------------------------------------
+
+    /// <summary>Checks if a UDP error is recoverable (e.g. EWOULDBLOCK).</summary>
+    class function BIO_dgram_non_fatal_error(error: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    // -------------------------------------------------------------------------
+    // BATCH I/O (OpenSSL 3.2+)
+    // -------------------------------------------------------------------------
+
+    /// <summary>Sends multiple datagrams in a single system call.</summary>
+    class function BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: size_t;
+      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Receives multiple datagrams in a single system call.</summary>
+    class function BIO_recvmmsg(b: PBIO; msg: PBIO_MSG; stride: size_t;
+      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    // -------------------------------------------------------------------------
+    // POLLING (OpenSSL 3.2+)
+    // -------------------------------------------------------------------------
+
+    /// <summary>Retrieves the Read Poll Descriptor for the BIO.</summary>
+    class function BIO_get_rpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Retrieves the Write Poll Descriptor for the BIO.</summary>
+    class function BIO_get_wpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Waits for activity on the BIO (blocks until timeout or event).</summary>
+    class function BIO_wait(b: PBIO; max_time: time_t; flags: cuint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
@@ -2136,6 +2410,217 @@ end;
 class function TOsslApiBioText.BIO_hex_string(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint;
 begin
   Result := F_BIO_hex_string(out_, indent, width, data, len);
+end;
+
+{ TOsslApiBioAddr }
+
+class constructor TOsslApiBioAddr.Create;
+begin
+  UnBind;
+  // Network routines are in LibCrypto
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiBioAddr.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiBioAddr.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+// -----------------------------------------------------------------------------
+// ADDRESS LIFECYCLE
+// -----------------------------------------------------------------------------
+
+class function TOsslApiBioAddr.BIO_addr_new: PBIO_ADDR;
+begin
+  Result := F_BIO_addr_new();
+end;
+
+class procedure TOsslApiBioAddr.BIO_addr_free(ap: PBIO_ADDR);
+begin
+  F_BIO_addr_free(ap);
+end;
+
+class procedure TOsslApiBioAddr.BIO_addr_clear(ap: PBIO_ADDR);
+begin
+  F_BIO_addr_clear(ap);
+end;
+
+class function TOsslApiBioAddr.BIO_addr_family(ap: PBIO_ADDR): cint;
+begin
+  Result := F_BIO_addr_family(ap);
+end;
+
+// -----------------------------------------------------------------------------
+// LOOKUP & ADDRINFO
+// -----------------------------------------------------------------------------
+
+class function TOsslApiBioAddr.BIO_lookup_ex(host: PAnsiChar; service: PAnsiChar;
+  lookup_type: cint; family: cint; socktype: cint; protocol: cint;
+  out res: PBIO_ADDRINFO): cint;
+begin
+  // Pass 'res' by reference (out maps to **res)
+  Result := F_BIO_lookup_ex(host, service, lookup_type, family, socktype, protocol, res);
+end;
+
+class function TOsslApiBioAddr.BIO_addrinfo_next(bai: PBIO_ADDRINFO): PBIO_ADDRINFO;
+begin
+  Result := F_BIO_addrinfo_next(bai);
+end;
+
+class procedure TOsslApiBioAddr.BIO_addrinfo_free(bai: PBIO_ADDRINFO);
+begin
+  F_BIO_addrinfo_free(bai);
+end;
+
+class function TOsslApiBioAddr.BIO_addrinfo_family(bai: PBIO_ADDRINFO): cint;
+begin
+  Result := F_BIO_addrinfo_family(bai);
+end;
+
+class function TOsslApiBioAddr.BIO_addrinfo_socktype(bai: PBIO_ADDRINFO): cint;
+begin
+  Result := F_BIO_addrinfo_socktype(bai);
+end;
+
+class function TOsslApiBioAddr.BIO_addrinfo_protocol(bai: PBIO_ADDRINFO): cint;
+begin
+  Result := F_BIO_addrinfo_protocol(bai);
+end;
+
+class function TOsslApiBioAddr.BIO_addrinfo_address(bai: PBIO_ADDRINFO): PBIO_ADDR;
+begin
+  Result := F_BIO_addrinfo_address(bai);
+end;
+
+{ TOsslApiBioSock }
+
+class constructor TOsslApiBioSock.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiBioSock.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiBioSock.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+class function TOsslApiBioSock.BIO_socket(domain, socktype, protocol,
+  options: cint): cint;
+begin
+  Result := F_BIO_socket(domain, socktype, protocol, options);
+end;
+
+class function TOsslApiBioSock.BIO_connect(sock: cint; addr: PBIO_ADDR;
+  options: cint): cint;
+begin
+  Result := F_BIO_connect(sock, addr, options);
+end;
+
+class function TOsslApiBioSock.BIO_bind(sock: cint; addr: PBIO_ADDR;
+  options: cint): cint;
+begin
+  Result := F_BIO_bind(sock, addr, options);
+end;
+
+class function TOsslApiBioSock.BIO_listen(sock: cint; addr: PBIO_ADDR;
+  options: cint): cint;
+begin
+  Result := F_BIO_listen(sock, addr, options);
+end;
+
+class function TOsslApiBioSock.BIO_accept_ex(accept_sock: cint; addr: PBIO_ADDR;
+  options: cint): cint;
+begin
+  Result := F_BIO_accept_ex(accept_sock, addr, options);
+end;
+
+class function TOsslApiBioSock.BIO_closesocket(sock: cint): cint;
+begin
+  Result := F_BIO_closesocket(sock);
+end;
+
+class function TOsslApiBioSock.BIO_sock_info(sock: cint; type_: cint;
+  info: Pointer): cint;
+begin
+  Result := F_BIO_sock_info(sock, type_, info);
+end;
+
+class function TOsslApiBioSock.BIO_sock_error(sock: cint): cint;
+begin
+  Result := F_BIO_sock_error(sock);
+end;
+
+class function TOsslApiBioSock.BIO_sock_non_fatal_error(error: cint): cint;
+begin
+  Result := F_BIO_sock_non_fatal_error(error);
+end;
+
+{ TOsslApiBioDgram }
+
+class constructor TOsslApiBioDgram.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiBioDgram.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiBioDgram.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+class function TOsslApiBioDgram.BIO_dgram_non_fatal_error(error: cint): cint;
+begin
+  Result := F_BIO_dgram_non_fatal_error(error);
+end;
+
+class function TOsslApiBioDgram.BIO_sendmmsg(b: PBIO; msg: PBIO_MSG;
+  stride: size_t; num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint;
+begin
+  // Direct call. If version < 3.2, F_BIO_sendmmsg is Stub and will raise exception.
+  Result := F_BIO_sendmmsg(b, msg, stride, num_msg, flags, msgs_processed);
+end;
+
+class function TOsslApiBioDgram.BIO_recvmmsg(b: PBIO; msg: PBIO_MSG;
+  stride: size_t; num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint;
+begin
+  Result := F_BIO_recvmmsg(b, msg, stride, num_msg, flags, msgs_processed);
+end;
+
+class function TOsslApiBioDgram.BIO_get_rpoll_descriptor(b: PBIO;
+  desc: PBIO_POLL_DESCRIPTOR): cint;
+begin
+  Result := F_BIO_get_rpoll_descriptor(b, desc);
+end;
+
+class function TOsslApiBioDgram.BIO_get_wpoll_descriptor(b: PBIO;
+  desc: PBIO_POLL_DESCRIPTOR): cint;
+begin
+  Result := F_BIO_get_wpoll_descriptor(b, desc);
+end;
+
+class function TOsslApiBioDgram.BIO_wait(b: PBIO; max_time: time_t;
+  flags: cuint): cint;
+begin
+  Result := F_BIO_wait(b, max_time, flags);
 end;
 
 end.

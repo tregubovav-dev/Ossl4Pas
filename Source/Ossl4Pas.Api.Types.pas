@@ -95,6 +95,35 @@ type
   PBIO_f_buffer_ctx = ^TBIO_f_buffer_ctx;
   TBIO_f_buffer_ctx = record end;
 
+  /// <summary>
+  ///   Message structure for BIO_sendmmsg/BIO_recvmmsg (OpenSSL 3.2+).
+  ///   Used to pass multiple datagrams in a single system call.
+  /// </summary>
+  TBIO_MSG = record
+    /// <summary>Pointer to the data buffer.</summary>
+    data: Pointer;
+    /// <summary>Length of the data buffer.</summary>
+    data_len: size_t;
+    /// <summary>Destination (send) or Source (recv) address.</summary>
+    peer: PBIO_ADDR;
+    /// <summary>Flags (OS specific or OpenSSL specific).</summary>
+    flags: UInt64;
+  end;
+  PBIO_MSG = ^TBIO_MSG;
+
+  /// <summary>
+  ///   Descriptor for BIO_get_rpoll_descriptor / BIO_wait (OpenSSL 3.2+).
+  /// </summary>
+  TBIO_POLL_DESCRIPTOR = record
+    /// <summary>BIO_POLL_DESCRIPTOR_TYPE_* constant.</summary>
+    type_: cuint32;
+    case Integer of
+      0: (fd: cint);          // File descriptor / Socket handle
+      1: (custom: Pointer);   // Custom pointer
+      2: (custom_ui: ptruint);// Custom integer (uintptr_t)
+  end;
+  PBIO_POLL_DESCRIPTOR = ^TBIO_POLL_DESCRIPTOR;
+
   { ============================================================================
     EVP (High-Level Cryptography)
     Declared in: <openssl/evp.h>
