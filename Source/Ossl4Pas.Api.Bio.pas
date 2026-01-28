@@ -798,7 +798,7 @@ type
   end;
 
 type
-  /// <summary>
+/// <summary>
   ///   Base API wrapper for OpenSSL BIO routines (Lifecycle & Core).
   ///   Contains static methods mapping directly to C functions and common macros.
   /// </summary>
@@ -807,11 +807,18 @@ type
     // -------------------------------------------------------------------------
     // FUNCTION SIGNATURES
     // -------------------------------------------------------------------------
+
+    /// <summary>Signature for extended BIO callbacks (OpenSSL 3.0+).</summary>
+    TBIO_callback_fn_ex       = function(b: PBIO; oper: cint; argp: PAnsiChar;
+      len: size_t; argi: cint; argl: clong; ret: cint;
+      processed: psize_t): clong; cdecl;
+
     TRoutine_BIO_new          = function(Method: PBIO_METHOD): PBIO; cdecl;
     TRoutine_BIO_new_ex       = function(libctx: POSSL_LIB_CTX;
       propq: PAnsiChar; Method: PBIO_METHOD): PBIO; cdecl; // 3.0+
     TRoutine_BIO_free         = function(a: PBIO): cint; cdecl;
     TRoutine_BIO_free_all     = procedure(a: PBIO); cdecl;
+    TRoutine_BIO_vfree        = procedure(a: PBIO); cdecl;
     TRoutine_BIO_up_ref       = function(a: PBIO): cint; cdecl;
 
     // Basic I/O (Legacy int-based)
@@ -836,11 +843,18 @@ type
     TRoutine_BIO_method_name  = function(b: PBIO): PAnsiChar; cdecl;
     TRoutine_BIO_method_type  = function(b: PBIO): cint; cdecl;
 
+    // Debug & Data
+    TRoutine_BIO_set_callback_ex = function(b: PBIO; cb: TBIO_callback_fn_ex): cint; cdecl;
+    TRoutine_BIO_get_callback_ex = function(b: PBIO): TBIO_callback_fn_ex; cdecl;
+    TRoutine_BIO_set_ex_data     = function(bio: PBIO; idx: cint; data: Pointer): cint; cdecl;
+    TRoutine_BIO_get_ex_data     = function(bio: PBIO; idx: cint): Pointer; cdecl;
+
   strict private class var
     F_BIO_new:          TRoutine_BIO_new;
     F_BIO_new_ex:       TRoutine_BIO_new_ex;
     F_BIO_free:         TRoutine_BIO_free;
     F_BIO_free_all:     TRoutine_BIO_free_all;
+    F_BIO_vfree:        TRoutine_BIO_vfree;
     F_BIO_up_ref:       TRoutine_BIO_up_ref;
 
     F_BIO_read:         TRoutine_BIO_read;
@@ -859,14 +873,20 @@ type
     F_BIO_method_name:  TRoutine_BIO_method_name;
     F_BIO_method_type:  TRoutine_BIO_method_type;
 
+    F_BIO_set_callback_ex: TRoutine_BIO_set_callback_ex;
+    F_BIO_get_callback_ex: TRoutine_BIO_get_callback_ex;
+    F_BIO_set_ex_data:     TRoutine_BIO_set_ex_data;
+    F_BIO_get_ex_data:     TRoutine_BIO_get_ex_data;
+
   strict protected const
       // Define bindings in the Base class so descendants can inherit or extend logic if needed.
       // Note: In Pascal, descendants share these static vars.
-    cBindings: array[0..16] of TOsslBindEntry = (
+    cBindings: array[0..21] of TOsslBindEntry = (
       (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0),
       (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000), // 3.0+ Only
       (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0),
       (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0),
+      (Name: 'BIO_vfree';         VarPtr: @@TOsslApiBioBase.F_BIO_vfree;         MinVer: 0),
       (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0),
 
       (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0),
@@ -886,7 +906,13 @@ type
       (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0),
         // BIO_method_type is sometimes a macro in older versions, but function in 3.x
         // We will bind it dynamically.
-      (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0)
+      (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0),
+
+      // Debug & Data
+      (Name: 'BIO_set_callback_ex'; VarPtr: @@TOsslApiBioBase.F_BIO_set_callback_ex; MinVer: 0),
+      (Name: 'BIO_get_callback_ex'; VarPtr: @@TOsslApiBioBase.F_BIO_get_callback_ex; MinVer: 0),
+      (Name: 'BIO_set_ex_data';     VarPtr: @@TOsslApiBioBase.F_BIO_set_ex_data;     MinVer: 0),
+      (Name: 'BIO_get_ex_data';     VarPtr: @@TOsslApiBioBase.F_BIO_get_ex_data;     MinVer: 0)
     );
 
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
@@ -908,6 +934,7 @@ type
 
     class function BIO_free(a: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class procedure BIO_free_all(a: PBIO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class procedure BIO_vfree(a: PBIO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function BIO_up_ref(a: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // -------------------------------------------------------------------------
@@ -938,6 +965,15 @@ type
       {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function BIO_method_type(b: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    class function BIO_set_callback_ex(b: PBIO; cb: TBIO_callback_fn_ex): cint;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_get_callback_ex(b: PBIO): TBIO_callback_fn_ex;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_set_ex_data(bio: PBIO; idx: cint; data: Pointer): cint;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_get_ex_data(bio: PBIO; idx: cint): Pointer;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // -------------------------------------------------------------------------
     // CHAIN MANAGEMENT
@@ -971,6 +1007,198 @@ type
     ///   Wraps BIO_get_mem_data.
     /// </summary>
     class function BIO_get_mem_data(b: PBIO; pp: PPointer): clong; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+type
+  /// <summary>
+  ///   API wrapper for OpenSSL BIO Pair routines (BIO_s_bio).
+  ///   Used for internal buffering, pipes, and testing.
+  /// </summary>
+  TOsslApiBioPair = class sealed(TOsslApiBioBase)
+  public type
+    TRoutine_BIO_new_bio_pair             = function(bio1: PPBIO; writebuf1: size_t;
+      bio2: PPBIO; writebuf2: size_t): cint; cdecl;
+    TRoutine_BIO_make_bio_pair            = function(b1: PBIO; b2: PBIO): cint; cdecl;
+    TRoutine_BIO_destroy_bio_pair         = function(b: PBIO): cint; cdecl;
+    TRoutine_BIO_shutdown_wr              = function(b: PBIO): cint; cdecl;
+
+    // Direct exported functions
+    TRoutine_BIO_ctrl_get_write_guarantee = function(b: PBIO): size_t; cdecl;
+    TRoutine_BIO_ctrl_get_read_request    = function(b: PBIO): size_t; cdecl;
+    TRoutine_BIO_ctrl_reset_read_request  = function(b: PBIO): cint; cdecl;
+
+  strict private class var
+    F_BIO_new_bio_pair:             TRoutine_BIO_new_bio_pair;
+    F_BIO_make_bio_pair:            TRoutine_BIO_make_bio_pair;
+    F_BIO_destroy_bio_pair:         TRoutine_BIO_destroy_bio_pair;
+    F_BIO_shutdown_wr:              TRoutine_BIO_shutdown_wr;
+    F_BIO_ctrl_get_write_guarantee: TRoutine_BIO_ctrl_get_write_guarantee;
+    F_BIO_ctrl_get_read_request:    TRoutine_BIO_ctrl_get_read_request;
+    F_BIO_ctrl_reset_read_request:  TRoutine_BIO_ctrl_reset_read_request;
+
+  strict protected const
+    cBindings: array[0..6] of TOsslBindEntry = (
+      (Name: 'BIO_new_bio_pair';             VarPtr: @@TOsslApiBioPair.F_BIO_new_bio_pair;             MinVer: 0),
+      (Name: 'BIO_make_bio_pair';            VarPtr: @@TOsslApiBioPair.F_BIO_make_bio_pair;            MinVer: 0),
+      (Name: 'BIO_destroy_bio_pair';         VarPtr: @@TOsslApiBioPair.F_BIO_destroy_bio_pair;         MinVer: 0),
+      (Name: 'BIO_shutdown_wr';              VarPtr: @@TOsslApiBioPair.F_BIO_shutdown_wr;              MinVer: 0),
+      (Name: 'BIO_ctrl_get_write_guarantee'; VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_get_write_guarantee; MinVer: 0),
+      (Name: 'BIO_ctrl_get_read_request';     VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_get_read_request;    MinVer: 0),
+      (Name: 'BIO_ctrl_reset_read_request';   VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_reset_read_request;  MinVer: 0)
+    );
+
+  strict private
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+
+  public
+    class constructor Create;
+
+    // -------------------------------------------------------------------------
+    // PAIR LIFECYCLE
+    // -------------------------------------------------------------------------
+
+    /// <summary>Creates two connected BIOs (a pipe).</summary>
+    class function BIO_new_bio_pair(bio1: PPBIO; writebuf1: size_t;
+      bio2: PPBIO; writebuf2: size_t): cint; overload; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    class function BIO_make_bio_pair(b1: PBIO; b2: PBIO): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_destroy_bio_pair(b: PBIO): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_shutdown_wr(b: PBIO): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    // -------------------------------------------------------------------------
+    // RING BUFFER METRICS (Direct API)
+    // -------------------------------------------------------------------------
+
+    class function BIO_ctrl_get_write_guarantee(b: PBIO): size_t; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_ctrl_get_read_request(b: PBIO): size_t; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_ctrl_reset_read_request(b: PBIO): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    // -------------------------------------------------------------------------
+    // MACRO WRAPPERS (Helpers via BIO_ctrl)
+    // -------------------------------------------------------------------------
+
+    /// <summary>Sets the size of the write buffer.</summary>
+    class function BIO_set_write_buf_size(b: PBIO; size: clong): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Gets the size of the write buffer.</summary>
+    class function BIO_get_write_buf_size(b: PBIO): size_t; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Alias for BIO_ctrl_get_write_guarantee.</summary>
+    class function BIO_get_write_guarantee(b: PBIO): size_t; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Alias for BIO_ctrl_get_read_request.</summary>
+    class function BIO_get_read_request(b: PBIO): size_t; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+  TOsslApiBioPairHelper = class helper for TOsslApiBioPair
+    class function BIO_new_bio_pair(var bio1: PBIO; writebuf1: size_t;
+      var bio2: PBIO; writebuf2: size_t): cint; overload; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+type
+  /// <summary>
+  ///   API wrapper for OpenSSL BIO Text and Formatting routines.
+  ///   Includes String I/O (gets/puts) and Hex Dumping.
+  /// </summary>
+  TOsslApiBioText = class sealed(TOsslApiBioBase)
+  public type
+    // String I/O
+    TRoutine_BIO_gets       = function(b: PBIO; buf: PAnsiChar; size: cint): cint; cdecl;
+    TRoutine_BIO_puts       = function(b: PBIO; buf: PAnsiChar): cint; cdecl;
+    TRoutine_BIO_indent     = function(b: PBIO; indent, max: cint): cint; cdecl;
+
+    // Hex Dumping
+    TRoutine_BIO_dump       = function(b: PBIO; data: Pointer; len: cint): cint; cdecl;
+    TRoutine_BIO_dump_indent= function(b: PBIO; data: Pointer; len: cint; indent: cint): cint; cdecl;
+    TRoutine_BIO_hex_string = function(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint; cdecl;
+
+  strict private class var
+    F_BIO_gets:        TRoutine_BIO_gets;
+    F_BIO_puts:        TRoutine_BIO_puts;
+    F_BIO_indent:      TRoutine_BIO_indent;
+    F_BIO_dump:        TRoutine_BIO_dump;
+    F_BIO_dump_indent: TRoutine_BIO_dump_indent;
+    F_BIO_hex_string:  TRoutine_BIO_hex_string;
+
+  strict protected const
+    cBindings: array[0..5] of TOsslBindEntry = (
+      (Name: 'BIO_gets';        VarPtr: @@TOsslApiBioText.F_BIO_gets;        MinVer: 0),
+      (Name: 'BIO_puts';        VarPtr: @@TOsslApiBioText.F_BIO_puts;        MinVer: 0),
+      (Name: 'BIO_indent';      VarPtr: @@TOsslApiBioText.F_BIO_indent;      MinVer: 0),
+      (Name: 'BIO_dump';        VarPtr: @@TOsslApiBioText.F_BIO_dump;        MinVer: 0),
+      (Name: 'BIO_dump_indent'; VarPtr: @@TOsslApiBioText.F_BIO_dump_indent; MinVer: 0),
+      (Name: 'BIO_hex_string';  VarPtr: @@TOsslApiBioText.F_BIO_hex_string;  MinVer: 0)
+    );
+
+  strict private
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+
+  public
+    class constructor Create;
+
+    // -------------------------------------------------------------------------
+    // STRING I/O
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    ///   Reads a line of text from the BIO.
+    ///   <para>
+    ///     Reads up to <c>size-1</c> bytes, or until a newline is found.
+    ///     The buffer is always null-terminated.
+    ///   </para>
+    /// </summary>
+    class function BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Writes a null-terminated string to the BIO.</summary>
+    class function BIO_puts(b: PBIO; buf: PAnsiChar): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>Writes indentation (spaces) to the BIO.</summary>
+    class function BIO_indent(b: PBIO; indent, max: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    // -------------------------------------------------------------------------
+    // DEBUGGING & DUMPING
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    ///   Hex dumps data to the BIO.
+    ///   Useful for debugging buffer contents.
+    /// </summary>
+    class function BIO_dump(b: PBIO; data: Pointer; len: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Hex dumps data to the BIO with indentation.
+    /// </summary>
+    class function BIO_dump_indent(b: PBIO; data: Pointer; len: cint; indent: cint): cint; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Outputs data as a hex string (e.g., "0A:1B:2C").
+    /// </summary>
+    /// <param name="out_">The output BIO.</param>
+    /// <param name="indent">Indentation level.</param>
+    /// <param name="width">Hex bytes per line.</param>
+    /// <param name="data">Data buffer.</param>
+    /// <param name="len">Length of data.</param>
+    class function BIO_hex_string(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
@@ -1638,17 +1866,20 @@ begin
   Result:=F_BIO_read_ex(b, data, dlen, readbytes);
 end;
 
-class function TOsslApiBioBase.BIO_write_ex(b: PBIO; data: Pointer; dlen: size_t; written: psize_t): cint;
+class function TOsslApiBioBase.BIO_write_ex(b: PBIO; data: Pointer;
+  dlen: size_t; written: psize_t): cint;
 begin
   Result:=F_BIO_write_ex(b, data, dlen, written);
 end;
 
-class function TOsslApiBioBase.BIO_ctrl(b: PBIO; cmd: cint; larg: clong; parg: Pointer): clong;
+class function TOsslApiBioBase.BIO_ctrl(b: PBIO; cmd: cint; larg: clong;
+  parg: Pointer): clong;
 begin
   Result:=F_BIO_ctrl(b, cmd, larg, parg);
 end;
 
-class function TOsslApiBioBase.BIO_callback_ctrl(b: PBIO; cmd: cint; fp: Pointer): clong;
+class function TOsslApiBioBase.BIO_callback_ctrl(b: PBIO; cmd: cint;
+  fp: Pointer): clong;
 begin
   Result:=F_BIO_callback_ctrl(b, cmd, fp);
 end;
@@ -1734,6 +1965,177 @@ class function TOsslApiBioBase.BIO_get_mem_data(b: PBIO; pp: PPointer): clong;
 begin
   // #define BIO_get_mem_data(b,pp) BIO_ctrl(b,BIO_CTRL_INFO,0,(char *)(pp))
   Result:=BIO_ctrl(b, BIO_CTRL_INFO, 0, Pointer(pp));
+end;
+
+class procedure TOsslApiBioBase.BIO_vfree(a: PBIO);
+begin
+  F_BIO_vfree(a);
+end;
+
+class function TOsslApiBioBase.BIO_set_callback_ex(b: PBIO;
+  cb: TBIO_callback_fn_ex): cint;
+begin
+  Result := F_BIO_set_callback_ex(b, cb);
+end;
+
+class function TOsslApiBioBase.BIO_get_callback_ex(b: PBIO): TBIO_callback_fn_ex;
+begin
+  Result := F_BIO_get_callback_ex(b);
+end;
+
+class function TOsslApiBioBase.BIO_set_ex_data(bio: PBIO; idx: cint;
+  data: Pointer): cint;
+begin
+  Result := F_BIO_set_ex_data(bio, idx, data);
+end;
+
+class function TOsslApiBioBase.BIO_get_ex_data(bio: PBIO; idx: cint): Pointer;
+begin
+  Result := F_BIO_get_ex_data(bio, idx);
+end;
+
+{ TOsslApiBioPair }
+
+class constructor TOsslApiBioPair.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiBioPair.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiBioPair.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+// -----------------------------------------------------------------------------
+// Direct API Calls
+// -----------------------------------------------------------------------------
+
+class function TOsslApiBioPair.BIO_new_bio_pair(bio1: PPBIO; writebuf1: size_t;
+  bio2: PPBIO; writebuf2: size_t): cint;
+begin
+  Result := F_BIO_new_bio_pair(bio1, writebuf1, bio2, writebuf2);
+end;
+
+class function TOsslApiBioPair.BIO_make_bio_pair(b1: PBIO; b2: PBIO): cint;
+begin
+  Result := F_BIO_make_bio_pair(b1, b2);
+end;
+
+class function TOsslApiBioPair.BIO_destroy_bio_pair(b: PBIO): cint;
+begin
+  Result := F_BIO_destroy_bio_pair(b);
+end;
+
+class function TOsslApiBioPair.BIO_shutdown_wr(b: PBIO): cint;
+begin
+  Result := F_BIO_shutdown_wr(b);
+end;
+
+class function TOsslApiBioPair.BIO_ctrl_get_write_guarantee(b: PBIO): size_t;
+begin
+  Result := F_BIO_ctrl_get_write_guarantee(b);
+end;
+
+class function TOsslApiBioPair.BIO_ctrl_get_read_request(b: PBIO): size_t;
+begin
+  Result := F_BIO_ctrl_get_read_request(b);
+end;
+
+class function TOsslApiBioPair.BIO_ctrl_reset_read_request(b: PBIO): cint;
+begin
+  Result := F_BIO_ctrl_reset_read_request(b);
+end;
+
+// -----------------------------------------------------------------------------
+// Macros (Using Base.BIO_ctrl or Direct Aliases)
+// -----------------------------------------------------------------------------
+
+class function TOsslApiBioPair.BIO_set_write_buf_size(b: PBIO; size: clong): cint;
+begin
+  // #define BIO_set_write_buf_size(b,size) (int)BIO_ctrl(b,BIO_C_SET_WRITE_BUF_SIZE,size,NULL)
+  Result := cint(BIO_ctrl(b, BIO_C_SET_WRITE_BUF_SIZE, size, nil));
+end;
+
+class function TOsslApiBioPair.BIO_get_write_buf_size(b: PBIO): size_t;
+begin
+  // #define BIO_get_write_buf_size(b,size) (size_t)BIO_ctrl(b,BIO_C_GET_WRITE_BUF_SIZE,size,NULL)
+  Result := size_t(BIO_ctrl(b, BIO_C_GET_WRITE_BUF_SIZE, 0, nil));
+end;
+
+class function TOsslApiBioPair.BIO_get_write_guarantee(b: PBIO): size_t;
+begin
+  // Maps directly to the exported function in modern OpenSSL
+  Result := BIO_ctrl_get_write_guarantee(b);
+end;
+
+class function TOsslApiBioPair.BIO_get_read_request(b: PBIO): size_t;
+begin
+  // Maps directly to the exported function in modern OpenSSL
+  Result := BIO_ctrl_get_read_request(b);
+end;
+
+{ TOsslApiBioPairHelper }
+
+class function TOsslApiBioPairHelper.BIO_new_bio_pair(var bio1: PBIO;
+  writebuf1: size_t; var bio2: PBIO; writebuf2: size_t): cint;
+begin
+  Result:=BIO_new_bio_pair(@bio1, writebuf1, @bio2, writebuf2);
+end;
+
+{ TOsslApiBioText }
+
+class constructor TOsslApiBioText.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiBioText.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiBioText.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+
+class function TOsslApiBioText.BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint;
+begin
+  Result := F_BIO_gets(b, buf, size);
+end;
+
+class function TOsslApiBioText.BIO_puts(b: PBIO; buf: PAnsiChar): cint;
+begin
+  Result := F_BIO_puts(b, buf);
+end;
+
+class function TOsslApiBioText.BIO_indent(b: PBIO; indent, max: cint): cint;
+begin
+  Result := F_BIO_indent(b, indent, max);
+end;
+
+class function TOsslApiBioText.BIO_dump(b: PBIO; data: Pointer; len: cint): cint;
+begin
+  Result := F_BIO_dump(b, data, len);
+end;
+
+class function TOsslApiBioText.BIO_dump_indent(b: PBIO; data: Pointer; len: cint; indent: cint): cint;
+begin
+  Result := F_BIO_dump_indent(b, data, len, indent);
+end;
+
+class function TOsslApiBioText.BIO_hex_string(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint;
+begin
+  Result := F_BIO_hex_string(out_, indent, width, data, len);
 end;
 
 end.
