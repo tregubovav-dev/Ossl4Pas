@@ -76,8 +76,9 @@ type
     ============================================================================ }
 
   // The BIO Handle
-  PBIO = ^TBIO;
-  TBIO = record end;
+  PPBIO = ^PBIO;
+  PBIO  = ^TBIO;
+  TBIO  = record end;
 
   // The BIO Method Table
   PBIO_METHOD = ^TBIO_METHOD;
