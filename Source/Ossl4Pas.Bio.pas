@@ -60,7 +60,6 @@ Needs to add more helper functions }
     // -------------------------------------------------------------------------
 
     /// <summary>Reads a line into a RawByteString.</summary>
-    /// <param name="MaxLen">Maximum bytes to read (buffer size).</param>
     class function BIO_getsA(b: PBIO; AMaxLen: cint; out AStr: RawByteString): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
