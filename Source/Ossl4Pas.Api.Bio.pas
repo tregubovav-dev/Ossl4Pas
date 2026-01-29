@@ -1028,7 +1028,7 @@ type
     TRoutine_BIO_ctrl_get_read_request    = function(b: PBIO): size_t; cdecl;
     TRoutine_BIO_ctrl_reset_read_request  = function(b: PBIO): cint; cdecl;
 
-  strict private class var
+  {strict }private class var
     F_BIO_new_bio_pair:             TRoutine_BIO_new_bio_pair;
     F_BIO_make_bio_pair:            TRoutine_BIO_make_bio_pair;
     F_BIO_destroy_bio_pair:         TRoutine_BIO_destroy_bio_pair;
@@ -2360,7 +2360,7 @@ end;
 class function TOsslApiBioPairHelper.BIO_new_bio_pair(var bio1: PBIO;
   writebuf1: size_t; var bio2: PBIO; writebuf2: size_t): cint;
 begin
-  Result:=BIO_new_bio_pair(@bio1, writebuf1, @bio2, writebuf2);
+  Result:=F_BIO_new_bio_pair(@bio1, writebuf1, @bio2, writebuf2);
 end;
 
 { TOsslApiBioText }
