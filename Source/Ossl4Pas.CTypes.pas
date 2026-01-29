@@ -33,6 +33,54 @@ type
 (*  when running on FPC (which includes CTypes) or if defined elsewhere.      *)
 (*============================================================================*)
    _dummy_ = System.integer; // to avoid empty "type" section
+
+ {$IFDEF FPC}
+   // 8-bit
+   cint8       = CTypes.cint8;       pcint8      = CTypes.pcint8;
+   cuint8      = CTypes.cuint8;      pcuint8     = CTypes.pcuint8;
+   cchar       = CTypes.cchar;       pcchar      = CTypes.pcchar;
+   cschar      = CTypes.cschar;      pcschar     = CTypes.pcschar;
+   cuchar      = CTypes.cuchar;      pcuchar     = CTypes.pcuchar;
+
+   // 16-bit
+   cint16      = CTypes.cint16;      pcint16     = CTypes.pcint16;
+   cuint16     = CTypes.cuint16;     pcuint16    = CTypes.pcuint16;
+   cshort      = CTypes.cshort;      pcshort     = CTypes.pcshort;
+   csshort     = CTypes.csshort;     pcsshort    = CTypes.pcsshort;
+   cushort     = CTypes.cushort;     pcushort    = CTypes.pcushort;
+
+   // 32-bit
+   cint32      = CTypes.cint32;      pcint32     = CTypes.pcint32;
+   cuint32     = CTypes.cuint32;     pcuint32    = CTypes.pcuint32;
+
+   // 64-bit
+   cint64      = CTypes.cint64;      pcint64     = CTypes.pcint64;
+   cuint64     = CTypes.cuint64;     pcuint64    = CTypes.pcuint64;
+   clonglong   = CTypes.clonglong;   pclonglong  = CTypes.pclonglong;
+   cslonglong  = CTypes.cslonglong;  pcslonglong = CTypes.pcslonglong;
+   culonglong  = CTypes.culonglong;  pculonglong = CTypes.pculonglong;
+
+   // Boolean
+   cbool       = CTypes.cbool;       pcbool      = CTypes.pcbool;
+
+   // Standard Ints (Platform Dependent)
+   cint        = CTypes.cint;        pcint       = CTypes.pcint;
+   csint       = CTypes.csint;       pcsint      = CTypes.pcsint;
+   cuint       = CTypes.cuint;       pcuint      = CTypes.pcuint;
+
+   // Longs (Platform Dependent - handled by FPC CTypes unit)
+   clong       = CTypes.clong;       pclong      = CTypes.pclong;
+   cslong      = CTypes.cslong;      pcslong     = CTypes.pcslong;
+   culong      = CTypes.culong;      pculong     = CTypes.pculong;
+
+   // Helpers
+   csigned     = CTypes.csigned;     pcsigned    = CTypes.pcsigned;
+   cunsigned   = CTypes.cunsigned;   pcunsigned  = CTypes.pcunsigned;
+
+   // Size
+   csize_t     = CTypes.csize_t;     pcsize_t    = CTypes.pcsize_t;
+ {$ENDIF}
+
   // 1. Basic Type Mapping
   {$IF not Declared(qword)}
     {$IF Declared(UInt64)}
@@ -118,7 +166,9 @@ type
 
   // 4. size_t (Native Pointer Size)
   {$IF not Declared(csize_t)} csize_t = ptruint; pcsize_t   = pptruint;{$ENDIF}
-  {$IF not Declared(size_t)} size_t   = csize_t; psize_t    = ^size_t;{$ENDIF}
+  {$IF not Declared(size_t)} size_t   = csize_t; {$ENDIF}
+  // explicit psize_t is needed as it's not declared in FPC
+  {$IF not Declared(psize_t)} psize_t    = ^size_t;{$ENDIF}
 
   // 5. time_t (Native Pointer Size)
   {$IF not Declared(ctime_t)} ctime_t = Int64; pctime_t     = ^ctime_t;{$ENDIF}

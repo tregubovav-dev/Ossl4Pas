@@ -28,6 +28,8 @@
     {$MODE DELPHI}
     {$MODESWITCH ADVANCEDRECORDS}
     {$UNDEF UNICODE_DEFAULT}
+    {$DEFINE STUB_TSPINWAIT}
+    {$DEFINE STUB_IOUTILS}
   {$ENDIF}
 
   {$IFDEF DCC}
@@ -110,6 +112,15 @@
     {$DEFINE USE_TINTERLOCKED}
   {$ENDIF}
 
+  {$IF (not Defined(USE_TINTERLOCKED)) and
+    (Defined(FPC) and (FPC_FULLVERSION < 30204))}
+    {$DEFINE USE_ATOMIC_FPC}
+  {$ENDIF}
+
+  {$IF (not Defined(USE_TINTERLOCKED)) and Defined(DCC)}
+    {$DEFINE USE_ATOMIC_DCC}
+  {$ENDIF}
+
   {$IF not Defined(DCC)}
     {$DEFINE EMULATE_TSPINWAIT}
   {$ENDIF}
@@ -123,3 +134,4 @@
 {$ELSE}
   {$MESSAGE Warning 'Unsupported compiler version'}
 {$ENDIF}
+

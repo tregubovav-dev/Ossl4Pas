@@ -123,7 +123,7 @@ var
   lLen: cint;
 
 begin
-  if AStr.Length <= 0 then
+  if Length(AStr) <= 0 then
     Exit(0);
 
   // OpenSSL 3.x generally expects UTF-8 for text IO
@@ -183,7 +183,7 @@ begin
   {$IFDEF UNICODE_DEFAULT}
   Result:=BIO_getsW(b, AMaxLen, AStr);
   {$ELSE}
-  Result:=BIO_getsA(b, AMaxLen, AStr);
+  Result:=BIO_getsA(b, AMaxLen, RawByteString(AStr));
   {$ENDIF}
 end;
 
@@ -208,19 +208,18 @@ end;
 
 class function TOsslApiBioTextHelper.BIO_printfW(b: PBIO; const AStr: UnicodeString;
   const Args: array of const): cint;
-{$IFDEF DCC}
 var
   lStr: UnicodeString;
 
 begin
+  {$IFDEF DCC}
   lStr:=Format(AStr, Args);
+  {$ENDIF}
+  {$IFDEF FPC}
+  lStr:=UnicodeFormat(AStr, Args);
+  {$ENDIF}
   Result:=BIO_putsW(b, lStr);
 end;
-{$ENDIF}
-{$IFDEF FPC}
-{ TODO : Implement FPC Unicode Format handling }
-{$ENDIF}
-
 
 class function TOsslApiBioTextHelper.BIO_printf(b: PBIO; const AStr: string;
   const Args: array of const): cint;
