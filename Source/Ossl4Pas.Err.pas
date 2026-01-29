@@ -26,12 +26,16 @@ uses
   {$IFDEF DCC}
   System.SysUtils,
   System.SyncObjs,
+  System.Generics.Collections,
   {$ENDIF}
   {$IFDEF FPC}
   SysUtils,
   SyncObjs,
+  Generics.Collections,
   {$ENDIF}
-  System.Generics.Collections,
+  {$IFDEF STUB_TSPINWAIT}
+  fpc.stub.syncobjs,
+  {$ENDIF}
   Ossl4Pas.CTypes,
   Ossl4Pas.Types,
   Ossl4Pas.Api.Err;
@@ -167,6 +171,8 @@ type
 
     TErrorStack = TList<TErrorEntry>;
 
+    { TErrorMessageFlagRec }
+
     TErrorMessageFlagRec = record
     private type
       PErrorMessageFlags = ^TErrorMessageFlags;
@@ -178,6 +184,7 @@ type
       FStorage: cardinal;
 
     public
+    {$IFDEF DCC}
       ///   Atomically assigns the value of one flags record to another.
       ///   Implements the ":=" operator.
       /// </summary>
@@ -185,6 +192,12 @@ type
       /// <param name="Src">The source record.</param>
       class operator Assign(var Dest: TErrorMessageFlagRec;
         const [ref] Src: TErrorMessageFlagRec); {$IFDEF INLINE_ON}inline;{$ENDIF}
+    {$ENDIF}
+    {$IFDEF FPC}
+      // FPC does not suppor `operator Assign` we have to use `operator Initialize` instead
+      class operator Copy(constref Src: TErrorMessageFlagRec;
+        var Dest: TErrorMessageFlagRec); {$IFDEF INLINE_ON}inline;{$ENDIF}
+    {$ENDIF}
 
       /// <summary>
       ///   Implicitly converts a standard Pascal Set to the thread-safe record.
@@ -409,10 +422,22 @@ end;
 
 { EOsslCustomError.TErrorMessageFlagRec }
 
+{$IFDEF DCC}
 class operator EOsslCustomError.TErrorMessageFlagRec.Assign(var Dest: TErrorMessageFlagRec;
   const [ref] Src: TErrorMessageFlagRec);
+{$ENDIF}
+{$IFDEF FPC}
+class operator EOsslCustomError.TErrorMessageFlagRec.Copy(constref Src: TErrorMessageFlagRec;
+        var Dest: TErrorMessageFlagRec);
+{$ENDIF}
 begin
+  {$IF Defined(USE_TINTERLOCKED)}
   TInterlocked.Exchange(Dest.FStorage, Src.FStorage);
+  {$ELSEIF Defined(USE_ATOMIC_DCC)}
+  AtomicExchange(Dest.FStorage, Src.FStorage);
+  {$ELSEIF Defined(USE_ATOMIC_FPC)}
+  System.InterlockedExchange(cardinal(Dest.FStorage), cardinal(Src.FStorage))
+  {$ENDIF}
 end;
 
 class operator EOsslCustomError.TErrorMessageFlagRec.Implicit(
@@ -429,8 +454,8 @@ begin
   Result:=PErrorMessageFlags(@a)^;
 end;
 
-class operator EOsslCustomError.TErrorMessageFlagRec.In(a: TErrorMessageFlagRec;
-  b: TErrorMessageFlag): boolean;
+class operator EOsslCustomError.TErrorMessageFlagRec.in(
+  a: TErrorMessageFlagRec; b: TErrorMessageFlag): boolean;
 var
   lFlag: cardinal;
 
@@ -468,7 +493,13 @@ begin
     // Try to swap lOld with lNew.
     // If a.FStorage equals lOld, it becomes lNew, and lPrev returns lOld.
     // If they don't match (another thread changed it), lPrev returns the `current` value.
+    {$IF Defined(USE_TINTERLOCKED)}
     lPrev:=TInterlocked.CompareExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_DCC)}
+    lPrev:=AtomicCmpExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_FPC)}
+    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    {$ENDIF}
     if lPrev = lOld then
       Exit;
 
@@ -502,7 +533,14 @@ begin
       Exit;
 
     // see note in `Include` about swapping lOld and lNew
+    {$IF Defined(USE_TINTERLOCKED)}
     lPrev:=TInterlocked.CompareExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_DCC)}
+    lPrev:=AtomicCmpExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_FPC)}
+    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    {$ENDIF}
+
     if lPrev = lOld then
       Exit;
 

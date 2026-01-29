@@ -750,9 +750,10 @@ class function TOsslApiErrStringsHelper.GetErrorStrings(out AFileName, AFunc,
   AData: string; var line, flags: cint): culong;
 begin
   {$IFDEF UNICODE_DEFAULT}
-    Result:=GetErrorStringsW(AFileName, AFunc, AData, line, flags);
+  Result:=GetErrorStringsW(AFileName, AFunc, AData, line, flags);
   {$ELSE}
-    Result:=GetErrorStringsA(AFileName, AFunc, AData, line, flags);
+  Result:=GetErrorStringsA(RawByteString(AFileName), RawByteString(AFunc),
+    RawByteString(AData), line, flags);
   {$ENDIF}
 end;
 

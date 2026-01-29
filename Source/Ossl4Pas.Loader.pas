@@ -366,6 +366,7 @@ type
     strict private
       FStorage: cardinal;
     public
+    {$IFDEF DCC}
       /// <summary>
       ///   Atomically assigns the value of one flags record to another.
       ///   Implements the ":=" operator.
@@ -374,6 +375,12 @@ type
       /// <param name="Src">The source record.</param>
       class operator Assign(var Dest: TLoaderFlagsRec;
         const [ref] Src: TLoaderFlagsRec); {$IFDEF INLINE_ON}inline;{$ENDIF}
+    {$ENDIF}
+    {$IFDEF FPC}
+      // FPC does not suppor `operator Assign` we have to use `operator Initialize` instead
+      class operator Copy(constref Src: TLoaderFlagsRec;
+        var Dest: TLoaderFlagsRec); {$IFDEF INLINE_ON}inline;{$ENDIF}
+    {$ENDIF}
 
       /// <summary>
       ///   Implicitly converts a standard Pascal Set to the thread-safe record.
@@ -591,17 +598,21 @@ uses
   System.SysConst,
   System.IOUtils,
 {$ENDIF}
-
+{$IFDEF FPC}
+  sysconst,
+{$ENDIF}
+{$IFDEF STUB_TSPINWAIT}
+  fpc.stub.syncobjs,
+{$ENDIF}
+{$IFDEF STUB_IOUTILS}
+  fpc.stub.ioutils,
+{$ENDIF}
   Ossl4Pas.ResStrings;
 
 {$REGION 'TOsslLoaderRegistry implementation'}
 type
   TOsslLoaderRegistry = class
-  public type
-    TBindingIterator = reference to procedure(const AParam: TBindParam);
-
   private type
-    TBindParam      = TBindParam;
     TBindParamList  = TThreadList<TBindParam>;
     TBindSnapshot   = TList<TBindParam>;
 
@@ -651,8 +662,15 @@ begin
     Exit(FRegistry);
 
   lRegistry:=TBindParamList.Create;
+  {$IF Defined(USE_TINTERLOCKED)}
   if TInterlocked.CompareExchange<TBindParamList>(FRegistry,
     lRegistry, nil) <> nil then
+  {$ELSEIF Defined(USE_ATOMIC_DCC)}
+  if AtomicCmpExchange(pointer(FRegistry), pointer(lRegistry), nil) <> nil then
+  {$ELSEIF Defined(USE_ATOMIC_FPC)}
+  if System.InterlockedCompareExchange(pointer(FRegistry), pointer(lRegistry),
+     nil) <> nil then
+  {$ENDIF}
     lRegistry.Free; // some other thread installed the singleton.
   Result:=FRegistry;
 end;
@@ -753,8 +771,15 @@ begin
   lNewLoader:=FLoaderClass.NewLoader;
 
   // try to set singleton instance
+  {$IF Defined(USE_TINTERLOCKED)}
   if TInterlocked.CompareExchange<TOsslCustomLoader>(
     FLoader, lNewLoader, nil) <> nil then
+  {$ELSEIF Defined(USE_ATOMIC_DCC)}
+  if AtomicCmpExchange(pointer(FLoader), pointer(lNewLoader), nil) <> nil then
+  {$ELSEIF Defined(USE_ATOMIC_FPC)}
+  if System.InterlockedCompareExchange(pointer(FLoader), pointer(lNewLoader),
+     nil) <> nil then
+  {$ENDIF}
       lNewLoader.Free; // if other thread outpaced, destroy the local instance.
   Result:=Assigned(FLoader);
 end;
@@ -769,7 +794,15 @@ begin
     Exit(False); // Singleton instantiated and it's a different class.
 
   // try to replace 'nil' value with a new one atomically
+
+  {$IF Defined(USE_TINTERLOCKED)}
   TInterlocked.CompareExchange(pointer(FLoaderClass), pointer(ALoaderClass), nil);
+  {$ELSEIF Defined(USE_ATOMIC_DCC)}
+  AtomicCmpExchange(pointer(FLoaderClass), pointer(ALoaderClass), nil);
+  {$ELSEIF Defined(USE_ATOMIC_FPC)}
+  System.InterlockedCompareExchange(pointer(FLoaderClass), pointer(ALoaderClass),
+    nil);
+  {$ENDIF}
   Result:=FLoaderClass = ALoaderClass;
 end;
 
@@ -1039,16 +1072,26 @@ begin
   else
     Error:=EOsslLib.CreateRes(@SUnkOSError);
   Error.ErrorCode:=LastError;
-  raise Error at ReturnAddress;
+  raise Error{$IFDEF DCC} at ReturnAddress;{$ENDIF}
 end;
 
 { TOsslLoader.TLoaderFlagsRec }
-
+{$IFDEF DCC}
 class operator TOsslLoader.TLoaderFlagsRec.Assign(var Dest: TLoaderFlagsRec;
   const [ref] Src: TLoaderFlagsRec);
+{$ENDIF}
+{$IFDEF FPC}
+class operator TOsslLoader.TLoaderFlagsRec.Copy(constref Src: TLoaderFlagsRec;
+        var Dest: TLoaderFlagsRec);
+{$ENDIF}
 begin
-
+  {$IF Defined(USE_TINTERLOCKED)}
   TInterlocked.Exchange(Dest.FStorage, Src.FStorage);
+  {$ELSEIF Defined(USE_ATOMIC_DCC)}
+  AtomicExchange(Dest.FStorage, Src.FStorage);
+  {$ELSEIF Defined(USE_ATOMIC_FPC)}
+  System.InterlockedExchange(cardinal(Dest.FStorage), cardinal(Src.FStorage))
+  {$ENDIF}
 end;
 
 class operator TOsslLoader.TLoaderFlagsRec.Implicit(
@@ -1104,7 +1147,13 @@ begin
     // Try to swap lOld with lNew.
     // If a.FStorage equals lOld, it becomes lNew, and lPrev returns lOld.
     // If they don't match (another thread changed it), lPrev returns the `current` value.
+    {$IF Defined(USE_TINTERLOCKED)}
     lPrev:=TInterlocked.CompareExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_DCC)}
+    lPrev:=AtomicCmpExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_FPC)}
+    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    {$ENDIF}
     if lPrev = lOld then
       Exit;
 
@@ -1137,8 +1186,16 @@ begin
     if lOld = lNew then
       Exit;
 
+
     // see note in `Include` about swapping lOld and lNew
+    {$IF Defined(USE_TINTERLOCKED)}
     lPrev:=TInterlocked.CompareExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_DCC)}
+    lPrev:=AtomicCmpExchange(a.FStorage, lNew, lOld);
+    {$ELSEIF Defined(USE_ATOMIC_FPC)}
+    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    {$ENDIF}
+
     if lPrev = lOld then
       Exit;
 
@@ -1155,7 +1212,9 @@ end;
 
 class function TOsslLoader.GetLoader: TOsslLoader;
 begin
-  if not TOsslCustomLoader.GetLoader<TOsslLoader>(Result) then
+  // additional parentheses around static generic method call is a
+  // workaround for https://gitlab.com/freepascal.org/fpc/source/-/issues/39881
+  if not (TOsslCustomLoader.GetLoader<TOsslLoader>(Result)) then
     RaiseExceptionRes(@resLoaderUnsupported);
 end;
 
@@ -1168,7 +1227,15 @@ const
 {$ENDIF}
 
 begin
+{$IFDEF DCC}
   Result:=TStringList.Create(dupIgnore, False, cCaseSensitive);
+{$ENDIF}
+{$IFDEF FPC}
+  Result:=TStringList.Create;
+  Result.Duplicates:=dupIgnore;
+  Result.Sorted:=False;
+  Result.CaseSensitive:=cCaseSensitive;
+{$ENDIF}
   Result.QuoteChar:=#0;
   Result.Delimiter:=TPath.PathSeparator;
   Result.DelimitedText:=APaths;
