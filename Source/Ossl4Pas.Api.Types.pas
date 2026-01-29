@@ -103,7 +103,7 @@ type
     /// <summary>Pointer to the data buffer.</summary>
     data: Pointer;
     /// <summary>Length of the data buffer.</summary>
-    data_len: size_t;
+    data_len: csize_t;
     /// <summary>Destination (send) or Source (recv) address.</summary>
     peer: PBIO_ADDR;
     /// <summary>Flags (OS specific or OpenSSL specific).</summary>
