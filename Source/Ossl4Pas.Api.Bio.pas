@@ -408,7 +408,7 @@ type
 
   TBIO_callback_fn_ex = function(b: PBIO; oper: cint; const argp: pointer;
     len: csize_t; argi: cint; argl: clong; ret: cint;
-    processed: psize_t): clong; cdecl;
+    processed: pcsize_t): clong; cdecl;
 
   TBIO_info_cb = function(b: PBIO; state: cint; res: cint): cint; cdecl;
 
@@ -810,8 +810,8 @@ type
 
     /// <summary>Signature for extended BIO callbacks (OpenSSL 3.0+).</summary>
     TBIO_callback_fn_ex       = function(b: PBIO; oper: cint; argp: PAnsiChar;
-      len: size_t; argi: cint; argl: clong; ret: cint;
-      processed: psize_t): clong; cdecl;
+      len: csize_t; argi: cint; argl: clong; ret: cint;
+      processed: pcsize_t): clong; cdecl;
 
     TRoutine_BIO_new          = function(Method: PBIO_METHOD): PBIO; cdecl;
     TRoutine_BIO_new_ex       = function(libctx: POSSL_LIB_CTX;
@@ -826,10 +826,10 @@ type
     TRoutine_BIO_write        = function(b: PBIO; data: Pointer; dlen: cint): cint; cdecl;
 
     // Extended I/O (size_t based - Recommended for 3.0)
-    TRoutine_BIO_read_ex      = function(b: PBIO; data: Pointer; dlen: size_t;
-      readbytes: psize_t): cint; cdecl;
-    TRoutine_BIO_write_ex     = function(b: PBIO; data: Pointer; dlen: size_t;
-      written: psize_t): cint; cdecl;
+    TRoutine_BIO_read_ex      = function(b: PBIO; data: Pointer; dlen: csize_t;
+      readbytes: pcsize_t): cint; cdecl;
+    TRoutine_BIO_write_ex     = function(b: PBIO; data: Pointer; dlen: csize_t;
+      written: pcsize_t): cint; cdecl;
 
     TRoutine_BIO_ctrl         = function(b: PBIO; cmd: cint; larg: clong;
       parg: Pointer): clong; cdecl;
@@ -947,10 +947,10 @@ type
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // Extended I/O (Preferred for 3.0)
-    class function BIO_read_ex(b: PBIO; data: Pointer; dlen: size_t;
-      readbytes: psize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class function BIO_write_ex(b: PBIO; data: Pointer; dlen: size_t;
-      written: psize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_read_ex(b: PBIO; data: Pointer; dlen: csize_t;
+      readbytes: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_write_ex(b: PBIO; data: Pointer; dlen: csize_t;
+      written: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // -------------------------------------------------------------------------
     // CONTROL & INFO
@@ -999,8 +999,8 @@ type
     class function BIO_set_close(b: PBIO; flag: clong): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function BIO_get_close(b: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class function BIO_pending(b: PBIO): size_t; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class function BIO_wpending(b: PBIO): size_t; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_pending(b: PBIO): csize_t; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_wpending(b: PBIO): csize_t; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Retrieves the internal buffer pointer from a Memory BIO.
@@ -1017,15 +1017,15 @@ type
   /// </summary>
   TOsslApiBioPair = class sealed(TOsslApiBioBase)
   public type
-    TRoutine_BIO_new_bio_pair             = function(bio1: PPBIO; writebuf1: size_t;
-      bio2: PPBIO; writebuf2: size_t): cint; cdecl;
+    TRoutine_BIO_new_bio_pair             = function(bio1: PPBIO; writebuf1: csize_t;
+      bio2: PPBIO; writebuf2: csize_t): cint; cdecl;
     TRoutine_BIO_make_bio_pair            = function(b1: PBIO; b2: PBIO): cint; cdecl;
     TRoutine_BIO_destroy_bio_pair         = function(b: PBIO): cint; cdecl;
     TRoutine_BIO_shutdown_wr              = function(b: PBIO): cint; cdecl;
 
     // Direct exported functions
-    TRoutine_BIO_ctrl_get_write_guarantee = function(b: PBIO): size_t; cdecl;
-    TRoutine_BIO_ctrl_get_read_request    = function(b: PBIO): size_t; cdecl;
+    TRoutine_BIO_ctrl_get_write_guarantee = function(b: PBIO): csize_t; cdecl;
+    TRoutine_BIO_ctrl_get_read_request    = function(b: PBIO): csize_t; cdecl;
     TRoutine_BIO_ctrl_reset_read_request  = function(b: PBIO): cint; cdecl;
 
   {strict }private class var
@@ -1060,8 +1060,8 @@ type
     // -------------------------------------------------------------------------
 
     /// <summary>Creates two connected BIOs (a pipe).</summary>
-    class function BIO_new_bio_pair(bio1: PPBIO; writebuf1: size_t;
-      bio2: PPBIO; writebuf2: size_t): cint; overload; static;
+    class function BIO_new_bio_pair(bio1: PPBIO; writebuf1: csize_t;
+      bio2: PPBIO; writebuf2: csize_t): cint; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     class function BIO_make_bio_pair(b1: PBIO; b2: PBIO): cint; static;
@@ -1075,9 +1075,9 @@ type
     // RING BUFFER METRICS (Direct API)
     // -------------------------------------------------------------------------
 
-    class function BIO_ctrl_get_write_guarantee(b: PBIO): size_t; static;
+    class function BIO_ctrl_get_write_guarantee(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class function BIO_ctrl_get_read_request(b: PBIO): size_t; static;
+    class function BIO_ctrl_get_read_request(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function BIO_ctrl_reset_read_request(b: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -1091,21 +1091,21 @@ type
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>Gets the size of the write buffer.</summary>
-    class function BIO_get_write_buf_size(b: PBIO): size_t; static;
+    class function BIO_get_write_buf_size(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>Alias for BIO_ctrl_get_write_guarantee.</summary>
-    class function BIO_get_write_guarantee(b: PBIO): size_t; static;
+    class function BIO_get_write_guarantee(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>Alias for BIO_ctrl_get_read_request.</summary>
-    class function BIO_get_read_request(b: PBIO): size_t; static;
+    class function BIO_get_read_request(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   TOsslApiBioPairHelper = class helper for TOsslApiBioPair
-    class function BIO_new_bio_pair(var bio1: PBIO; writebuf1: size_t;
-      var bio2: PBIO; writebuf2: size_t): cint; overload; static;
+    class function BIO_new_bio_pair(var bio1: PBIO; writebuf1: csize_t;
+      var bio2: PBIO; writebuf2: csize_t): cint; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
@@ -1402,10 +1402,10 @@ type
     TRoutine_BIO_dgram_non_fatal_error = function(error: cint): cint; cdecl;
 
     // OpenSSL 3.2+
-    TRoutine_BIO_sendmmsg = function(b: PBIO; msg: PBIO_MSG; stride: size_t;
-      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; cdecl;
-    TRoutine_BIO_recvmmsg = function(b: PBIO; msg: PBIO_MSG; stride: size_t;
-      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; cdecl;
+    TRoutine_BIO_sendmmsg = function(b: PBIO; msg: PBIO_MSG; stride: csize_t;
+      num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; cdecl;
+    TRoutine_BIO_recvmmsg = function(b: PBIO; msg: PBIO_MSG; stride: csize_t;
+      num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; cdecl;
 
     TRoutine_BIO_get_rpoll_descriptor = function(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl;
     TRoutine_BIO_get_wpoll_descriptor = function(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl;
@@ -1452,12 +1452,12 @@ type
     // -------------------------------------------------------------------------
 
     /// <summary>Sends multiple datagrams in a single system call.</summary>
-    class function BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: size_t;
-      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t;
+      num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>Receives multiple datagrams in a single system call.</summary>
-    class function BIO_recvmmsg(b: PBIO; msg: PBIO_MSG; stride: size_t;
-      num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function BIO_recvmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t;
+      num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // -------------------------------------------------------------------------
     // POLLING (OpenSSL 3.2+)
@@ -2135,13 +2135,13 @@ begin
   Result:=F_BIO_write(b, data, dlen);
 end;
 
-class function TOsslApiBioBase.BIO_read_ex(b: PBIO; data: Pointer; dlen: size_t; readbytes: psize_t): cint;
+class function TOsslApiBioBase.BIO_read_ex(b: PBIO; data: Pointer; dlen: csize_t; readbytes: pcsize_t): cint;
 begin
   Result:=F_BIO_read_ex(b, data, dlen, readbytes);
 end;
 
 class function TOsslApiBioBase.BIO_write_ex(b: PBIO; data: Pointer;
-  dlen: size_t; written: psize_t): cint;
+  dlen: csize_t; written: pcsize_t): cint;
 begin
   Result:=F_BIO_write_ex(b, data, dlen, written);
 end;
@@ -2222,17 +2222,17 @@ begin
   Result:=cint(BIO_ctrl(b, BIO_CTRL_GET_CLOSE, 0, nil));
 end;
 
-class function TOsslApiBioBase.BIO_pending(b: PBIO): size_t;
+class function TOsslApiBioBase.BIO_pending(b: PBIO): csize_t;
 begin
   // #define BIO_pending(b) (int)BIO_ctrl(b,BIO_CTRL_PENDING,0,NULL)
   // Note: OpenSSL returns int/long, but conceptually it's a size.
-  Result:=size_t(BIO_ctrl(b, BIO_CTRL_PENDING, 0, nil));
+  Result:=csize_t(BIO_ctrl(b, BIO_CTRL_PENDING, 0, nil));
 end;
 
-class function TOsslApiBioBase.BIO_wpending(b: PBIO): size_t;
+class function TOsslApiBioBase.BIO_wpending(b: PBIO): csize_t;
 begin
   // #define BIO_wpending(b) (int)BIO_ctrl(b,BIO_CTRL_WPENDING,0,NULL)
-  Result:=size_t(BIO_ctrl(b, BIO_CTRL_WPENDING, 0, nil));
+  Result:=csize_t(BIO_ctrl(b, BIO_CTRL_WPENDING, 0, nil));
 end;
 
 class function TOsslApiBioBase.BIO_get_mem_data(b: PBIO; pp: PPointer): clong;
@@ -2291,8 +2291,8 @@ end;
 // Direct API Calls
 // -----------------------------------------------------------------------------
 
-class function TOsslApiBioPair.BIO_new_bio_pair(bio1: PPBIO; writebuf1: size_t;
-  bio2: PPBIO; writebuf2: size_t): cint;
+class function TOsslApiBioPair.BIO_new_bio_pair(bio1: PPBIO; writebuf1: csize_t;
+  bio2: PPBIO; writebuf2: csize_t): cint;
 begin
   Result := F_BIO_new_bio_pair(bio1, writebuf1, bio2, writebuf2);
 end;
@@ -2312,12 +2312,12 @@ begin
   Result := F_BIO_shutdown_wr(b);
 end;
 
-class function TOsslApiBioPair.BIO_ctrl_get_write_guarantee(b: PBIO): size_t;
+class function TOsslApiBioPair.BIO_ctrl_get_write_guarantee(b: PBIO): csize_t;
 begin
   Result := F_BIO_ctrl_get_write_guarantee(b);
 end;
 
-class function TOsslApiBioPair.BIO_ctrl_get_read_request(b: PBIO): size_t;
+class function TOsslApiBioPair.BIO_ctrl_get_read_request(b: PBIO): csize_t;
 begin
   Result := F_BIO_ctrl_get_read_request(b);
 end;
@@ -2337,19 +2337,19 @@ begin
   Result := cint(BIO_ctrl(b, BIO_C_SET_WRITE_BUF_SIZE, size, nil));
 end;
 
-class function TOsslApiBioPair.BIO_get_write_buf_size(b: PBIO): size_t;
+class function TOsslApiBioPair.BIO_get_write_buf_size(b: PBIO): csize_t;
 begin
   // #define BIO_get_write_buf_size(b,size) (size_t)BIO_ctrl(b,BIO_C_GET_WRITE_BUF_SIZE,size,NULL)
-  Result := size_t(BIO_ctrl(b, BIO_C_GET_WRITE_BUF_SIZE, 0, nil));
+  Result := csize_t(BIO_ctrl(b, BIO_C_GET_WRITE_BUF_SIZE, 0, nil));
 end;
 
-class function TOsslApiBioPair.BIO_get_write_guarantee(b: PBIO): size_t;
+class function TOsslApiBioPair.BIO_get_write_guarantee(b: PBIO): csize_t;
 begin
   // Maps directly to the exported function in modern OpenSSL
   Result := BIO_ctrl_get_write_guarantee(b);
 end;
 
-class function TOsslApiBioPair.BIO_get_read_request(b: PBIO): size_t;
+class function TOsslApiBioPair.BIO_get_read_request(b: PBIO): csize_t;
 begin
   // Maps directly to the exported function in modern OpenSSL
   Result := BIO_ctrl_get_read_request(b);
@@ -2358,7 +2358,7 @@ end;
 { TOsslApiBioPairHelper }
 
 class function TOsslApiBioPairHelper.BIO_new_bio_pair(var bio1: PBIO;
-  writebuf1: size_t; var bio2: PBIO; writebuf2: size_t): cint;
+  writebuf1: csize_t; var bio2: PBIO; writebuf2: csize_t): cint;
 begin
   Result:=F_BIO_new_bio_pair(@bio1, writebuf1, @bio2, writebuf2);
 end;
@@ -2593,14 +2593,14 @@ begin
 end;
 
 class function TOsslApiBioDgram.BIO_sendmmsg(b: PBIO; msg: PBIO_MSG;
-  stride: size_t; num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint;
+  stride: csize_t; num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint;
 begin
   // Direct call. If version < 3.2, F_BIO_sendmmsg is Stub and will raise exception.
   Result := F_BIO_sendmmsg(b, msg, stride, num_msg, flags, msgs_processed);
 end;
 
 class function TOsslApiBioDgram.BIO_recvmmsg(b: PBIO; msg: PBIO_MSG;
-  stride: size_t; num_msg: size_t; flags: UInt64; msgs_processed: psize_t): cint;
+  stride: csize_t; num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint;
 begin
   Result := F_BIO_recvmmsg(b, msg, stride, num_msg, flags, msgs_processed);
 end;

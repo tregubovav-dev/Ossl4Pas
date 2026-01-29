@@ -200,7 +200,7 @@ type
     TRoutine_ERR_error_string        = function(e: culong;
       buf: PAnsiChar): PAnsiChar; cdecl;
     TRoutine_ERR_error_string_n      = procedure(e: culong;
-      buf: PAnsiChar; len: size_t); cdecl;
+      buf: PAnsiChar; len: csize_t); cdecl;
 
     TRoutine_ERR_lib_error_string    = function(e: culong): PAnsiChar; cdecl;
     TRoutine_ERR_reason_error_string = function(e: culong): PAnsiChar; cdecl;
@@ -253,7 +253,7 @@ type
 
   strict private
     class procedure SetMsgBindErr; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class function GetMsgBindErrBuf(buf: PAnsiChar; len: size_t): PAnsiChar;
+    class function GetMsgBindErrBuf(buf: PAnsiChar; len: csize_t): PAnsiChar;
       overload; static;
     class function GetMsgBindErrBuf: PAnsiChar; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -281,7 +281,7 @@ type
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // ERR_error_string_n (Thread Safe)
-    class procedure ERR_error_string_n(e: culong; buf: PAnsiChar; len: size_t);
+    class procedure ERR_error_string_n(e: culong; buf: PAnsiChar; len: csize_t);
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     class function ERR_lib_error_string(e: culong): PAnsiChar;
@@ -336,13 +336,13 @@ type
     class function GetReason(e: culong): string;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class function GetErrorStringA(e: culong; AMaxlen: size_t): RawByteString;
+    class function GetErrorStringA(e: culong; AMaxlen: csize_t): RawByteString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class function GetErrorStringW(e: culong; AMaxlen: size_t): UnicodeString;
+    class function GetErrorStringW(e: culong; AMaxlen: csize_t): UnicodeString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class function GetErrorString(e: culong; AMaxlen: size_t): string;
+    class function GetErrorString(e: culong; AMaxlen: csize_t): string;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     class function GetErrorStringsA(out AFileName, AFunc, AData: RawByteString;
@@ -493,9 +493,9 @@ begin
 end;
 
 class function TOsslApiErrStrings.GetMsgBindErrBuf(buf: PAnsiChar;
-  len: size_t): PAnsiChar;
+  len: csize_t): PAnsiChar;
 var
-  lCopyLen: size_t;
+  lCopyLen: csize_t;
 
 begin
   Result:=PAnsiChar(FMsgBindErr);
@@ -568,7 +568,7 @@ begin
 end;
 
 class procedure TOsslApiErrStrings.ERR_error_string_n(e: culong;
-  buf: PAnsiChar; len: size_t);
+  buf: PAnsiChar; len: csize_t);
 begin
   if Assigned(F_ERR_error_string_n) then
     F_ERR_error_string_n(e, buf, len)
@@ -657,7 +657,7 @@ end;
 { TOsslApiErrStringsHelper }
 
 class function TOsslApiErrStringsHelper.GetErrorStringA(e: culong;
-  AMaxlen: size_t): RawByteString;
+  AMaxlen: csize_t): RawByteString;
 begin
   if AMaxLen = 0 then
     Exit;
@@ -667,13 +667,13 @@ begin
 end;
 
 class function TOsslApiErrStringsHelper.GetErrorStringW(e: culong;
-  AMaxlen: size_t): UnicodeString;
+  AMaxlen: csize_t): UnicodeString;
 begin
   Result:=UnicodeString(GetErrorStringA(e, AMaxLen));
 end;
 
 class function TOsslApiErrStringsHelper.GetErrorString(e: culong;
-  AMaxlen: size_t): string;
+  AMaxlen: csize_t): string;
 begin
   {$IFDEF UNICODE_DEFAULT}
     Result:=GetErrorStringW(e, AMaxLen);
