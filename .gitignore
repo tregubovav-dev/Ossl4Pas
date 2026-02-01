@@ -10,6 +10,7 @@ __recovery/
 *.a
 *.dsk
 *.ident
+*.identcache
 *.local
 *.rsm
 *.res
@@ -43,3 +44,6 @@ lib/
 *.stat
 *.ver
 Test/
+
+#CI outpit
+CI/
