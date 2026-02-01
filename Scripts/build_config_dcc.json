@@ -1,0 +1,102 @@
+{
+  "root": "..\\",
+  "output_root": "CI\\manual\\_build_results",
+  "git_path": "git", 
+  "clean_on_success": false,
+  "default_config": "Debug",
+  "default_compilers": ["13.0"],  
+
+  "dcc": {
+    "10.4.2": { 
+      "path": "C:\\Program Files (x86)\\Embarcadero\\Studio\\21.0\\bin\\rsvars.bat", 
+      "active": true,
+      "variables": {
+        "dcc_suffix": "D14_2"
+      }
+    },
+    "13.0": { 
+      "path": "C:\\Program Files (x86)\\Embarcadero\\Studio\\37.0\\bin\\rsvars.bat", 
+      "active": true,
+      "variables": {
+        "dcc_suffix": "D13_0"
+      }
+    }
+  },
+
+  "platforms": ["Win64", "Win32"],
+
+  "build_options": {
+    "common": {
+      "env_vars": {
+        "FASTMM5": "..\\FastMM5",
+        "DUnitX": "..\\DUnitX\\Source"
+      },
+      "defines": [
+        "CI_BUILD",
+        "UNITTEST",
+        "EnableMemoryLeakReporting",
+        "FastMM_NoMessageBoxes"
+      ]
+    },
+    "Debug": {
+      "search_paths": [],
+      "defines": ["Debug"]
+    },
+    "Release": {
+      "search_paths": [],
+      "defines": []
+    }
+  },
+
+  "common_params": {
+    "-b": "",
+    "-exit": "Continue",
+    "-cm": "Quiet",
+    "-mkw": "{output_dir}\\Temp",
+    "-osp": "Tests\\ossl_bin\\{platform}\\",
+    "-xml": "{output_dir}\\{project_name}_results.xml"
+  },
+
+  "projects": [
+    { 
+      "name": "Ossl4Pas_Package", 
+      "path": "Packages\\{dcc_suffix}\\Ossl4Pas_rt.dproj", 
+      "type": "package",
+      "tags": ["core", "build_only"],
+      "env_vars": {}
+    },
+    {
+      "name": "Mock_Library",
+      "path": "Tests\\Mocks\\mockLibs\\mocklib.dproj",
+      "env_vars": {}
+    },
+    { 
+      "name": "Test_Loader", 
+      "path": "Tests\\TOsslLoader\\Ossl4PasLoader_UT.dproj", 
+      "type": "test",
+      "tags": ["core", "tests", "fast"],
+      "params": {
+        "-mkl": "{output_dir}\\mocklib.dll"
+      },
+      "env_vars": {}
+    },
+    { 
+      "name": "Test_Errors", 
+      "path": "Tests\\TOsslErrors\\Ossl4PasErrors_UT.dproj", 
+      "type": "test",
+      "tags": ["core", "tests", "fast"],
+      "params": {
+        "-mkl": "{output_dir}\\mocklib.dll"
+      },
+      "env_vars": {}
+    },
+    { 
+      "name": "Test_API", 
+      "path": "Tests\\Ossl4PasApi\\Ossl4PasApi_UT.dproj", 
+      "type": "test",
+      "tags": ["tests", "slow", "integration"],
+      "params": {},
+      "env_vars": {}
+    }
+  ]
+}
