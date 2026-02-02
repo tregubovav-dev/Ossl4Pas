@@ -65,7 +65,6 @@ type
     procedure BindIsLibName(ALibType: TLibType; AVersion: culong;
       AExpected: TBindKind);
 
-//    [Category('Debug')]
     [AutoNameTestCase('ltCrypto,$3000000F,bkFallBack')]
     [AutoNameTestCase('ltCrypto,$3020000F,bkFallBack')]
     [AutoNameTestCase('ltCrypto,$3060000F,bkFallBack')]
@@ -358,7 +357,7 @@ end;
 
 procedure CheckIsLib;
 begin
-  var lPLibName: PChar;
+  var lPLibName: PChar:='';
   Assert.IsFalse(TTestApiClass.IsLibName(lPLibName), 'IsLibName should returned False');
 end;
 
@@ -371,10 +370,6 @@ begin
   case AExpected of
     bkNone:
       CheckIsLib;
-//    begin
-//      var lPLibName: PChar;
-//      Assert.IsFalse(TTestApiClass.IsLibName(lPLibName), 'IsLibName should returned False');
-//    end;
     bkStub:
       Assert.WillRaise(
         procedure begin CheckIsLib; end,

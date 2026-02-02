@@ -98,20 +98,28 @@ end;
 function IsLibName(var ALibName: PChar): boolean; cdecl;
 var
   lDirName, lFileName: string;
+  lLibName: string;
 
 begin
-  lDirName:=TPath.GetDirectoryName(ALibName);
-  lFileName:=TPath.GetFileName(ALibName);
-{$IFDEF MSWINDOWS}
-  Result:=SameText(TPath.GetFileName(GLibPath), lFileName);
-  if not lDirName.IsEmpty then
-    Result:=Result and SameText(TPath.GetDirectoryName(GLibPath), lDirName);
-{$ELSE}
-  Result:=SameStr(TPath.GetFileName(GLibPath), lFileName);
-  if not lDirName.IsEmpty then
-    Result:=Result and SameStr(TPath.GetDirectoryName(GLibPath), lDirName);
-{$ENDIF}
-  ALibName:=Pchar(GLibPath);
+  try
+    lLibName:=string(ALibName);
+    lDirName:=TPath.GetDirectoryName(lLibName);
+    lFileName:=TPath.GetFileName(lLibName);
+    {$IFDEF MSWINDOWS}
+    Result:=SameText(TPath.GetFileName(GLibPath), lFileName);
+    if not lDirName.IsEmpty then
+      Result:=Result and SameText(TPath.GetDirectoryName(GLibPath), lDirName);
+    {$ELSE}
+    Result:=SameStr(TPath.GetFileName(GLibPath), lFileName);
+    if not lDirName.IsEmpty then
+      Result:=Result and SameStr(TPath.GetDirectoryName(GLibPath), lDirName);
+    {$ENDIF}
+    ALibName:=PChar(GLibPath);
+
+  except
+    Result:=False;
+    ALibName:=nil;
+  end;
 end;
 
 procedure CheckLibPath;
