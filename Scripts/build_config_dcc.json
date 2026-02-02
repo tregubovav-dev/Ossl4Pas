@@ -1,6 +1,6 @@
 {
   "root": "..\\",
-  "output_root": "CI\\manual\\_build_results",
+  "output_root": "CI\\manual",
   "git_path": "git", 
   "clean_on_success": false,
   "default_config": "Debug",
@@ -32,7 +32,7 @@
         "DUnitX": "..\\DUnitX\\Source"
       },
       "defines": [
-        "CI_BUILD",
+        "CI",
         "UNITTEST",
         "EnableMemoryLeakReporting",
         "FastMM_NoMessageBoxes"
