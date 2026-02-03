@@ -23,7 +23,7 @@ program Ossl4PasLoader_UT;
 {$ENDIF}
 {$STRONGLINKTYPES ON}
 uses
-  {$IFDEF MSWINDOWS}
+  {$IF Defined(MSWINDOWS) and Defined(EnableMemoryLeakReporting)}
   FastMM5,
   DUnitX.MemoryLeakMonitor.FastMM5,
   {$ENDIF }
@@ -35,12 +35,9 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   {$ENDIF }
   DUnitX.TestFramework,
+  Ossl4Pas.UT.Utils,
   Ossl4Pas.UT.Types.OsslVersion in 'Ossl4Pas.UT.Types.OsslVersion.pas',
-  Ossl4Pas.Mock.Loader in '..\Mocks\Ossl4Pas.Mock.Loader.pas',
   Ossl4Pas.UT.Loader.Behavior in 'Ossl4Pas.UT.Loader.Behavior.pas',
-  Ossl4Pas.UT.Utils in '..\Common\Ossl4Pas.UT.Utils.pas',
-  Ossl4Pas.UT.Loader.CustomFixtures in '..\Common\Ossl4Pas.UT.Loader.CustomFixtures.pas',
-  Ossl4Pas.Loader in '..\..\Source\Ossl4Pas.Loader.pas',
   Ossl4Pas.UT.Loader.TOsslLoader.Integration in 'Ossl4Pas.UT.Loader.TOsslLoader.Integration.pas',
   Ossl4Pas.UT.Binding.Behavior in 'Ossl4Pas.UT.Binding.Behavior.pas';
 
@@ -78,9 +75,9 @@ begin
     runner.AddLogger(nunitLogger);
 
     //Enable Memory Leak Debug
-{$IFDEF MSWINDOWS}
+    {$IF Defined(MSWINDOWS) and Defined(EnableMemoryLeakReporting)}
     TFastMMDebugConfig.DebugModeActive:=TFastMMDebugConfig.CmdParamActive;
-{$ENDIF}
+    {$ENDIF}
 
     //Run tests
     results := runner.Execute;

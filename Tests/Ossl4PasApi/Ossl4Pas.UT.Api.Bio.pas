@@ -27,6 +27,7 @@ uses
   System.Rtti,
   DUnitX.TestFramework,
   Ossl4Pas.UT.Utils,
+  Ossl4Pas.UT.CustomFixtures,
   Ossl4Pas.Types,
   Ossl4Pas.CTypes,
   Ossl4Pas.Api.Types,
@@ -35,7 +36,7 @@ uses
 
 type
   [TestFixture]
-  TOsslApiCustomFixture = class
+  TOsslApiCustomFixture = class(TCustomFixture)
   protected
     procedure LoadOsslLib(APaths, ALibPathSuffix: string); overload;
     procedure LoadOsslLib(ALibPathSuffix: string); overload;

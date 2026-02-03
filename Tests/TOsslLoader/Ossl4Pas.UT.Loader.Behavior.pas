@@ -29,7 +29,7 @@ uses
   Ossl4Pas.Types,
   Ossl4Pas.Loader,
   Ossl4Pas.Mock.Loader,
-  Ossl4Pas.UT.Loader.CustomFixtures;
+  Ossl4Pas.UT.CustomFixtures;
 
 type
   [Category('OsslLoader,OsslLoaderBehavior')]
@@ -53,16 +53,18 @@ type
     [Test]
     procedure RegisterBindAndLoadSsl;
 
-    [TestCase('"MultiThreadLoading: 8 threads"', '8')]
+    [AutoNameTestCase('1')]
+    [AutoNameTestCase('8')]
+    [AutoNameTestCase('32')]
+    [IgnoreMemoryLeaks]
+    // DUnitX report false positive memory leak.
+    // FastMM5 does not detect any memory leak instead.
     procedure MultiThreadLoading(ACount: integer);
   end;
 
 implementation
 
 type
-(*  TLibType = TOsslCustomLoader.TLibType;
-  TLibHandle = TOsslCustomLoader.TLibHandle;
-*)
   TBindSelector = class abstract
     class function GetLibType: TLibType; virtual; abstract;
   end;

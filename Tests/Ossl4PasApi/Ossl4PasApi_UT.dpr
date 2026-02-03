@@ -23,7 +23,7 @@ program Ossl4PasApi_UT;
 {$ENDIF}
 {$STRONGLINKTYPES ON}
 uses
-  {$IFDEF MSWINDOWS}
+  {$IF Defined(MSWINDOWS) and Defined(EnableMemoryLeakReporting)}
   FastMM5,
   DUnitX.MemoryLeakMonitor.FastMM5,
   {$ENDIF }
@@ -35,8 +35,8 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   {$ENDIF }
   DUnitX.TestFramework,
-  Ossl4Pas.UT.Api.Bio in 'Ossl4Pas.UT.Api.Bio.pas',
-  Ossl4Pas.UT.Utils in '..\Common\Ossl4Pas.UT.Utils.pas';
+  Ossl4Pas.UT.Utils,
+  Ossl4Pas.UT.Api.Bio in 'Ossl4Pas.UT.Api.Bio.pas';
 
 { keep comment here to protect the following conditional from being removed by the IDE when adding a unit }
 {$IFNDEF TESTINSIGHT}
@@ -70,6 +70,11 @@ begin
     //Generate an NUnit compatible XML File
     nunitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
     runner.AddLogger(nunitLogger);
+
+    //Enable Memory Leak Debug
+    {$IF Defined(MSWINDOWS) and Defined(EnableMemoryLeakReporting)}
+    TFastMMDebugConfig.DebugModeActive:=TFastMMDebugConfig.CmdParamActive;
+    {$ENDIF}
 
     //Run tests
     results := runner.Execute;
