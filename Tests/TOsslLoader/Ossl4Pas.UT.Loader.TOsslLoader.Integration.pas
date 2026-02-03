@@ -27,7 +27,7 @@ uses
   Ossl4Pas.CTypes,
   Ossl4Pas.Types,
   Ossl4Pas.Loader,
-  Ossl4Pas.UT.Loader.CustomFixtures;
+  Ossl4Pas.UT.CustomFixtures;
 
 type
   TBindSelectorClass = class of TBindSelector;
@@ -101,9 +101,19 @@ type
     procedure LoadVersionDiff(ACryptoVer, ASslVer: culong; AExpected: boolean);
 
     [AutoNameTestCase('$3060000F')]
+    [IgnoreMemoryLeaks]
+    // DUnitX report false positive memory leak.
+    // The loader binfing registry is updated during this test
+    // Unfortunately the binding registry can't be reset after the test
+    // without impacting other loader finctionality.
     procedure LoadAndBindLibCrypto(AVersion: culong); overload;
 
     [AutoNameTestCase('$3060000F')]
+    [IgnoreMemoryLeaks]
+    // DUnitX report false positive memory leak.
+    // The loader binfing registry is updated during this test
+    // Unfortunately the binding registry can't be reset after the test
+    // without impacting other loader finctionality.
     procedure LoadAndBindLibSsl(AVersion: culong); overload;
   end;
 
@@ -321,136 +331,6 @@ begin
   LoadAndBindLib<TBindSsl>(AVersion);
 end;
 
-(*
-function TOsslCustomLoaderIntegrationFixture.GetWorkDir: string;
-begin
-  Result:=TMockLibConfig.MockWorkDir;
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CopyFile(ASrc, ADst: string);
-begin
-  var lSrc: TStream:=nil;
-  var lDst: TStream:=nil;
-  try
-    lSrc:=TFile.OpenRead(ASrc);
-    lDst:=TFile.Open(ADst, TFileMode.fmCreate);
-    lDst.CopyFrom(lSrc);
-  finally
-    lDst.Free;
-    lSrc.Free;
-  end;
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.DeleteFile(ASrc: string);
-begin
-  if TFile.Exists(ASrc) then
-    TFile.Delete(ASrc);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.WriteVersion(ADst: string;
-  const AVersion: TOsslVersion);
-begin
-  TFile.WriteAllText(ADst, '$'+AVersion.Version.ToHexString(8));
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.SetupMock(ALibName: string;
-  const AVersion: TOsslVersion);
-begin
-  CopyFile(TMockLibConfig.MockLibPath, TMockLibConfig.GetWorkMockLibPath(ALibName));
-  WriteVersion(TMockLibConfig.GetMockLibVerFile(ALibName), AVersion);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.SetupMock(
-  ALibType: TLibType; const AVersion: TOsslVersion);
-begin
-  SetupMock(TOsslLoader.LibName[ALibType], AVersion);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.SetupMocks(
-  ALibTypes: TLibTypes; const AVersion: TOsslVersion);
-begin
-  for var lLib in ALibTypes do
-    SetupMock(lLib, AVersion);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.SetupAllMocks(
-  AVersion: TOsslVersion);
-begin
-  SetupMocks(TOsslLoader.cLibTypesAll, AVersion);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CleanUpMock(ALibName: string);
-begin
-  DeleteFile(TMockLibConfig.GetMockLibVerFile(ALibName));
-  DeleteFile(TMockLibConfig.GetWorkMockLibPath(ALibName));
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CleanUpMock(
-  ALibType: TLibType);
-begin
-  CleanUpMock(TOsslLoader.LibName[ALibType]);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CleanUpMocks(
-  ALibTypes: TLibTypes);
-begin
-  for var lLib in ALibTypes do
-    CleanUpMock(lLib);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CleanUpAllMocks;
-begin
-  CleanUpMocks(TOsslLoader.cLibTypesAll);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.LoaderUnload(ALibType: TLibType);
-begin
-  if TOsslCustomLoader.IsLoaderSet then
-    TOsslCustomLoader.Unload([ALibType]);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.LoaderUnload(
-  ALibTypes: TLibTypes);
-begin
-  if TOsslCustomLoader.IsLoaderSet then
-    TOsslCustomLoader.Unload(ALibTypes);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.LoaderUnloadAll;
-begin
-  if TOsslCustomLoader.IsLoaderSet then
-    TOsslCustomLoader.Unload(TOsslCustomLoader.cLibTypesAll);
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CheckWorkDir;
-begin
-  var FWorkDir:=TMockLibConfig.MockWorkDir;
-  if string.IsNullOrEmpty(FWorkDir) then
-    Exit; // use current Directory
-  if not TDirectory.Exists(TMockLibConfig.MockWorkDir) then
-  begin
-    TDirectory.CreateDirectory(TMockLibConfig.MockWorkDir);
-    FWorkDirCreated:=True;
-  end;
-end;
-
-procedure TOsslCustomLoaderIntegrationFixture.CleanWorkDir;
-begin
-  if FWorkdirCreated then
-    TDirectory.Delete(TMockLibConfig.MockWorkDir, True);
-end;
-
-function TOsslCustomLoaderIntegrationFixture.CheckLibTypes(
-  ALibTypes: TLibTypes): TLibTypes;
-const
-  cBaseLibType = TOsslLoader.cBaseLibType;
-
-begin
-  Result:=ALibTypes;
-  if (ALibTypes - [cBaseLibType]) <> [] then
-    Include(Result, cBaseLibType);
-end;
-*)
 initialization
   TDUnitX.RegisterTestFixture(TOsslCustomLoaderIntegrationFixture);
 

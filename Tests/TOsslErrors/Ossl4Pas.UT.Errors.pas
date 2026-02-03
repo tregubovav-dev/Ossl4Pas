@@ -29,7 +29,7 @@ uses
   Ossl4Pas.Err,     // UUT
   Ossl4Pas.UT.Consts,
   DUnitX.TestFramework,
-  Ossl4Pas.UT.Loader.CustomFixtures;
+  Ossl4Pas.UT.CustomFixtures;
 
 type
   [TestFixture]

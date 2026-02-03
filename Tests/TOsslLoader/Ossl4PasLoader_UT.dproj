@@ -170,11 +170,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="Ossl4Pas.UT.Types.OsslVersion.pas"/>
-        <DCCReference Include="..\Mocks\Ossl4Pas.Mock.Loader.pas"/>
         <DCCReference Include="Ossl4Pas.UT.Loader.Behavior.pas"/>
-        <DCCReference Include="..\Common\Ossl4Pas.UT.Utils.pas"/>
-        <DCCReference Include="..\Common\Ossl4Pas.UT.Loader.CustomFixtures.pas"/>
-        <DCCReference Include="..\..\Source\Ossl4Pas.Loader.pas"/>
         <DCCReference Include="Ossl4Pas.UT.Loader.TOsslLoader.Integration.pas"/>
         <DCCReference Include="Ossl4Pas.UT.Binding.Behavior.pas"/>
         <BuildConfiguration Include="Base">

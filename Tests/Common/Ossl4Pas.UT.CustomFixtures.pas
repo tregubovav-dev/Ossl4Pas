@@ -16,7 +16,7 @@
 {                                                                              }
 {******************************************************************************}
 
-unit Ossl4Pas.UT.Loader.CustomFixtures;
+unit Ossl4Pas.UT.CustomFixtures;
 
 interface
 
@@ -31,7 +31,15 @@ uses
   Ossl4Pas.Mock.Loader;
 
 type
-  TCustomLoaderFixture = class
+  TCustomFixture = class
+  protected
+    procedure LoadStrings; virtual;
+  public
+    [SetupFixture]
+    procedure SetupFixture;
+  end;
+
+  TCustomLoaderFixture = class(TCustomFixture)
   protected
     class procedure Reset; virtual;
   public
@@ -116,7 +124,64 @@ implementation
 
 uses
   System.Classes,
-  System.IOUtils;
+  System.IOUtils,
+  Ossl4Pas.ResStrings;
+
+{ TCustomFixture }
+
+procedure TCustomFixture.SetupFixture;
+var
+  lStr: string;
+
+begin
+  LoadStrings;
+end;
+
+procedure TCustomFixture.LoadStrings;
+var
+  lStr: string;
+
+begin
+  // preloads resourcestrings to avoid
+  // false positive memory leaks reports
+
+  // Ossl4Pas.Loader strings
+  lStr := resVersionShort;
+
+  // EOsslLoader strings
+  lStr := resLoaderNotSet;
+  lStr := resLoaderUnsupported;
+  lStr := resNoVersionFound;
+  lStr := resLoadLibVersionIncompatible;
+  lStr := resLoadLibNotFound;
+  lStr := resLoadLibVersionsIncompatible;
+  lStr := resLoadBindLibNotLoaded;
+
+  // Ossl4Pas.Api.Err strings
+  lStr := resErrRoutineNotBound;
+
+  // Ossl4Pas.Err - EOsslCustomError.TErrorEntry strings
+  lStr := resErrFmtSpace;
+  lStr := resErrFmtComma;
+  lStr := resErrFmtCode;
+  lStr := resErrFmtLib;
+  lStr := resErrFmtFile;
+  lStr := resErrFmtLine;
+  lStr := resErrFmtFunc;
+  lStr := resErrFmtDescript;
+
+  // EOsslCustomError strings
+  lStr := resErrUnknownError;
+  lStr := resErrFmtOsslWithMessage;
+  lStr := resErrFmtOsslWithoutMessage;
+  lStr := resErrFmtNestedSectionBegins;
+  lStr := resErrFmtNestedSectionEnds;
+  lStr := resErrFmtNestedLineBegins;
+  lStr := resErrFmtNestedLineEnds;
+  lStr := resErrFmtNestedNewLine;
+
+  lStr:='';
+end;
 
 { TCustomLoaderFixture }
 

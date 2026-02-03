@@ -26,11 +26,12 @@ uses
   Ossl4Pas.CTypes,
   OSsl4Pas.Types,
   OSsl4Pas.Loader,
-  DUnitX.TestFramework;
+  DUnitX.TestFramework,
+  Ossl4Pas.UT.CustomFixtures;
 
 type
   [TestFixture]
-  TOsslVersionFixture = class
+  TOsslVersionFixture = class(TCustomFixture)
   private
     class function GetMajor(AValue: culong): byte; static;
     class function GetMinor(AValue: culong): byte; static;

@@ -33,9 +33,8 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   {$ENDIF }
   DUnitX.TestFramework,
-  Ossl4Pas.UT.Errors in 'Ossl4Pas.UT.Errors.pas',
-  Ossl4Pas.UT.Utils in '..\Common\Ossl4Pas.UT.Utils.pas',
-  Ossl4Pas.UT.Loader.CustomFixtures in '..\Common\Ossl4Pas.UT.Loader.CustomFixtures.pas';
+  Ossl4Pas.UT.Utils,
+  Ossl4Pas.UT.Errors in 'Ossl4Pas.UT.Errors.pas';
 
 { keep comment here to protect the following conditional from being removed by the IDE when adding a unit }
 {$IFNDEF TESTINSIGHT}
@@ -69,6 +68,11 @@ begin
     //Generate an NUnit compatible XML File
     nunitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
     runner.AddLogger(nunitLogger);
+
+    //Enable Memory Leak Debug
+    {$IF Defined(MSWINDOWS) and Defined(EnableMemoryLeakReporting)}
+    TFastMMDebugConfig.DebugModeActive:=TFastMMDebugConfig.CmdParamActive;
+    {$ENDIF}
 
     //Run tests
     results := runner.Execute;
