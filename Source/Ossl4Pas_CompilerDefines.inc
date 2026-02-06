@@ -108,9 +108,14 @@
     {$DEFINE INLINE_ON}
   {$IFEND}
 
-  {$IF Defined(DCC) or (FPC_FULLVERSION >= 30204)}
+  {$IF Defined(DCC) and (CompilerVersion >= 36)}
     {$DEFINE USE_TINTERLOCKED}
   {$ENDIF}
+
+  {$IF Defined(FPC) and (FPC_FULLVERSION >= 30204)}
+    {$DEFINE USE_TINTERLOCKED}
+  {$ENDIF}
+
 
   {$IF (not Defined(USE_TINTERLOCKED)) and
     (Defined(FPC) and (FPC_FULLVERSION < 30204))}
