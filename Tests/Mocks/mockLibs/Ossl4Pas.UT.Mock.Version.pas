@@ -48,6 +48,25 @@ implementation
 const
   cDefaultVersion: culong = $3000000F;
 
+{$IF not Defined(VER3600) }
+type
+  TFIleHelper = record helper for TFile
+    class function GetSize(AFileName: string): Int64; static;
+  end;
+
+class function TFIleHelper.GetSize(AFileName: string): Int64;
+begin
+  var lStream: TFileStream:=nil;
+  try
+    lStream:=TFileStream.Create(AFileName, fmOpenRead);
+    Result:=lStream.Size;
+  finally
+    lStream.Free;
+  end;
+end;
+{$ENDIF}
+
+
 function LoadVersion: culong;
 var
   lPath: string;
@@ -133,6 +152,8 @@ begin
   if not lPath.IsEmpty then
     GLibPath:=lPath;
 end;
+
+{ TFIleHelper }
 
 initialization
   CheckLibPath;

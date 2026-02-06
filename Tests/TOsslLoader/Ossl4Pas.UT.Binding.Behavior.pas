@@ -182,12 +182,12 @@ begin
   TOsslBinding.Reset(cBindingNull, False);
 end;
 
-class procedure TTestApiClass.RaiseNullBind(AMethodName: string); noreturn;
+class procedure TTestApiClass.RaiseNullBind(AMethodName: string);
 begin
   raise ENullBind.Create(AMethodName);
 end;
 
-class procedure TTestApiClass.RaiseFallBackBind(AMethodName: string); noreturn;
+class procedure TTestApiClass.RaiseFallBackBind(AMethodName: string);
 begin
   raise EFallBack.Create(AMethodName);
 end;
@@ -198,7 +198,7 @@ begin
   Result:=0;
 end;
 
-class function TTestApiClass.FallBackDummyStr: PChar; noreturn;
+class function TTestApiClass.FallBackDummyStr: PChar;
 begin
   RaiseFallBackBind(cDummyStrName);
   Result:=nil;
