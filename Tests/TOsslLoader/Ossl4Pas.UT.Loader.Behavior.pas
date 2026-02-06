@@ -304,12 +304,14 @@ begin
 end;
 
 procedure TOsslCustomLoaderBehaviorFixture.MultiThreadLoading(ACount: integer);
+var
+  lThreads: array of TThread;
+
 begin
   Assert.IsTrue(ACount > 0, '''ACount must be greater than zero.');
 
   var lStartSignal: TSimpleEvent:=nil;
   var lCompleteSignal: TCountdownEvent:=nil;
-  var lThreads: array of TThread;
 
   try
     lStartSignal:=TSimpleEvent.Create(nil, True, False, '');
