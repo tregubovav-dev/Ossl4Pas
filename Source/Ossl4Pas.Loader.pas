@@ -1088,7 +1088,7 @@ begin
   {$IF Defined(USE_TINTERLOCKED)}
   TInterlocked.Exchange(Dest.FStorage, Src.FStorage);
   {$ELSEIF Defined(USE_ATOMIC_DCC)}
-  AtomicExchange(Dest.FStorage, Src.FStorage);
+  AtomicExchange(PInteger(@Dest.FStorage)^, PInteger(@Src.FStorage)^);
   {$ELSEIF Defined(USE_ATOMIC_FPC)}
   System.InterlockedExchange(cardinal(Dest.FStorage), cardinal(Src.FStorage))
   {$ENDIF}
@@ -1150,7 +1150,8 @@ begin
     {$IF Defined(USE_TINTERLOCKED)}
     lPrev:=TInterlocked.CompareExchange(a.FStorage, lNew, lOld);
     {$ELSEIF Defined(USE_ATOMIC_DCC)}
-    lPrev:=AtomicCmpExchange(a.FStorage, lNew, lOld);
+    PInteger(@lPrev)^:=AtomicCmpExchange(PInteger(@a.FStorage)^,
+      PInteger(@lNew)^, PInteger(@lOld)^);
     {$ELSEIF Defined(USE_ATOMIC_FPC)}
     System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
     {$ENDIF}
@@ -1191,7 +1192,8 @@ begin
     {$IF Defined(USE_TINTERLOCKED)}
     lPrev:=TInterlocked.CompareExchange(a.FStorage, lNew, lOld);
     {$ELSEIF Defined(USE_ATOMIC_DCC)}
-    lPrev:=AtomicCmpExchange(a.FStorage, lNew, lOld);
+    PCardinal(@lPrev)^:=AtomicCmpExchange(PInteger(@a.FStorage)^,
+      PInteger(@lNew)^, PInteger(@lOld)^);
     {$ELSEIF Defined(USE_ATOMIC_FPC)}
     System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
     {$ENDIF}
