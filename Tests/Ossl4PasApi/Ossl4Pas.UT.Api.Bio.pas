@@ -285,7 +285,7 @@ begin
   Assert.IsNotNull(lMethod, 'BIO Method factory returned nil');
 
   // 2. Create (BIO_new binding check)
-  var lBio := TOsslApiBioBase.BIO_new(lMethod);
+  var lBio:=TOsslApiBioBase.BIO_new(lMethod);
   Assert.IsNotNull(lBio, 'BIO_new returned nil');
 
   try
@@ -300,9 +300,9 @@ begin
 
   finally
     // 4. Free (BIO_free binding check)
-    var lRet := TOsslApiBioBase.BIO_free(lBio);
+    var lRet: cint:=TOsslApiBioBase.BIO_free(lBio);
     // BIO_free returns 1 on success, 0 on failure
-    Assert.AreEqual(1, lRet, 'BIO_free failed');
+    Assert.AreEqual<cint>(1, lRet, 'BIO_free failed');
   end;
 end;
 
@@ -311,19 +311,19 @@ begin
   LoadOsslLib(ALibPathSuffix);
 
   // 1. Get Method (Factory binding check)
-  var lMethod := TOsslApiBioMethodMem.BIO_s_mem;
-  var lBio := TOsslApiBioBase.BIO_new(lMethod);
+  var lMethod:=TOsslApiBioMethodMem.BIO_s_mem;
+  var lBio:=TOsslApiBioBase.BIO_new(lMethod);
   Assert.IsNotNull(lBio);
 
   // Ref Count is 1
   // UpRef -> Ref Count 2
-  Assert.AreEqual(1, TOsslApiBioBase.BIO_up_ref(lBio), 'UpRef should return 1 (True)');
+  Assert.AreEqual<cint>(1, TOsslApiBioBase.BIO_up_ref(lBio), 'UpRef should return 1 (True)');
 
   // Free -> Ref Count 1 (Object still alive)
-  Assert.AreEqual(1, TOsslApiBioBase.BIO_free(lBio), 'First free should succeed');
+  Assert.AreEqual<cint>(1, TOsslApiBioBase.BIO_free(lBio), 'First free should succeed');
 
   // Real Free -> Ref Count 0 (Object destroyed)
-  Assert.AreEqual(1, TOsslApiBioBase.BIO_free(lBio), 'Second free should succeed');
+  Assert.AreEqual<cint>(1, TOsslApiBioBase.BIO_free(lBio), 'Second free should succeed');
 end;
 
 initialization

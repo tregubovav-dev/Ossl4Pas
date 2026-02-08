@@ -336,7 +336,7 @@ begin
     '`TOsslAPIErrCodes.ERR_get_error` returns wrong Library code.');
 
   // 4. Verify Queue Empty
-  Assert.AreEqual(0, TOsslAPIErrCodes.ERR_get_error,
+  Assert.AreEqual<culong>(0, TOsslAPIErrCodes.ERR_get_error,
     'Errors queue is not empty, but should be.');
 end;
 
@@ -389,7 +389,7 @@ begin
       Assert.AreEqual('Base Message', E.Message, 'Incorrect exception message.');
       Assert.IsTrue(EOsslTestError(E).IsErrorStackEmpty,
         'Error(s) repoerted.');
-      Assert.AreEqual(0, E.LastError,
+      Assert.AreEqual<culong>(0, E.LastError,
         '`EOsslCustomError.LastError` returns non-Zero value.');
     end;
   end;
