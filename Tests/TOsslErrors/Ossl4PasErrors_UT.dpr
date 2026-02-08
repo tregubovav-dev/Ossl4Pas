@@ -23,8 +23,10 @@ program Ossl4PasErrors_UT;
 {$ENDIF}
 {$STRONGLINKTYPES ON}
 uses
+  {$IF Defined(MSWINDOWS) and Defined(EnableMemoryLeakReporting)}
   FastMM5,
   DUnitX.MemoryLeakMonitor.FastMM5,
+  {$ENDIF }
   System.SysUtils,
   {$IFDEF TESTINSIGHT}
   TestInsight.DUnitX,

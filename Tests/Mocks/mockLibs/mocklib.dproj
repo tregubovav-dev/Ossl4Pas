@@ -6,7 +6,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
-        <TargetedPlatforms>4227</TargetedPlatforms>
+        <TargetedPlatforms>36995</TargetedPlatforms>
         <AppType>Library</AppType>
         <MainSource>mocklib.dpr</MainSource>
         <ProjectName Condition="'$(ProjectName)'==''">mocklib</ProjectName>
@@ -1188,7 +1188,7 @@
             </Deployment>
             <Platforms>
                 <Platform value="Android">False</Platform>
-                <Platform value="Android64">False</Platform>
+                <Platform value="Android64">True</Platform>
                 <Platform value="iOSDevice64">False</Platform>
                 <Platform value="iOSSimARM64">False</Platform>
                 <Platform value="Linux64">True</Platform>
