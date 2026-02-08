@@ -436,10 +436,6 @@ type
     cLibTypesAll  = [ltCrypto..ltSsl];
     cBaseLibType  = Low(TLibType);
 
-  private const
-    cLib3VersionProc = 'OpenSSL_version_num';
-    cLib1VersionProc = 'SSLeay';
-
     cMinVersion = $3000000F;
 
   protected const
