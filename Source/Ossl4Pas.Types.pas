@@ -38,6 +38,10 @@ uses
 {$ENDIF}
   Ossl4Pas.CTypes;
 
+const
+  cLib3VersionProc = 'OpenSSL_version_num';
+  cLib1VersionProc = 'SSLeay';
+
 type
   ///  <summary>Parent class for `Ossl4Pas` exceptions</summary>
   EOsslCustomError = class(Exception);
@@ -420,6 +424,7 @@ begin
 end;
 
 function TLibHandleHelper.DoGetFileName: string;
+{$IFDEF T_WINDOWS}
 const
   cStartBufLen = MAX_PATH;
 
@@ -428,7 +433,6 @@ var
   lLen: cardinal;
 
 begin
-
   lBufLen:=cStartBufLen;
   repeat
     SetLength(Result, lBufLen);
@@ -441,6 +445,34 @@ begin
     lBufLen:=lBufLen*2;
   until lBufLen >= $F777; //32 Kb
 end;
+{$ELSE}
+var
+  lInfo: Dl_info;
+  lSymAddr: pointer;
+  lLibPtr: NativeUInt;
+begin
+  Result:='';
+  if Self = cNilHandle then Exit;
+
+  // Prepare Handle for POSIX API
+  // FPC 'dl' unit expects Pointer. Delphi 'Posix.Dlfcn' expects THandle/Pointer.
+  lLibPtr:=NativeUInt(Self);
+
+  // 1. Find a known symbol inside the library (OpenSSL 3.x / 1.1)
+  lSymAddr:=dlsym(lLibPtr, cLib3VersionProc);
+
+  // Fallback for older/different builds
+  if not Assigned(lSymAddr) then
+    lSymAddr:=dlsym(lLibPtr, cLib1VersionProc);
+
+  // 2. Use dladdr to find the file containing that symbol
+  if Assigned(lSymAddr) and (dladdr(NativeUInt(lSymAddr), lInfo) <> 0) then
+  begin
+    // dli_fname contains the absolute path
+    Result:=string(lInfo.dli_fname);
+  end;
+end;
+{$ENDIF}
 
 { TBindParam }
 
