@@ -114,12 +114,11 @@ type
     [AutoNameTestCase('mtsAccept,3.6,False')]
     [AutoNameTestCase('mtsFD,3.0,False')]
     [AutoNameTestCase('mtsFD,3.6,False')]
-    [AutoNameTestCase('mtsLog,3.0,False')]
 {$IFDEF MSWINDOWS}
+    [AutoNameTestCase('mtsLog,3.0,True')]
     [AutoNameTestCase('mtsLog,3.6,True')]
-{$ENDIF}
-{$IFDEF POSIX}
-    // This method always return "null" in latest OpenSsl versions
+{$ELSE}
+    [AutoNameTestCase('mtsLog,3.0,False')]
     [AutoNameTestCase('mtsLog,3.6,False')]
 {$ENDIF}
     [AutoNameTestCase('mtsBio,3.0,False')]
@@ -130,8 +129,8 @@ type
     [AutoNameTestCase('mtsCore,3.6,False')]
     [AutoNameTestCase('mtsDGram,3.0,False')]
     [AutoNameTestCase('mtsDGram,3.6,False')]
-{$IFDEF POSIX}
-    // this method is not available for Windows
+{$IFDEF LINUX}
+    // this method is available only in Linux
     [AutoNameTestCase('mtsDGramSctp,3.0,False')]
     [AutoNameTestCase('mtsDGramSctp,3.6,False')]
 {$ENDIF}
@@ -255,9 +254,9 @@ begin
     finally
       lPaths.Free;
     end;
-    TOsslLoader.Load([ltCrypto], APaths);
-    Assert.IsTrue(TOsslLoader.IsLibLoaded[ltCrypto], 'LibCrypto fails to load.')
   end;
+  TOsslLoader.Load([ltCrypto], APaths);
+  Assert.IsTrue(TOsslLoader.IsLibLoaded[ltCrypto], 'LibCrypto fails to load.')
 end;
 
 procedure TOsslApiCustomFixture.UnloadOsslLib;
