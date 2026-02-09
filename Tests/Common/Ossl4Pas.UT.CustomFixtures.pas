@@ -31,6 +31,23 @@ uses
   Ossl4Pas.Mock.Loader;
 
 type
+  TDelphiPlatform = (dpUnknown, dpWIN32, dpWIN64, dpWINARM64, dpANDROID32,
+    dpANDROID64, dpLINUX64, dpOSX64, dpOSXARM64, dpIOS64);
+  TDelphiPlatforms = set of TDelphiPlatform;
+
+  TDelphiPlatformHelper = record helper for TDelphiPlatform
+  public
+    class function RunningPlatform: TDelphiPlatform; static;
+  end;
+
+  TDelphiPlatformsHelper = record helper for TDelphiPlatforms
+  public const
+    cAllPlatforms = [Low(TDelphiPlatform)..High(TDelphiPlatform)];
+
+  public
+    function InPlatforms: boolean;
+  end;
+
   TCustomFixture = class
   protected
     procedure LoadStrings; virtual;
@@ -383,6 +400,42 @@ begin
   finally
     inherited;
   end;
+end;
+
+{ TDelphiPlatformHelper }
+
+class function TDelphiPlatformHelper.RunningPlatform: TDelphiPlatform;
+begin
+{$IF Defined(Win32)}
+  Result:=dpWIN32;
+{$ELSEIF Defined(Win64)}
+  {$IF Defined(CPUX64)}
+  Result:=dpWIN64;
+  {$ELSEIF Defined(CPUARM64)}
+  Result:=dpWINARM64;
+  {$ELSE}
+  Result:=dpUnknown;
+  {$ENDIF}
+{$ELSEIF Defined(ANDROID32)}
+  Result:=dpANDROID32;
+{$ELSEIF Defined(ANDROID64)}
+  Result:=dpANDROID64;
+{$ELSEIF Defined(OSX64)}
+  Result:=dpOSX64;
+{$ELSEIF Defined(OSXARM64)}
+  Result:=dpOSXARM64;
+{$ELSEIF Defined(IOS64)}
+  Result:=dpIOS64;
+{$ELSE}
+  Result:=dpUnknown;
+{$ENDIF}
+end;
+
+{ TDelphiPlatformsHelper }
+
+function TDelphiPlatformsHelper.InPlatforms: boolean;
+begin
+  Result:=TDelphiPlatform.RunningPlatform in Self;
 end;
 
 end.
