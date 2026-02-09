@@ -45,5 +45,6 @@ lib/
 *.ver
 Test/
 
-#CI outpit
+#CI scripts and outputs
 CI/
+*.pyc
