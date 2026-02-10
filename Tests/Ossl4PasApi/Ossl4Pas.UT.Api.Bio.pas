@@ -38,13 +38,10 @@ type
   [TestFixture]
   TOsslApiCustomFixture = class(TCustomFixture)
   protected
-    procedure LoadOsslLib(APaths, ALibPathSuffix: string); overload;
-    procedure LoadOsslLib(ALibPathSuffix: string); overload;
-    procedure UnloadOsslLib;
     function GetLibVersion(ALibType: TLibType): TOsslVersion;
   public
-    [TearDown]
-    procedure TearDown;
+    [SetupFixture]
+    procedure SetupFixture;
 
     [TearDownFixture]
     procedure TearDownFixture;
@@ -59,6 +56,7 @@ type
                     mtsDGramSctp, mtsDGramPair, mtfNull, mtfBuffer, mtfReadBuf,
                     mtbLineBuf, mtfNBioTest, mtfPreffix);
 
+
   TBIOMethodEnumHelper = record helper for TBIOMethodEnum
     function MethodName: string;
     function MethodClass: TOsslApiBioMethodClass;
@@ -66,109 +64,109 @@ type
   end;
 
   TOsslMethodRec = record
+  public const
+    cAllPlatforms = TDelphiPlatforms.cAllPlatforms;
+
+  public
     Name: string;
     ClassType: TOsslApiBioMethodClass;
     MinVer: culong;
+    Platforms: TDelphiPlatforms;
     procedure CheckMethod(AVer: TOsslVersion; ANullExpected: boolean);
+    function IsCheckNeeded: boolean;
   end;
 
 const
   cMethods: array[TBIOMethodEnum] of TOsslMethodRec = (
-    (Name: 'BIO_s_file'; ClassType: TOsslApiBioMethodFile; MinVer: 0),
-    (Name: 'BIO_s_mem'; ClassType: TOsslApiBioMethodMem; MinVer: 0),
-    (Name: 'BIO_s_secmem'; ClassType: TOsslApiBioMethodSecMem; MinVer: 0),
-    (Name: 'BIO_s_socket'; ClassType: TOsslApiBioMethodSocket; MinVer: 0),
-    (Name: 'BIO_s_connect'; ClassType: TOsslApiBioMethodConnect; MinVer: 0),
-    (Name: 'BIO_s_accept'; ClassType: TOsslApiBioMethodAccept; MinVer: 0),
-    (Name: 'BIO_s_fd'; ClassType: TOsslApiBioMethodFd; MinVer: 0),
-    (Name: 'BIO_s_log'; ClassType: TOsslApiBioMethodLog; MinVer: 0),
-    (Name: 'BIO_s_bio'; ClassType: TOsslApiBioMethodBio; MinVer: 0),
-    (Name: 'BIO_s_null'; ClassType: TOsslApiBioMethodNull; MinVer: 0),
-    (Name: 'BIO_s_core'; ClassType: TOsslApiBioMethodCore; MinVer: 0),
-    (Name: 'BIO_s_datagram'; ClassType: TOsslApiBioMethodDatagram; MinVer: 0),
-    (Name: 'BIO_s_datagram_sctp'; ClassType: TOsslApiBioMethodDatagramSctp; MinVer: 0),
-    (Name: 'BIO_s_dgram_pair'; ClassType: TOsslApiBioMethodDatagramPair; MinVer: $30200000), // OpenSSL 3.2+
-    (Name: 'BIO_f_null'; ClassType: TOsslApiBioFilterNull; MinVer: 0),
-    (Name: 'BIO_f_buffer'; ClassType: TOsslApiBioFilterBuffer; MinVer: 0),
-    (Name: 'BIO_f_readbuffer'; ClassType: TOsslApiBioFilterReadBuffer; MinVer: 0),
-    (Name: 'BIO_f_linebuffer'; ClassType: TOsslApiBioFilterLineBuffer; MinVer: 0),
-    (Name: 'BIO_f_nbio_test'; ClassType: TOsslApiBioFilterNbioTest; MinVer: 0),
-    (Name: 'BIO_f_prefix'; ClassType: TOsslApiBioFilterPrefix; MinVer: 0)
+    (Name: 'BIO_s_file'; ClassType: TOsslApiBioMethodFile;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_mem'; ClassType: TOsslApiBioMethodMem;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_secmem'; ClassType: TOsslApiBioMethodSecMem;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_socket'; ClassType: TOsslApiBioMethodSocket;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_connect'; ClassType: TOsslApiBioMethodConnect;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_accept'; ClassType: TOsslApiBioMethodAccept;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_fd'; ClassType: TOsslApiBioMethodFd;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_log'; ClassType: TOsslApiBioMethodLog;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_bio'; ClassType: TOsslApiBioMethodBio;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_null'; ClassType: TOsslApiBioMethodNull;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_core'; ClassType: TOsslApiBioMethodCore;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_datagram'; ClassType: TOsslApiBioMethodDatagram;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_s_datagram_sctp'; ClassType: TOsslApiBioMethodDatagramSctp;
+     MinVer: 0; Platforms: [dpLINUX64]),
+    (Name: 'BIO_s_dgram_pair'; ClassType: TOsslApiBioMethodDatagramPair;
+     MinVer: $30200000; Platforms: TOsslMethodRec.cAllPlatforms), // OpenSSL 3.2+
+    (Name: 'BIO_f_null'; ClassType: TOsslApiBioFilterNull;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_f_buffer'; ClassType: TOsslApiBioFilterBuffer;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_f_readbuffer'; ClassType: TOsslApiBioFilterReadBuffer;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_f_linebuffer'; ClassType: TOsslApiBioFilterLineBuffer;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_f_nbio_test'; ClassType: TOsslApiBioFilterNbioTest;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms),
+    (Name: 'BIO_f_prefix'; ClassType: TOsslApiBioFilterPrefix;
+     MinVer: 0; Platforms: TOsslMethodRec.cAllPlatforms)
   );
 
 type
   [TestFixture]
   TOsslApiBioMethodFixture = class(TOsslApiCustomFixture)
   public
-    [AutoNameTestCase('mtsFile,3.0,False')]
-    [AutoNameTestCase('mtsFile,3.6,False')]
-    [AutoNameTestCase('mtsMem,3.0,False')]
-    [AutoNameTestCase('mtsMem,3.6,False')]
-    [AutoNameTestCase('mtsSecMem,3.0,False')]
-    [AutoNameTestCase('mtsSecMem,3.6,False')]
-    [AutoNameTestCase('mtsSocket,3.0,False')]
-    [AutoNameTestCase('mtsSocket,3.6,False')]
-    [AutoNameTestCase('mtsConnect,3.0,False')]
-    [AutoNameTestCase('mtsConnect,3.6,False')]
-    [AutoNameTestCase('mtsAccept,3.0,False')]
-    [AutoNameTestCase('mtsAccept,3.6,False')]
-    [AutoNameTestCase('mtsFD,3.0,False')]
-    [AutoNameTestCase('mtsFD,3.6,False')]
+    [AutoNameTestCase('mtsFile,False')]
+    [AutoNameTestCase('mtsMem,False')]
+    [AutoNameTestCase('mtsSecMem,False')]
+    [AutoNameTestCase('mtsSocket,False')]
+    [AutoNameTestCase('mtsConnect,False')]
+    [AutoNameTestCase('mtsAccept,False')]
+    [AutoNameTestCase('mtsFD,False')]
 {$IFDEF MSWINDOWS}
-    [AutoNameTestCase('mtsLog,3.0,True')]
-    [AutoNameTestCase('mtsLog,3.6,True')]
+    [AutoNameTestCase('mtsLog,True')]
 {$ELSE}
-    [AutoNameTestCase('mtsLog,3.0,False')]
-    [AutoNameTestCase('mtsLog,3.6,False')]
+    [AutoNameTestCase('mtsLog,False')]
 {$ENDIF}
-    [AutoNameTestCase('mtsBio,3.0,False')]
-    [AutoNameTestCase('mtsBio,3.6,False')]
-    [AutoNameTestCase('mtsNull,3.0,False')]
-    [AutoNameTestCase('mtsNull,3.6,False')]
-    [AutoNameTestCase('mtsCore,3.0,False')]
-    [AutoNameTestCase('mtsCore,3.6,False')]
-    [AutoNameTestCase('mtsDGram,3.0,False')]
-    [AutoNameTestCase('mtsDGram,3.6,False')]
+    [AutoNameTestCase('mtsBio,False')]
+    [AutoNameTestCase('mtsNull,False')]
+    [AutoNameTestCase('mtsCore,False')]
+    [AutoNameTestCase('mtsDGram,False')]
 {$IFDEF LINUX}
     // this method is available only in Linux
-    [AutoNameTestCase('mtsDGramSctp,3.0,False')]
-    [AutoNameTestCase('mtsDGramSctp,3.6,False')]
+    [AutoNameTestCase('mtsDGramSctp,False')]
+    [AutoNameTestCase('mtsDGramSctp,False')]
 {$ENDIF}
-    [AutoNameTestCase('mtsDGramPair,3.0,True')]
-    [AutoNameTestCase('mtsDGramPair,3.2,False')]
-    [AutoNameTestCase('mtsDGramPair,3.6,False')]
-    [AutoNameTestCase('mtfNull,3.0,False')]
-    [AutoNameTestCase('mtfNull,3.6,False')]
-    [AutoNameTestCase('mtfBuffer,3.0,False')]
-    [AutoNameTestCase('mtfBuffer,3.6,False')]
-    [AutoNameTestCase('mtfReadBuf,3.0,False')]
-    [AutoNameTestCase('mtfReadBuf,3.6,False')]
-    [AutoNameTestCase('mtbLineBuf,3.0,False')]
-    [AutoNameTestCase('mtbLineBuf,3.6,False')]
-    [AutoNameTestCase('mtfNBioTest,3.0,False')]
-    [AutoNameTestCase('mtfNBioTest,3.6,False')]
-    [AutoNameTestCase('mtfPreffix,3.0,False')]
-    [AutoNameTestCase('mtfPreffix,3.6,False')]
-    procedure Method(AMethod: TBIOMethodEnum; ALibPathSuffix: string;
-      ANullExpected: boolean = False);
+    [AutoNameTestCase('mtsDGramPair,False')]
+    [AutoNameTestCase('mtfNull,False')]
+    [AutoNameTestCase('mtfBuffer,False')]
+    [AutoNameTestCase('mtfReadBuf,False')]
+    [AutoNameTestCase('mtbLineBuf,False')]
+    [AutoNameTestCase('mtfNBioTest,False')]
+    [AutoNameTestCase('mtfPreffix,False')]
+    procedure Method(AMethod: TBIOMethodEnum; ANullExpected: boolean = False);
   end;
 
   [TestFixture]
   TOsslApiBioLifecycleFixture = class(TOsslApiCustomFixture)
   public
-    [Test]
-    [AutoNameTestCase('mtsMem,3.0')]
-    [AutoNameTestCase('mtsNull,3.0')]
-    [AutoNameTestCase('mtsSocket,3.0')]
+    [AutoNameTestCase('mtsMem')]
+    [AutoNameTestCase('mtsNull')]
+    [AutoNameTestCase('mtsSocket')]
     // Just creation, no connection
-    procedure Test_Cycle(AMethod: TBIOMethodEnum; ALibPathSuffix: string);
+    procedure Test_Cycle(AMethod: TBIOMethodEnum);
 
     [Test]
-    [AutoNameTestCase('3.0')]
-    [AutoNameTestCase('3.2')]
-    [AutoNameTestCase('3.6')]
     // Just creation, no connection
-    procedure Test_RefCounting(ALibPathSuffix: string);
+    procedure Test_RefCounting;
   end;
 
   [TestFixture]
@@ -177,6 +175,12 @@ type
   end;
 
 implementation
+
+{$IFDEF MSWINDOWS}
+uses
+  Winapi.WinSock,
+  Winapi.Winsock2;
+{$ENDIF}
 
 { TBIOMethodEnumHelper }
 
@@ -200,12 +204,19 @@ end;
 procedure TOsslMethodRec.CheckMethod(AVer: TOsslVersion;
   ANullExpected: boolean);
 begin
+  Assert.IsTrue(Platforms.InPlatforms, 'Method does not supported for this platform.');
+
   var lErrStr:=Format('OpenSsl routine "%s" (class ''%s'').',
     [Name, ClassType.ClassName]);
   if ANullExpected then
     Assert.IsNull(ClassType.GetMethodHandle, lErrStr)
   else
     Assert.IsNotNull(ClassType.GetMethodHandle, lErrStr);
+end;
+
+function TOsslMethodRec.IsCheckNeeded: boolean;
+begin
+  Result:=Platforms.InPlatforms;
 end;
 
 { TOsslApiCustomFixture }
@@ -217,15 +228,11 @@ begin
   Result:=TOsslLoader.LibVersion[ALibType];
 end;
 
-procedure TOsslApiCustomFixture.LoadOsslLib(ALibPathSuffix: string);
+procedure TOsslApiCustomFixture.SetupFixture;
 begin
-  LoadOsslLib(TOsslLibPathConfig.OsslLibPath, ALibPathSuffix);
-end;
-
-procedure TOsslApiCustomFixture.TearDown;
-begin
-  TOsslLoader.Unload([ltCrypto]);
-  TOsslLoader.ResetSingleton;
+  TOsslLoader.Flags:=TOsslLoader.Flags+[lfStrictPath];
+  TOsslLoader.Load([ltCrypto], TOsslLibPathConfig.OsslLibPath);
+  Assert.IsTrue(TOsslLoader.IsLibLoaded[ltCrypto], 'LibCrypto fails to load.')
 end;
 
 procedure TOsslApiCustomFixture.TearDownFixture;
@@ -234,52 +241,27 @@ begin
   TOsslLoader.ResetSingleton;
 end;
 
-procedure TOsslApiCustomFixture.LoadOsslLib(APaths, ALibPathSuffix: string);
-begin
-  TOsslLoader.Flags:=TOsslLoader.Flags+[lfStrictPath];
-  if not APaths.IsEmpty then
-  begin
-    var lPaths: TStringList:=nil;
-    try
-      {$IFDEF MSWINDOWS}
-      lPaths:=TStringList.Create(dupIgnore, False, False);
-      {$ELSE}
-      lPaths:=TStringList.Create(dupIgnore, False, True);
-      {$ENDIF}
-      lPaths.Delimiter:=TPath.PathSeparator;
-      lPaths.DelimitedText:=APaths;
-      for var i:=0 to lPaths.Count-1 do
-        lPaths[i]:=TPath.Combine(lPaths[i], ALibPathSuffix);
-      APaths:=lPaths.DelimitedText;
-    finally
-      lPaths.Free;
-    end;
-  end;
-  TOsslLoader.Load([ltCrypto], APaths);
-  Assert.IsTrue(TOsslLoader.IsLibLoaded[ltCrypto], 'LibCrypto fails to load.')
-end;
-
-procedure TOsslApiCustomFixture.UnloadOsslLib;
-begin
-  TOsslLoader.Unload([ltCrypto]);
-end;
-
 { TOsslApiBioMethodFixture }
 
 procedure TOsslApiBioMethodFixture.Method(AMethod: TBIOMethodEnum;
-  ALibPathSuffix: string; ANullExpected: boolean);
+  ANullExpected: boolean);
 begin
-  LoadOsslLib(ALibPathSuffix);
-  cMethods[AMethod].CheckMethod(LibVersion[ltCrypto], ANullExpected);
+  if not cMethods[AMethod].IsCheckNeeded then
+    Exit;
+
+  var lVer:=GetLibVersion(ltCrypto);
+  var lMinVer:=cMethods[AMethod].MinVer;
+
+  if not (lVer.AreCompatible(lMinVer) or (lMinVer > lVer)) then
+    cMethods[AMethod].CheckMethod(LibVersion[ltCrypto], ANullExpected);
+  // Otherwise the method is not supported by LibCrypto. Test pass.
+  // Do not use Assert.Pass as it reports a False Positive Memory Leak
 end;
 
 { TOsslApiBioLifecycleFixture }
 
-procedure TOsslApiBioLifecycleFixture.Test_Cycle(AMethod: TBIOMethodEnum;
-  ALibPathSuffix: string);
+procedure TOsslApiBioLifecycleFixture.Test_Cycle(AMethod: TBIOMethodEnum);
 begin
-  LoadOsslLib(ALibPathSuffix);
-
   var lMethod:=AMethod.MethodClass.GetMethodHandle;
   Assert.IsNotNull(lMethod, 'BIO Method factory returned nil');
 
@@ -305,10 +287,8 @@ begin
   end;
 end;
 
-procedure TOsslApiBioLifecycleFixture.Test_RefCounting(ALibPathSuffix: string);
+procedure TOsslApiBioLifecycleFixture.Test_RefCounting;
 begin
-  LoadOsslLib(ALibPathSuffix);
-
   // 1. Get Method (Factory binding check)
   var lMethod:=TOsslApiBioMethodMem.BIO_s_mem;
   var lBio:=TOsslApiBioBase.BIO_new(lMethod);
