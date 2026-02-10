@@ -1,0 +1,38 @@
+name: Fetch macOS SDK
+
+on: 
+  workflow_dispatch: # Manual trigger only
+
+jobs:
+  fetch-sdk:
+    runs-on: macos-15 # ARM64 Runner
+    steps:
+      - name: Locate SDK
+        id: sdk
+        run: |
+          # Find the path to the latest macOS SDK
+          SDK_PATH=$(xcrun --sdk macosx --show-sdk-path)
+          echo "SDK found at: $SDK_PATH"
+          echo "sdk_path=$SDK_PATH" >> $GITHUB_OUTPUT
+          
+          # Get the version name (e.g., MacOSX14.2.sdk)
+          SDK_NAME=$(basename $SDK_PATH)
+          echo "sdk_name=$SDK_NAME" >> $GITHUB_OUTPUT
+
+      - name: Pack SDK
+        run: |
+          # We tar it to preserve symlinks (critical for SDKs)
+          # We use -h to dereference symlinks if you want a 'flat' copy safe for Windows,
+          # BUT for cross-compilers, preserving links is usually better. 
+          # However, extracting symlinks on Windows is painful.
+          # Recommendation: Standard tar (preserve links). 
+          
+          cd "$(dirname ${{ steps.sdk.outputs.sdk_path }})"
+          tar -czvf ${{ github.workspace }}/${{ steps.sdk.outputs.sdk_name }}.tar.gz ${{ steps.sdk.outputs.sdk_name }}
+
+      - name: Upload SDK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.sdk.outputs.sdk_name }}
+          path: ${{ github.workspace }}/*.tar.gz
+          retention-days: 1
