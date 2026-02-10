@@ -44,14 +44,13 @@ def load_config(args):
         "clean_on_success": False,
         "default_config": "Debug",
         "dcc": {},
-        "default_compilers": [], # New: List of compiler IDs to run by default
+        "default_compilers": [],
         "platforms": ["Win64"],
         "projects": [],
         "dependencies": {},
         "build_options": {"common": {"search_paths": [], "defines": []}}
     }
     
-    # ... (File loading logic remains the same) ...
     # Load File
     file_path = args.config if args.config else DEFAULT_CONFIG_FILE
     if os.path.exists(file_path):
@@ -65,14 +64,20 @@ def load_config(args):
 
     # CLI Overrides
     if args.platforms:
-        cfg["platforms"] = args.platforms.split(',')
-    if args.compilers: # New CLI override
-        cfg["default_compilers"] = args.compilers.split(',')
+        cfg["platforms"] = [p.strip() for p in args.platforms.split(',')]
+    if args.compilers: 
+        cfg["default_compilers"] = [c.strip() for c in args.compilers.split(',')]
     if args.build_config:
         cfg["default_config"] = args.build_config
     if args.clean is not None:
         cfg["clean_on_success"] = args.clean
         
+    # NEW: Override OpenSSL Versions from CLI
+    if args.openssl_versions:
+        # We inject this into dependencies so run_test_project sees it
+        if "dependencies" not in cfg: cfg["dependencies"] = {}
+        cfg["dependencies"]["openssl_versions"] = [v.strip() for v in args.openssl_versions.split(',')]
+
     return cfg
 
 # ==============================================================================
@@ -191,7 +196,11 @@ def execute_test_process(cmd_args, log_file):
             lf.write(f"EXECUTION ERROR: {e}\n")
             return False
 
-def run_test_project(project, output_dir, common_params, build_id, platform, config_name, log_file):
+def run_test_project(project, output_dir, common_params, dependencies, build_id, platform, config_name, log_file):
+    """
+    Runs the test executable. 
+    Supports 'Matrix' execution with variable substitution for OpenSSL paths.
+    """
     exe_name = os.path.splitext(os.path.basename(project["path"]))[0] + ".exe"
     exe_path = os.path.join(output_dir, exe_name)
     
@@ -199,56 +208,95 @@ def run_test_project(project, output_dir, common_params, build_id, platform, con
         log(f"Test executable missing: {exe_path}", "FAIL")
         return False
 
-    log(f"  > Running {project['name']}...")
-
-    # 1. Prepare Variable Context for Substitution
-    # These variables can be used inside the JSON params values
-    context = {
-        "build_id": build_id,
-        "platform": platform,
-        "config": config_name,
-        "compiler": "DCC",
-        "output_dir": output_dir,
-        "exe_path": exe_path,
-        "project_name": project["name"]
-    }
-
-    # 2. Merge Parameters
-    # Start with common params
-    final_params = common_params.copy()
-    
-    # Override/Add project specific params
-    project_params = project.get("params", {})
-    final_params.update(project_params)
-
-    # 3. Construct Command Line
-    cmd = [exe_path]
-
-    for switch, value in final_params.items():
-        if value:
-            try:
-                # Apply variable substitution to the value (e.g. {build_id})
-                formatted_value = value.format(**context)
-                # Normalize paths (fix slashes for OS)
-                formatted_value = os.path.normpath(formatted_value)
-                
-                # Construct switch: -key:value
-                # We don't manually add quotes here; subprocess.run handles spaces in args automatically.
-                cmd.append(f"{switch}:{formatted_value}")
-            except KeyError as e:
-                log(f"    [WARN] Parameter '{switch}' missing variable {e}. Using raw value.", "WARN")
-                cmd.append(f"{switch}:{value}")
-        else:
-            # Flag only (e.g. "-verbose")
-            cmd.append(switch)
-
-    # 4. Execute
-    if not execute_test_process(cmd, log_file):
-        log(f"    Failed: {project['name']}", "FAIL")
-        return False
+    # 1. Determine Versions
+    versions = []
+    if project.get("matrix", False):
+        versions = dependencies.get("openssl_versions", [])
+        if not versions:
+            log(f"    [WARN] Project requested matrix but 'openssl_versions' is empty.", "WARN")
+            versions = [None] 
     else:
-        return True
+        versions = [None] 
 
+    # Get the raw path template
+    # Fallback to "openssl_root" for backward compat if "openssl_path" is missing
+    raw_ossl_path = dependencies.get("openssl_path", dependencies.get("openssl_root", ""))
+    
+    overall_success = True
+
+    # 2. Iterate Versions
+    for ver in versions:
+        version_suffix = f"_{ver}" if ver else ""
+        
+        # --- A. Build Substitution Context ---
+        context = {
+            "build_id": build_id,
+            "platform": platform,
+            "config": config_name,
+            "compiler": "DCC",
+            "output_dir": output_dir,
+            "exe_path": exe_path,
+            "project_name": f"{project['name']}{version_suffix}",
+            "version": ver if ver else "" 
+        }
+
+        # --- B. Resolve OpenSSL Path ---
+        current_ossl_path = ""
+        if raw_ossl_path:
+            try:
+                # 1. Substitute variables (e.g. {version})
+                substituted_path = raw_ossl_path.format(**context)
+                
+                # 2. Normalize separators (fix / vs \)
+                substituted_path = os.path.normpath(substituted_path)
+                
+                # 3. Absolutize ONLY if not already absolute
+                if os.path.isabs(substituted_path):
+                    current_ossl_path = substituted_path
+                else:
+                    current_ossl_path = os.path.abspath(substituted_path)
+                    
+            except KeyError as e:
+                log(f"    [WARN] openssl_path config missing variable {e}. Path ignored.", "WARN")
+
+        if ver:
+            log(f"    > Running {project['name']} [OpenSSL {ver}]...")
+        else:
+            log(f"    > Running {project['name']}...")
+
+        # --- C. Merge Parameters ---
+        final_params = common_params.copy()
+        final_params.update(project.get("params", {}))
+
+        # --- D. Construct Command ---
+        cmd = [exe_path]
+
+        # FIX: Remove manual quotes around the path. 
+        # subprocess.run handles spaces automatically.
+        if current_ossl_path:
+            cmd.append(f'-osp:{current_ossl_path}') # <--- Changed
+
+        for switch, value in final_params.items():
+            if value:
+                try:
+                    # Apply substitution
+                    formatted_value = value.format(**context)
+                    formatted_value = os.path.normpath(formatted_value)
+                    
+                    # FIX: Remove manual quotes here too
+                    cmd.append(f"{switch}:{formatted_value}") # <--- Changed
+                except KeyError as e:
+                    log(f"    [WARN] Parameter '{switch}' missing variable {e}. Using raw value.", "WARN")
+                    cmd.append(f"{switch}:{value}")
+            else:
+                cmd.append(switch)
+
+        # --- E. Execute ---
+        if not execute_test_process(cmd, log_file):
+            log(f"    [FAIL] Failed: {project['name']} {version_suffix}", "ERROR")
+            overall_success = False
+
+    return overall_success
 
 # ==============================================================================
 # MAIN
@@ -258,6 +306,7 @@ def main():
     parser.add_argument("--config", help="Path to JSON config file")
     parser.add_argument("--platforms", help="Comma separated list (Win32,Win64)")
     parser.add_argument("--compilers", help="Comma separated list of compiler IDs (e.g. 11.0,12.0)")
+    parser.add_argument("--openssl-versions", help="Comma separated list of OpenSSL versions (e.g. 3.0,3.3)")
     parser.add_argument("--build-config", help="Debug or Release")
     parser.add_argument("--tags", help="Comma separated list of tags to filter projects")
     parser.add_argument("--clean", action="store_true", help="Clean output on success")
@@ -410,12 +459,12 @@ def main():
                                     proj, 
                                     target_out_dir, 
                                     common_params, 
+                                    cfg.get("dependencies", {}), # <--- NEW ARGUMENT
                                     build_id, 
                                     platform, 
                                     cfg["default_config"], 
                                     log_file
-                                )
-                                
+                                )                                
                                 if test_success:
                                     report.append({"step": step_name, "status": "Passed"})
                                 else:
