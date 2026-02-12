@@ -23,6 +23,11 @@
 {$ENDIF}
 
 {$IFDEF CONDITIONALEXPRESSIONS}
+  {$IFDEF LINK_STATIC}
+    {$UNDEF LINK_DYNAMIC}
+  {$ELSE}
+    {$DEFINE LINK_DYNAMIC}
+  {$ENDIF}
 
   {$IFDEF LINK_STATIC}
     {$I ossl_version_scope.inc}

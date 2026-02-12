@@ -22,7 +22,7 @@ unit Ossl4Pas.Loader;
 
 interface
 
-{$IFNDEF LINK_STATIC}
+{$IFDEF LINK_DYNAMIC}
 
 uses
 {$IF Defined(FPC)}
@@ -583,11 +583,11 @@ protected
   end;
 {$ENDREGION 'TOsslLoader declaration'}
 
-{$ENDIF LINK_STATIC}
+{$ENDIF LINK_DYNAMIC}
 
 implementation
 
-{$IFNDEF LINK_STATIC}
+{$IFDEF LINK_DYNAMIC}
 
 uses
 {$IFDEF DCC}
@@ -1550,6 +1550,6 @@ end;
 
 {$ENDREGION 'TOsslLoader implementation'}
 
-{$ENDIF LINK_STATIC}
+{$ENDIF LINK_DYNAMIC}
 
 end.
