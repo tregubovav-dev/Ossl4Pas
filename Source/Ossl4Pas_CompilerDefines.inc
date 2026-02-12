@@ -24,6 +24,12 @@
 
 {$IFDEF CONDITIONALEXPRESSIONS}
 
+  {$IFDEF LINK_STATIC}
+    {$I ossl_version_scope.inc}
+  {$ELSE}
+    {$I ossl_version_shared.inc}
+  {$ENDIF}
+
   {$IFDEF FPC}
     {$MODE DELPHI}
     {$MODESWITCH ADVANCEDRECORDS}
