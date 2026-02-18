@@ -30,9 +30,13 @@ uses
   SysUtils,
 {$ENDIF}
   Ossl4Pas.Api.Types,  // Defines PBIO
+{$IFDEF LINK_DYNAMIC}
+  Ossl4Pas.Binding,
+{$ENDIF}
   Ossl4Pas.CTypes,
-  Ossl4Pas.Types,
-  Ossl4Pas.Binding;
+  Ossl4Pas.Types;
+
+
 
 
 const
@@ -159,8 +163,12 @@ type
     TRoutine_ERR_peek_last_error     = function: culong; cdecl;
     TRoutine_ERR_clear_error         = procedure; cdecl;
 
+  private
+    class function GetIntialized: boolean; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+  {$IFDEF LINK_DYNAMIC}
   strict private class var
-    FIntialized: boolean;
+    FInitialized: boolean;
 
     F_ERR_get_error:           TRoutine_ERR_get_error;
     F_ERR_peek_error:          TRoutine_ERR_peek_error;
@@ -179,16 +187,19 @@ type
     class procedure Bind(const ALibHandle: TLibHandle;
       const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
+  {$ENDIF}
 
   public
+  {$IFDEF LINK_DYNAMIC}
     class constructor Create;
+  {$ENDIF}
 
     class function ERR_get_error: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function ERR_peek_error: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function ERR_peek_last_error: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class procedure ERR_clear_error; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class property Initialized: boolean read FIntialized;
+    class property Initialized: boolean read GetIntialized;
   end;
 
   // ---------------------------------------------------------------------------
@@ -220,8 +231,9 @@ type
     TRoutine_ERR_peek_last_error_all = function(file_: PPAnsiChar; line: Pcint;
       func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl;
 
+  {$IFDEF LINK_DYNAMIC}
   strict private class var
-    FIntialized: boolean;
+    FInitialized: boolean;
     FMsgBindErr: AnsiString;
 
     F_ERR_error_string:        TRoutine_ERR_error_string;
@@ -267,9 +279,15 @@ type
 
   const
     cErrorStringBufSize = 256;
+  {$ENDIF}
+
+  private
+    class function GetIntialized: boolean; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
   public
+  {$IFDEF LINK_DYNAMIC}
     class constructor Create;
+  {$ENDIF}
 
      // ERR_error_string Overloads
 
@@ -313,7 +331,7 @@ type
       func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class property Initialized: boolean read FIntialized;
+    class property Initialized: boolean read GetIntialized;
  end;
 
   TOsslApiErrStringsHelper = class helper for TOsslApiErrStrings
@@ -369,8 +387,9 @@ type
     TRoutine_ERR_print_errors   = procedure(bp: PBIO); cdecl;
     TRoutine_ERR_put_error      = procedure(lib, func, reason: cint; file_: PAnsiChar; line: cint); cdecl;
 
+  {$IFDEF LINK_DYNAMIC}
   strict private class var
-    FIntialized: boolean;
+    FInitialized: boolean;
 
     F_ERR_set_mark:       TRoutine_ERR_set_mark;
     F_ERR_pop_to_mark:    TRoutine_ERR_pop_to_mark;
@@ -378,31 +397,38 @@ type
     F_ERR_put_error:      TRoutine_ERR_put_error;
 
   strict private const
-    cBindings: array[0..3] of TOsslBindEntry = (
+    cBindings: array[0..2] of TOsslBindEntry = (
       (Name: 'ERR_set_mark';       VarPtr: @@TOsslApiErrSystem.F_ERR_set_mark;       MinVer: 0),
       (Name: 'ERR_pop_to_mark';    VarPtr: @@TOsslApiErrSystem.F_ERR_pop_to_mark;    MinVer: 0),
-      (Name: 'ERR_print_errors';   VarPtr: @@TOsslApiErrSystem.F_ERR_print_errors;   MinVer: 0),
-      (Name: 'ERR_put_error';      VarPtr: @@TOsslApiErrSystem.F_ERR_put_error;      MinVer: 0)
+      (Name: 'ERR_print_errors';   VarPtr: @@TOsslApiErrSystem.F_ERR_print_errors;   MinVer: 0)
     );
 
   strict private
     class procedure Bind(const ALibHandle: TLibHandle;
       const AVersion: TOsslVersion); static;
     class procedure UnBind; static;
+  {$ENDIF}
+
+  private
+    class function GetIntialized: boolean; static;
 
   public
+  {$IFDEF LINK_DYNAMIC}
     class constructor Create;
+  {$ENDIF}
 
     class function ERR_set_mark: cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function ERR_pop_to_mark: cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     class procedure ERR_print_errors(bp: PBIO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
-    class procedure ERR_put_error(lib, func, reason: cint; file_: PAnsiChar; line: cint); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class property Initialized: boolean read FIntialized;
+    class property Initialized: boolean read GetIntialized;
   end;
 
 implementation
+
+{$I Ossl4Pas_Versions.inc}
+{$I Ossl4Pas_StaticDeps.inc}
 
 uses
   {$IFDEF DCC}
@@ -411,6 +437,36 @@ uses
   Ossl4Pas.Loader,
   Ossl4Pas.ResStrings;
 
+{$REGION 'Static reoutine declarations'}
+  {$IFDEF LINK_STATIC}
+  // 1. STATIC LINKING
+  // Map internal F_XXX names to external symbols
+  function F_ERR_get_error: culong; cdecl; external 'libcrypto.a' name 'ERR_get_error';
+  function F_ERR_peek_error: culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error';
+  function F_ERR_peek_last_error: culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error';
+  procedure F_ERR_clear_error; cdecl; external 'libcrypto.a' name 'ERR_clear_error';
+
+  function F_ERR_error_string(e: culong; buf: PAnsiChar): PAnsiChar; cdecl; external 'libcrypto.a' name 'ERR_error_string';
+  procedure F_ERR_error_string_n(e: culong; buf: PAnsiChar; len: size_t); cdecl; external 'libcrypto.a' name 'ERR_error_string_n';
+  function F_ERR_lib_error_string(e: culong): PAnsiChar; cdecl; external 'libcrypto.a' name 'ERR_lib_error_string';
+  function F_ERR_reason_error_string(e: culong): PAnsiChar; cdecl; external 'libcrypto.a' name 'ERR_reason_error_string';
+
+  function F_ERR_peek_error_func(func: PPAnsiChar): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error_func';
+  function F_ERR_peek_last_error_func(func: PPAnsiChar): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error_func';
+  function F_ERR_peek_error_data(data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error_data';
+  function F_ERR_peek_last_error_data(data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error_data';
+
+  function F_ERR_get_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_get_error_all';
+  function F_ERR_peek_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error_all';
+  function F_ERR_peek_last_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error_all';
+
+  function F_ERR_set_mark: cint; cdecl; external 'libcrypto.a' name 'ERR_set_mark';
+  function F_ERR_pop_to_mark: cint; cdecl; external 'libcrypto.a' name 'ERR_pop_to_mark';
+  procedure F_ERR_print_errors(bp: PBIO); cdecl; external 'libcrypto.a' name 'ERR_print_errors';
+  {$ENDIF}
+{$ENDREGION}
+
+{$IFDEF LINK_DYNAMIC}
 function GetInitialized(const AEntries: array of TOsslBindEntry): boolean;
 var
   i: integer;
@@ -421,10 +477,11 @@ begin
     if not (Assigned(AEntries[i].VarPtr) and Assigned(AEntries[i].VarPtr^)) then
       Exit(False);
 end;
-
+{$ENDIF}
 
 { TOsslApiErrCodes }
 
+{$IFDEF LINK_DYNAMIC}
 class constructor TOsslApiErrCodes.Create;
 begin
   TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
@@ -436,7 +493,7 @@ begin
   try
     TOsslBinding.Bind(ALibHandle, AVersion, cBindings, False);
   finally
-    FIntialized:=GetInitialized(cBindings);
+    FInitialized:=GetInitialized(cBindings);
   end;
 end;
 
@@ -445,52 +502,98 @@ begin
   try
     TOsslBinding.Reset(cBindings, False);
   finally
-    FIntialized:=GetInitialized(cBindings);
+    FInitialized:=GetInitialized(cBindings);
   end;
+end;
+{$ENDIF}
+
+class function TOsslApiErrCodes.GetIntialized: boolean;
+begin
+{$IFDEF LINK_DYNAMIC}
+  Result:=FInitialized;
+{$ENDIF}
+{$IFDEF LINK_STATIC}
+  Result:=True;
+{$ENDIF}
 end;
 
 class function TOsslApiErrCodes.ERR_get_error: culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_get_error) then
+{$ENDIF}
     Result:=F_ERR_get_error
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=0;
+{$ENDIF}
 end;
 
 class function TOsslApiErrCodes.ERR_peek_error: culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_error) then
+{$ENDIF}
     Result:=F_ERR_peek_error()
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=0;
+{$ENDIF}
 end;
 
 class function TOsslApiErrCodes.ERR_peek_last_error: culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_last_error) then
+{$ENDIF}
     Result:=F_ERR_peek_last_error()
+{$IFDEF LINK_DYNAMIC}
   else
-    Result:=F_ERR_peek_last_error;
+    Result:=0;
+{$ENDIF}
 end;
 
 class procedure TOsslApiErrCodes.ERR_clear_error;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_clear_error) then
+{$ENDIF}
     F_ERR_clear_error();
 end;
 
 { TOsslApiErrStrings }
 
+{$IFDEF LINK_DYNAMIC}
 class constructor TOsslApiErrStrings.Create;
 begin
   UnBind;
   TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
 end;
 
+class procedure TOsslApiErrStrings.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  try
+    TOsslBinding.Bind(ALibHandle, AVersion, cBindings, False);
+  finally
+    FInitialized:=GetInitialized(cBindings);
+  end;
+end;
+
+class procedure TOsslApiErrStrings.UnBind;
+begin
+  try
+    TOsslBinding.Reset(cBindings, False);
+  finally
+    FInitialized:=GetInitialized(cBindings);
+  end;
+end;
+
 class procedure TOsslApiErrStrings.SetMsgBindErr;
 begin
   FMsgBindErr:=AnsiString(@resErrRoutineNotBound);
 end;
+
 
 class function TOsslApiErrStrings.GetMsgBindErrBuf(buf: PAnsiChar;
   len: csize_t): PAnsiChar;
@@ -538,120 +641,162 @@ begin
   if Assigned(line) then
     line^:=0;
 end;
+{$ENDIF}
 
-class procedure TOsslApiErrStrings.Bind(const ALibHandle: TLibHandle;
-  const AVersion: TOsslVersion);
+class function TOsslApiErrStrings.GetIntialized: boolean;
 begin
-  try
-    TOsslBinding.Bind(ALibHandle, AVersion, cBindings, False);
-  finally
-    FIntialized:=GetInitialized(cBindings);
-  end;
-end;
-
-class procedure TOsslApiErrStrings.UnBind;
-begin
-  try
-    TOsslBinding.Reset(cBindings, False);
-  finally
-    FIntialized:=GetInitialized(cBindings);
-  end;
+{$IFDEF LINK_DYNAMIC}
+  Result:=FInitialized;
+{$ENDIF}
+{$IFDEF LINK_STATIC}
+  Result:=True;
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_error_string(e: culong;
   buf: PAnsiChar): PAnsiChar;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_error_string) then
     Exit(F_ERR_error_string(e, buf))
   else
     Result:=GetMsgBindErrBuf(buf, cErrorStringBufSize);
+{$ENDIF}
+{$IFDEF LINK_STATIC}
+  Result:=F_ERR_error_string(e, buf);
+{$ENDIF}
 end;
 
 class procedure TOsslApiErrStrings.ERR_error_string_n(e: culong;
   buf: PAnsiChar; len: csize_t);
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_error_string_n) then
+{$ENDIF}
     F_ERR_error_string_n(e, buf, len)
+{$IFDEF LINK_DYNAMIC}
   else
     GetMsgBindErrBuf(buf, len);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_lib_error_string(e: culong): PAnsiChar;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_lib_error_string) then
+{$ENDIF}
     Result:=F_ERR_lib_error_string(e)
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=GetMsgBindErrBuf;
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_reason_error_string(e: culong): PAnsiChar;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_reason_error_string) then
+{$ENDIF}
     Result:=F_ERR_reason_error_string(e)
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=GetMsgBindErrBuf;
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_peek_error_func(func: PPAnsiChar): culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_error_func) then
     Exit(F_ERR_peek_error_func(func));
 
   Result:=0;
   if Assigned(func) then
     func^:=GetMsgBindErrBuf;
+{$ENDIF}
+{$IFDEF LINK_STATIC}
+  Result:=F_ERR_peek_error_func(func);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_peek_last_error_func(func: PPAnsiChar): culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_last_error_func) then
     Exit(F_ERR_peek_last_error_func(func));
 
   Result:=0;
   if Assigned(func) then
     func^:=GetMsgBindErrBuf;
+{$ENDIF}
+{$IFDEF LINK_STATIC}
+  Result:=F_ERR_peek_last_error_func(func);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_peek_error_data(data: PPAnsiChar;
   flags: pcint): culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_error_data) then
+{$ENDIF}
     Result:=F_ERR_peek_error_data(data, flags)
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=GetMsgBindErrBufFlag(data, flags);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_peek_last_error_data(data: PPAnsiChar;
   flags: pcint): culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_last_error_data) then
+{$ENDIF}
     Result:=F_ERR_peek_last_error_data(data, flags)
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=GetMsgBindErrBufFlag(data, flags);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_get_error_all(file_: PPAnsiChar;
   line: pcint; func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_get_error_all) then
+{$ENDIF}
     Result:=F_ERR_get_error_all(file_, line, func, data, flags)
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=GetMsgBindErrBufFlagAll(file_, func, data, line, flags);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_peek_error_all(file_: PPAnsiChar;
   line: pcint; func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_peek_error_all) then
+{$ENDIF}
     Result:=F_ERR_peek_error_all(file_, line, func, data, flags)
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=GetMsgBindErrBufFlagAll(file_, func, data, line, flags);
+{$ENDIF}
 end;
 
 class function TOsslApiErrStrings.ERR_peek_last_error_all(file_: PPAnsiChar;
   line: pcint; func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
 begin
-  Result := F_ERR_peek_last_error_all(file_, line, func, data, flags);
+{$IFDEF LINK_DYNAMIC}
+  if Assigned(F_ERR_peek_last_error_all) then
+{$ENDIF}
+    Result:=F_ERR_peek_last_error_all(file_, line, func, data, flags)
+{$IFDEF LINK_DYNAMIC}
+  else
+    Result:=GetMsgBindErrBufFlagAll(file_, func, data, line, flags);
+{$ENDIF}
 end;
 
 { TOsslApiErrStringsHelper }
@@ -759,6 +904,7 @@ end;
 
 { TOsslApiErrSystem }
 
+{$IFDEF LINK_DYNAMIC}
 class constructor TOsslApiErrSystem.Create;
 begin
   UnBind;
@@ -771,7 +917,7 @@ begin
   try
     TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
   finally
-    FIntialized:=GetInitialized(cBindings);
+    FInitialized:=GetInitialized(cBindings);
   end;
 end;
 
@@ -780,37 +926,51 @@ begin
   try
     TOsslBinding.Reset(cBindings);
   finally
-    FIntialized:=GetInitialized(cBindings);
+    FInitialized:=GetInitialized(cBindings);
   end;
+end;
+{$ENDIF}
+
+class function TOsslApiErrSystem.GetIntialized: boolean;
+begin
+{$IFDEF LINK_DYNAMIC}
+  Result:=FInitialized;
+{$ENDIF}
+{$IFDEF LINK_STATIC}
+  Result:=True;
+{$ENDIF}
 end;
 
 class function TOsslApiErrSystem.ERR_set_mark: cint;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_set_mark) then
+{$ENDIF}
     Result:=F_ERR_set_mark()
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=0;
+{$ENDIF}
 end;
 
 class function TOsslApiErrSystem.ERR_pop_to_mark: cint;
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_pop_to_mark) then
+{$ENDIF}
     Result:=F_ERR_pop_to_mark()
+{$IFDEF LINK_DYNAMIC}
   else
     Result:=0;
+{$ENDIF}
 end;
 
 class procedure TOsslApiErrSystem.ERR_print_errors(bp: PBIO);
 begin
+{$IFDEF LINK_DYNAMIC}
   if Assigned(F_ERR_print_errors) then
+{$ENDIF}
     F_ERR_print_errors(bp);
-end;
-
-class procedure TOsslApiErrSystem.ERR_put_error(lib, func, reason: cint;
-  file_: PAnsiChar; line: cint);
-begin
-  if Assigned(F_ERR_put_error) then
-    F_ERR_put_error(lib, func, reason, file_, line);
 end;
 
 end.
