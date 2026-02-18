@@ -77,15 +77,15 @@ Needs to add more helper functions }
 
     /// <summary>Formats arguments using Ansi strings and writes to BIO.</summary>
     class function BIO_printfA(b: PBIO; const AStr: RawByteString;
-      const Args: array of const): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+      const Args: array of const): cint; static;
 
     /// <summary>Formats arguments using Unicode strings, converts to UTF-8, and writes to BIO.</summary>
     class function BIO_printfW(b: PBIO; const AStr: UnicodeString;
-      const Args: array of const): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+      const Args: array of const): cint; static;
 
     /// <summary>Formats arguments and writes to BIO (Default encoding).</summary>
     class function BIO_printf(b: PBIO; const AStr: string;
-      const Args: array of const): cint; overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+      const Args: array of const): cint; overload; static;
   end;
 
 implementation
