@@ -505,4 +505,17 @@ begin
   end;
 end;
 
+{$IFDEF T_LINUX}
+// We have to export __dso_handle in Linux if OpenSSL static library
+// built without 'no-dso' flag.
+procedure  __dso_handle; cdecl;
+begin
+end;
+
+exports
+  __dso_handle;
+{$ENDIF}
+
+
+
 end.
