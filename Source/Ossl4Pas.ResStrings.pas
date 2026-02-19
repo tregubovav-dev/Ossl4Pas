@@ -31,8 +31,6 @@ resourcestring
   { EOsslLoader strings }
   resLoaderNotSet                 = 'OpenSSL loader is not registered.';
   resLoaderUnsupported            = 'Unsupported OpenSSL loader registered.';
-  resNoVersionFound               = 'The library %s loading failed. '+
-                                    'It does not provide version information.';
   resLoadLibVersionIncompatible   = 'Incompatible OpenSSL library version at: '+
                                     '%s. Expected version 3.0 or higher, but found %s';
   resLoadLibNotFound              = 'Libraries ''%s'' is not found at %s path(s).';

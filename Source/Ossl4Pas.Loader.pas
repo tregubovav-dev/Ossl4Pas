@@ -89,7 +89,7 @@ type
     FBindLock:    TCriticalSection;
     FLibsToLoad:  TLibTypes;
     FLibHandles:  TLibHandleList;
-    FLibVersions: TLibVersionList;
+    FLibVersion: TOsslVersion;
   private
     class function GetIsLibLoaded(ALibType: TLibType): boolean; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -97,7 +97,7 @@ type
     class function GetLibsLoaded: TLibTypes; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    class function GetLibVersion(ALibType: TLibType): TOsslVersion; static;
+    class function GetLibVersion: TOsslVersion; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     class function GetIsLoaderSet: boolean; static;
@@ -115,10 +115,10 @@ type
     procedure DoSetLibHandle(ALibType: TLibType; const Value: TLibHandle);
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    function DoGetLibVersion(ALibType: TLibType): TOsslVersion;
-      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    function DoGetLibVersion: TOsslVersion; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    procedure DoSetLibVersion(ALibType: TLibType; const Value: TOsslVersion);
+    procedure DoSetLibVersion(const Value: TOsslVersion); {$IFDEF INLINE_ON}inline;{$ENDIF}
+
     class function GetLibsToLoad: TLibTypes; static;
     class function GetLibHandle(ALibType: TLibType): TLibHandle; static;
 
@@ -273,7 +273,7 @@ type
     /// <summary>
     ///   Instance accessor for the loaded library versions.
     /// </summary>
-    property InstLibVersion[ALibType: TLibType]: TOsslVersion read DoGetLibVersion
+    property InstLibVersion: TOsslVersion read DoGetLibVersion
       write DoSetLibVersion;
 
   public
@@ -322,7 +322,7 @@ type
     /// <summary>Returns the set of currently loaded libraries.</summary>
     class property LibsLoaded: TLibTypes read GetLibsLoaded;
     /// <summary>Returns the version of a loaded library.</summary>
-    class property LibVersion[ALibType: TLibType]: TOsslVersion read GetLibVersion;
+    class property LibVersion: TOsslVersion read GetLibVersion;
 
     constructor Create; virtual;
     destructor Destroy; override;
@@ -456,8 +456,8 @@ type
     FLoadedPath:  string;
 
     class function SysLoadLibrary(const ALibName: string;
-      ASuppressException: boolean; out ALibVer: TOsslVersion): TLibHandle;
-      overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+      ASuppressException: boolean): TLibHandle; overload; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
     class function GetLibName(ALibType: TLibType): string; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -511,8 +511,7 @@ protected
     ///   <c>AVersion</c> return value may be undefined if method return <c>False</c>
     ///  </remark>
     class function CheckLibVersion(ALibHandle: TLibHandle;
-      out AVersion: TOsslVersion): boolean; overload;
-      static;
+      out AVersion: TOsslVersion): boolean; overload; static;
 
     /// <summary>
     ///   Orchestrates the loading of specified libraries using default paths.
@@ -836,10 +835,9 @@ begin
   Result:=GetLoader.InstLibsLoaded;
 end;
 
-class function TOsslCustomLoader.GetLibVersion(
-  ALibType: TLibType): TOsslVersion;
+class function TOsslCustomLoader.GetLibVersion: TOsslVersion;
 begin
-  Result:=GetLoader.InstLibVersion[ALibType];
+  Result:=GetLoader.InstLibVersion;
 end;
 
 class function TOsslCustomLoader.GetLoader: TOsslCustomLoader;
@@ -934,7 +932,7 @@ begin
   lLibType:=AParam.LibType;
   Include(FLibsToLoad, lLibType);
   if InstIsLibLoaded[lLibType] then
-    AParam.DoBind(InstLibHandle[lLibType], InstLibVersion[lLibType]);
+    AParam.DoBind(InstLibHandle[lLibType], InstLibVersion);
 end;
 
 procedure TOsslCustomLoader.DoSafeBind(const AParam: TBindParam);
@@ -1035,15 +1033,14 @@ begin
   FLibHandles[ALibType]:=Value;
 end;
 
-function TOsslCustomLoader.DoGetLibVersion(ALibType: TLibType): TOsslVersion;
+function TOsslCustomLoader.DoGetLibVersion: TOsslVersion;
 begin
-  Result:=FLibVersions[ALibType];
+  Result:=FLibVersion;
 end;
 
-procedure TOsslCustomLoader.DoSetLibVersion(ALibType: TLibType;
-  const Value: TOsslVersion);
+procedure TOsslCustomLoader.DoSetLibVersion(const Value: TOsslVersion);
 begin
-  FLibVersions[ALibType]:=Value;
+  FLibVersion:=Value;
 end;
 
 {$ENDREGION 'TOsslCustomLoader Instance methods'}
@@ -1242,7 +1239,7 @@ begin
 end;
 
 class function TOsslLoader.SysLoadLibrary(const ALibName: string;
-  ASuppressException: boolean; out ALibVer: TOsslVersion): TLibHandle;
+  ASuppressException: boolean): TLibHandle;
 const
   {$IFDEF T_WINDOWS}
     cErrMode = SEM_FAILCRITICALERRORS;
@@ -1251,17 +1248,8 @@ const
   {$ENDIF}
 begin
   Result:=TLibHandle.Create(ALibName);
-  if Result.IsEmpty then
-  begin
-    if not ASuppressException then
-      EOsslLib.RaiseLastOSError;
-  end
-  else if not CheckLibVersion(Result, ALibVer) then
-  begin
-    FreeLibrary(Result);
-
-    RaiseExceptionResFmt(@resNoVersionFound, [ALibName]);
-  end;
+  if Result.IsEmpty and (not ASuppressException) then
+    EOsslLib.RaiseLastOSError;
 end;
 
 class function TOsslLoader.GetLibName(ALibType: TLibType): string;
@@ -1306,6 +1294,8 @@ begin
   // OpenSsl v1.1.x and below provides `SSLeay` routine for retriving the version.
   Result:=False;
   lVerVal:=0;
+  if ALibHandle.IsEmpty then
+    Exit;
 
   // Try `OpenSSL_version_num` first
   @lVerFunc:=GetProcAddress(ALibHandle, PChar(cLib3VersionProc));
@@ -1438,10 +1428,11 @@ begin
 
         if lSuppressException or TFile.Exists(lLibPath) then
         begin
-          Result:=SysLoadLibrary(lLibPath, lSuppressException, lLibVer);
+          Result:=SysLoadLibrary(lLibPath, lSuppressException);
 
-          if not Result.IsEmpty then
+          if not CheckLibVersion(Result, lLibVer) then
           begin
+
             if  lLibVer < cMinVersion then
             begin
             // Incompatible OopenSSL library version.
@@ -1452,7 +1443,7 @@ begin
             lLibPath:=TPath.GetFullPath(TPath.GetDirectoryName(Result.FileName));
 
             InstLibHandle[cBaseLibType]:=Result;
-            InstLibVersion[cBaseLibType]:=lLibVer;
+            InstLibVersion:=lLibVer;
             FLoadedPath:=lLibPath;
             Break;
           end;
@@ -1472,15 +1463,8 @@ begin
       if not TFile.Exists(lLibPath) then
         RaiseExceptionResFmt(@resLoadLibNotFound, [LibName[ALibType], FLoadedPath]);
 
-      Result:=SysLoadLibrary(lLibPath, False, lLibVer);
-      if not InstLibVersion[cBaseLibType].AreCompatible(lLibVer) then
-        //RAISE EXCEPTION
-        RaiseExceptionResFmt(@resLoadLibVersionsIncompatible,
-          [LibName[cBaseLibType], LibName[ALibType],
-           InstLibVersion[cBaseLibType].AsString, lLibVer.AsString]);
-
+      Result:=SysLoadLibrary(lLibPath, False);
       InstLibHandle[ALibType]:=Result;
-      InstLibVersion[ALibType]:=lLibVer;
     end;
 
   except
