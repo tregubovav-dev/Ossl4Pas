@@ -23,14 +23,6 @@ unit Ossl4Pas.Binding;
 interface
 
 uses
-{$IFDEF T_WINDOWS}
-  {$IFDEF DCC}
-  Winapi.Windows,
-  {$ENDIF}
-  {$IFDEF FPC}
-  Windows,
-  {$ENDIF}
-{$ENDIF}
   Ossl4Pas.CTypes,
   Ossl4Pas.Types;
 
