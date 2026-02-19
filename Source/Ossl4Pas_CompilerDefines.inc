@@ -22,7 +22,35 @@
   {$DEFINE CONDITIONALEXPRESSIONS}
 {$ENDIF}
 
+
 {$IFDEF CONDITIONALEXPRESSIONS}
+  {$IFDEF DCC}
+    {$IF not (Defined(EXTERNALLINKER) and Defined(LLVM))}
+      // Statick linking must be disabled for WIN32 and WIN64 platforms
+      // as native Delphi linkers for WIN32 and WIN64
+      // do not support `.lib` format.
+      // Possible workaround is to build `amalgamated` '.obj' file per library
+      {$UNDEF LINK_STATIC}
+    {$ENDIF}
+  {$ENDIF}
+
+  {$IFDEF FPC}
+    {$IF (Defined(WIN64) or Defined(WIN32))}
+      {$UNDEF LINK_STATIC}
+    {$ENDIF}
+  {$ENDIF}
+
+  {$IFDEF LINK_STATIC}
+    {$UNDEF LINK_DYNAMIC}
+  {$ELSE}
+    {$DEFINE LINK_DYNAMIC}
+  {$ENDIF}
+
+  {$IFDEF LINK_STATIC}
+    {$I ossl_version_scope.inc}
+  {$ELSE}
+    {$I ossl_version_shared.inc}
+  {$ENDIF}
 
   {$IFDEF FPC}
     {$MODE DELPHI}

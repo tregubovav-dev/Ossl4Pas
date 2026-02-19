@@ -22,7 +22,7 @@ unit Ossl4Pas.Loader;
 
 interface
 
-{$IFNDEF LINK_STATIC}
+{$IFDEF LINK_DYNAMIC}
 
 uses
 {$IF Defined(FPC)}
@@ -583,11 +583,11 @@ protected
   end;
 {$ENDREGION 'TOsslLoader declaration'}
 
-{$ENDIF LINK_STATIC}
+{$ENDIF LINK_DYNAMIC}
 
 implementation
 
-{$IFNDEF LINK_STATIC}
+{$IFDEF LINK_DYNAMIC}
 
 uses
 {$IFDEF DCC}
@@ -1149,7 +1149,8 @@ begin
     PInteger(@lPrev)^:=AtomicCmpExchange(PInteger(@a.FStorage)^,
       PInteger(@lNew)^, PInteger(@lOld)^);
     {$ELSEIF Defined(USE_ATOMIC_FPC)}
-    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    lPrev:=System.InterlockedCompareExchange(cardinal(a.FStorage),
+      cardinal(lNew), cardinal(lNew));
     {$ENDIF}
     if lPrev = lOld then
       Exit;
@@ -1191,7 +1192,8 @@ begin
     PCardinal(@lPrev)^:=AtomicCmpExchange(PInteger(@a.FStorage)^,
       PInteger(@lNew)^, PInteger(@lOld)^);
     {$ELSEIF Defined(USE_ATOMIC_FPC)}
-    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    lPrev:=System.InterlockedCompareExchange(cardinal(a.FStorage),
+      cardinal(lNew), cardinal(lNew));
     {$ENDIF}
 
     if lPrev = lOld then
@@ -1550,6 +1552,6 @@ end;
 
 {$ENDREGION 'TOsslLoader implementation'}
 
-{$ENDIF LINK_STATIC}
+{$ENDIF LINK_DYNAMIC}
 
 end.

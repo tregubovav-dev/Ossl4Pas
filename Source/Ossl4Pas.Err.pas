@@ -499,7 +499,8 @@ begin
     PCardinal(@lPrev)^:=AtomicCmpExchange(PInteger(@a.FStorage)^,
       PInteger(@lNew)^, PInteger(@lOld)^);
     {$ELSEIF Defined(USE_ATOMIC_FPC)}
-    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    lPrev:=System.InterlockedCompareExchange(cardinal(a.FStorage),
+      cardinal(lNew), cardinal(lNew));
     {$ENDIF}
     if lPrev = lOld then
       Exit;
@@ -540,7 +541,8 @@ begin
     PCardinal(@lPrev)^:=AtomicCmpExchange(PInteger(@a.FStorage)^,
       PInteger(@lNew)^, PInteger(@lOld)^);
     {$ELSEIF Defined(USE_ATOMIC_FPC)}
-    System.InterlockedCompareExchange(cardinal(a.FStorage), cardinal(lNew), cardinal(lNew));
+    lPrev:=System.InterlockedCompareExchange(cardinal(a.FStorage),
+      cardinal(lNew), cardinal(lNew));
     {$ENDIF}
 
     if lPrev = lOld then
