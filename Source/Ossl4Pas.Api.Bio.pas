@@ -958,37 +958,37 @@ type
       // Define bindings in the Base class so descendants can inherit or extend logic if needed.
       // Note: In Pascal, descendants share these static vars.
     cBindings: array[0..21] of TOsslBindEntry = (
-      (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0),
-      (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000), // 3.0+ Only
-      (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0),
-      (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0),
-      (Name: 'BIO_vfree';         VarPtr: @@TOsslApiBioBase.F_BIO_vfree;         MinVer: 0),
-      (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0),
+      (Name: 'BIO_new';           VarPtr: @@TOsslApiBioBase.F_BIO_new;           MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_new_ex';        VarPtr: @@TOsslApiBioBase.F_BIO_new_ex;        MinVer: $30000000; FallbackPtr: nil), // 3.0+ Only
+      (Name: 'BIO_free';          VarPtr: @@TOsslApiBioBase.F_BIO_free;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_free_all';      VarPtr: @@TOsslApiBioBase.F_BIO_free_all;      MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_vfree';         VarPtr: @@TOsslApiBioBase.F_BIO_vfree;         MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_up_ref';        VarPtr: @@TOsslApiBioBase.F_BIO_up_ref;        MinVer: 0; FallbackPtr: nil),
 
-      (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0),
-      (Name: 'BIO_write';         VarPtr: @@TOsslApiBioBase.F_BIO_write;         MinVer: 0),
-      (Name: 'BIO_read_ex';       VarPtr: @@TOsslApiBioBase.F_BIO_read_ex;       MinVer: 0),
-      (Name: 'BIO_write_ex';      VarPtr: @@TOsslApiBioBase.F_BIO_write_ex;      MinVer: 0),
+      (Name: 'BIO_read';          VarPtr: @@TOsslApiBioBase.F_BIO_read;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_write';         VarPtr: @@TOsslApiBioBase.F_BIO_write;         MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_read_ex';       VarPtr: @@TOsslApiBioBase.F_BIO_read_ex;       MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_write_ex';      VarPtr: @@TOsslApiBioBase.F_BIO_write_ex;      MinVer: 0; FallbackPtr: nil),
 
-      (Name: 'BIO_ctrl';          VarPtr: @@TOsslApiBioBase.F_BIO_ctrl;          MinVer: 0),
-      (Name: 'BIO_callback_ctrl'; VarPtr: @@TOsslApiBioBase.F_BIO_callback_ctrl; MinVer: 0),
+      (Name: 'BIO_ctrl';          VarPtr: @@TOsslApiBioBase.F_BIO_ctrl;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_callback_ctrl'; VarPtr: @@TOsslApiBioBase.F_BIO_callback_ctrl; MinVer: 0; FallbackPtr: nil),
 
-      (Name: 'BIO_push';          VarPtr: @@TOsslApiBioBase.F_BIO_push;          MinVer: 0),
-      (Name: 'BIO_pop';           VarPtr: @@TOsslApiBioBase.F_BIO_pop;           MinVer: 0),
-      (Name: 'BIO_next';          VarPtr: @@TOsslApiBioBase.F_BIO_next;          MinVer: 0),
-      (Name: 'BIO_find_type';     VarPtr: @@TOsslApiBioBase.F_BIO_find_type;     MinVer: 0),
+      (Name: 'BIO_push';          VarPtr: @@TOsslApiBioBase.F_BIO_push;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_pop';           VarPtr: @@TOsslApiBioBase.F_BIO_pop;           MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_next';          VarPtr: @@TOsslApiBioBase.F_BIO_next;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_find_type';     VarPtr: @@TOsslApiBioBase.F_BIO_find_type;     MinVer: 0; FallbackPtr: nil),
 
         // Introspection
-      (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0),
+      (Name: 'BIO_method_name';   VarPtr: @@TOsslApiBioBase.F_BIO_method_name;   MinVer: 0; FallbackPtr: nil),
         // BIO_method_type is sometimes a macro in older versions, but function in 3.x
         // We will bind it dynamically.
-      (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0),
+      (Name: 'BIO_method_type';   VarPtr: @@TOsslApiBioBase.F_BIO_method_type;   MinVer: 0; FallbackPtr: nil),
 
       // Debug & Data
-      (Name: 'BIO_set_callback_ex'; VarPtr: @@TOsslApiBioBase.F_BIO_set_callback_ex; MinVer: 0),
-      (Name: 'BIO_get_callback_ex'; VarPtr: @@TOsslApiBioBase.F_BIO_get_callback_ex; MinVer: 0),
-      (Name: 'BIO_set_ex_data';     VarPtr: @@TOsslApiBioBase.F_BIO_set_ex_data;     MinVer: 0),
-      (Name: 'BIO_get_ex_data';     VarPtr: @@TOsslApiBioBase.F_BIO_get_ex_data;     MinVer: 0)
+      (Name: 'BIO_set_callback_ex'; VarPtr: @@TOsslApiBioBase.F_BIO_set_callback_ex; MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_get_callback_ex'; VarPtr: @@TOsslApiBioBase.F_BIO_get_callback_ex; MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_set_ex_data';     VarPtr: @@TOsslApiBioBase.F_BIO_set_ex_data;     MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_get_ex_data';     VarPtr: @@TOsslApiBioBase.F_BIO_get_ex_data;     MinVer: 0; FallbackPtr: nil)
     );
 
     class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
@@ -1118,13 +1118,13 @@ type
   {$IFDEF LINK_DYNAMIC}
   strict protected const
     cBindings: array[0..6] of TOsslBindEntry = (
-      (Name: 'BIO_new_bio_pair';             VarPtr: @@TOsslApiBioPair.F_BIO_new_bio_pair;             MinVer: 0),
-      (Name: 'BIO_make_bio_pair';            VarPtr: @@TOsslApiBioPair.F_BIO_make_bio_pair;            MinVer: 0),
-      (Name: 'BIO_destroy_bio_pair';         VarPtr: @@TOsslApiBioPair.F_BIO_destroy_bio_pair;         MinVer: 0),
-      (Name: 'BIO_shutdown_wr';              VarPtr: @@TOsslApiBioPair.F_BIO_shutdown_wr;              MinVer: 0),
-      (Name: 'BIO_ctrl_get_write_guarantee'; VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_get_write_guarantee; MinVer: 0),
-      (Name: 'BIO_ctrl_get_read_request';     VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_get_read_request;    MinVer: 0),
-      (Name: 'BIO_ctrl_reset_read_request';   VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_reset_read_request;  MinVer: 0)
+      (Name: 'BIO_new_bio_pair';             VarPtr: @@TOsslApiBioPair.F_BIO_new_bio_pair;             MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_make_bio_pair';            VarPtr: @@TOsslApiBioPair.F_BIO_make_bio_pair;            MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_destroy_bio_pair';         VarPtr: @@TOsslApiBioPair.F_BIO_destroy_bio_pair;         MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_shutdown_wr';              VarPtr: @@TOsslApiBioPair.F_BIO_shutdown_wr;              MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_ctrl_get_write_guarantee'; VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_get_write_guarantee; MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_ctrl_get_read_request';     VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_get_read_request;    MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_ctrl_reset_read_request';   VarPtr: @@TOsslApiBioPair.F_BIO_ctrl_reset_read_request;  MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
@@ -1219,12 +1219,12 @@ type
 
   strict protected const
     cBindings: array[0..5] of TOsslBindEntry = (
-      (Name: 'BIO_gets';        VarPtr: @@TOsslApiBioText.F_BIO_gets;        MinVer: 0),
-      (Name: 'BIO_puts';        VarPtr: @@TOsslApiBioText.F_BIO_puts;        MinVer: 0),
-      (Name: 'BIO_indent';      VarPtr: @@TOsslApiBioText.F_BIO_indent;      MinVer: 0),
-      (Name: 'BIO_dump';        VarPtr: @@TOsslApiBioText.F_BIO_dump;        MinVer: 0),
-      (Name: 'BIO_dump_indent'; VarPtr: @@TOsslApiBioText.F_BIO_dump_indent; MinVer: 0),
-      (Name: 'BIO_hex_string';  VarPtr: @@TOsslApiBioText.F_BIO_hex_string;  MinVer: 0)
+      (Name: 'BIO_gets';        VarPtr: @@TOsslApiBioText.F_BIO_gets;        MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_puts';        VarPtr: @@TOsslApiBioText.F_BIO_puts;        MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_indent';      VarPtr: @@TOsslApiBioText.F_BIO_indent;      MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_dump';        VarPtr: @@TOsslApiBioText.F_BIO_dump;        MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_dump_indent'; VarPtr: @@TOsslApiBioText.F_BIO_dump_indent; MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_hex_string';  VarPtr: @@TOsslApiBioText.F_BIO_hex_string;  MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
@@ -1333,17 +1333,17 @@ type
 
   strict protected const
     cBindings: array[0..10] of TOsslBindEntry = (
-      (Name: 'BIO_addr_new';          VarPtr: @@TOsslApiBioAddr.F_BIO_addr_new;          MinVer: 0),
-      (Name: 'BIO_addr_free';         VarPtr: @@TOsslApiBioAddr.F_BIO_addr_free;         MinVer: 0),
-      (Name: 'BIO_addr_clear';        VarPtr: @@TOsslApiBioAddr.F_BIO_addr_clear;        MinVer: 0),
-      (Name: 'BIO_addr_family';       VarPtr: @@TOsslApiBioAddr.F_BIO_addr_family;       MinVer: 0),
-      (Name: 'BIO_lookup_ex';         VarPtr: @@TOsslApiBioAddr.F_BIO_lookup_ex;         MinVer: 0),
-      (Name: 'BIO_addrinfo_next';     VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_next;     MinVer: 0),
-      (Name: 'BIO_addrinfo_free';     VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_free;     MinVer: 0),
-      (Name: 'BIO_addrinfo_family';   VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_family;   MinVer: 0),
-      (Name: 'BIO_addrinfo_socktype'; VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_socktype; MinVer: 0),
-      (Name: 'BIO_addrinfo_protocol'; VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_protocol; MinVer: 0),
-      (Name: 'BIO_addrinfo_address';  VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_address;  MinVer: 0)
+      (Name: 'BIO_addr_new';          VarPtr: @@TOsslApiBioAddr.F_BIO_addr_new;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addr_free';         VarPtr: @@TOsslApiBioAddr.F_BIO_addr_free;         MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addr_clear';        VarPtr: @@TOsslApiBioAddr.F_BIO_addr_clear;        MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addr_family';       VarPtr: @@TOsslApiBioAddr.F_BIO_addr_family;       MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_lookup_ex';         VarPtr: @@TOsslApiBioAddr.F_BIO_lookup_ex;         MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addrinfo_next';     VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_next;     MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addrinfo_free';     VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_free;     MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addrinfo_family';   VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_family;   MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addrinfo_socktype'; VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_socktype; MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addrinfo_protocol'; VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_protocol; MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_addrinfo_address';  VarPtr: @@TOsslApiBioAddr.F_BIO_addrinfo_address;  MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
@@ -1424,15 +1424,15 @@ type
 
   strict protected const
     cBindings: array[0..8] of TOsslBindEntry = (
-      (Name: 'BIO_socket';               VarPtr: @@TOsslApiBioSock.F_BIO_socket;               MinVer: 0),
-      (Name: 'BIO_connect';              VarPtr: @@TOsslApiBioSock.F_BIO_connect;              MinVer: 0),
-      (Name: 'BIO_bind';                 VarPtr: @@TOsslApiBioSock.F_BIO_bind;                 MinVer: 0),
-      (Name: 'BIO_listen';               VarPtr: @@TOsslApiBioSock.F_BIO_listen;               MinVer: 0),
-      (Name: 'BIO_accept_ex';            VarPtr: @@TOsslApiBioSock.F_BIO_accept_ex;            MinVer: 0),
-      (Name: 'BIO_closesocket';          VarPtr: @@TOsslApiBioSock.F_BIO_closesocket;          MinVer: 0),
-      (Name: 'BIO_sock_info';            VarPtr: @@TOsslApiBioSock.F_BIO_sock_info;            MinVer: 0),
-      (Name: 'BIO_sock_error';           VarPtr: @@TOsslApiBioSock.F_BIO_sock_error;           MinVer: 0),
-      (Name: 'BIO_sock_non_fatal_error'; VarPtr: @@TOsslApiBioSock.F_BIO_sock_non_fatal_error; MinVer: 0)
+      (Name: 'BIO_socket';               VarPtr: @@TOsslApiBioSock.F_BIO_socket;               MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_connect';              VarPtr: @@TOsslApiBioSock.F_BIO_connect;              MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_bind';                 VarPtr: @@TOsslApiBioSock.F_BIO_bind;                 MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_listen';               VarPtr: @@TOsslApiBioSock.F_BIO_listen;               MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_accept_ex';            VarPtr: @@TOsslApiBioSock.F_BIO_accept_ex;            MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_closesocket';          VarPtr: @@TOsslApiBioSock.F_BIO_closesocket;          MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_sock_info';            VarPtr: @@TOsslApiBioSock.F_BIO_sock_info;            MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_sock_error';           VarPtr: @@TOsslApiBioSock.F_BIO_sock_error;           MinVer: 0; FallbackPtr: nil),
+      (Name: 'BIO_sock_non_fatal_error'; VarPtr: @@TOsslApiBioSock.F_BIO_sock_non_fatal_error; MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
@@ -1520,11 +1520,11 @@ type
       (Name: 'BIO_dgram_non_fatal_error'; VarPtr: @@TOsslApiBioDgram.F_BIO_dgram_non_fatal_error; MinVer: 0; FallbackPtr: nil),
 
       // Available in 3.2+ ($30200000)
-      (Name: 'BIO_sendmmsg';              VarPtr: @@TOsslApiBioDgram.F_BIO_sendmmsg;              MinVer: $30200000),
-      (Name: 'BIO_recvmmsg';              VarPtr: @@TOsslApiBioDgram.F_BIO_recvmmsg;              MinVer: $30200000),
-      (Name: 'BIO_get_rpoll_descriptor';  VarPtr: @@TOsslApiBioDgram.F_BIO_get_rpoll_descriptor;  MinVer: $30200000),
-      (Name: 'BIO_get_wpoll_descriptor';  VarPtr: @@TOsslApiBioDgram.F_BIO_get_wpoll_descriptor;  MinVer: $30200000),
-      (Name: 'BIO_wait';                  VarPtr: @@TOsslApiBioDgram.F_BIO_wait;                  MinVer: $30200000)
+      (Name: 'BIO_sendmmsg';              VarPtr: @@TOsslApiBioDgram.F_BIO_sendmmsg;              MinVer: $30200000; FallbackPtr: nil),
+      (Name: 'BIO_recvmmsg';              VarPtr: @@TOsslApiBioDgram.F_BIO_recvmmsg;              MinVer: $30200000; FallbackPtr: nil),
+      (Name: 'BIO_get_rpoll_descriptor';  VarPtr: @@TOsslApiBioDgram.F_BIO_get_rpoll_descriptor;  MinVer: $30200000; FallbackPtr: nil),
+      (Name: 'BIO_get_wpoll_descriptor';  VarPtr: @@TOsslApiBioDgram.F_BIO_get_wpoll_descriptor;  MinVer: $30200000; FallbackPtr: nil),
+      (Name: 'BIO_wait';                  VarPtr: @@TOsslApiBioDgram.F_BIO_wait;                  MinVer: $30200000; FallbackPtr: nil)
     );
 
   strict private

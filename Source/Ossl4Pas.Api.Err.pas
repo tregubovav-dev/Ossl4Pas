@@ -177,10 +177,10 @@ type
 
   strict private const
     cBindings: array[0..3] of TOsslBindEntry = (
-      (Name: 'ERR_get_error';             VarPtr: @@TOsslApiErrCodes.F_ERR_get_error;            MinVer: 0),
-      (Name: 'ERR_peek_error';            VarPtr: @@TOsslApiErrCodes.F_ERR_peek_error;           MinVer: 0),
-      (Name: 'ERR_peek_last_error';       VarPtr: @@TOsslApiErrCodes.F_ERR_peek_last_error;      MinVer: 0),
-      (Name: 'ERR_clear_error';           VarPtr: @@TOsslApiErrCodes.F_ERR_clear_error;          MinVer: 0)
+      (Name: 'ERR_get_error';             VarPtr: @@TOsslApiErrCodes.F_ERR_get_error;            MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_error';            VarPtr: @@TOsslApiErrCodes.F_ERR_peek_error;           MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_last_error';       VarPtr: @@TOsslApiErrCodes.F_ERR_peek_last_error;      MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_clear_error';           VarPtr: @@TOsslApiErrCodes.F_ERR_clear_error;          MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
@@ -250,17 +250,17 @@ type
 
   strict private const
     cBindings: array[0..10] of TOsslBindEntry = (
-      (Name: 'ERR_error_string';          VarPtr: @@TOsslApiErrStrings.F_ERR_error_string;         MinVer: 0),
-      (Name: 'ERR_error_string_n';        VarPtr: @@TOsslApiErrStrings.F_ERR_error_string_n;       MinVer: 0),
-      (Name: 'ERR_lib_error_string';      VarPtr: @@TOsslApiErrStrings.F_ERR_lib_error_string;     MinVer: 0),
-      (Name: 'ERR_reason_error_string';   VarPtr: @@TOsslApiErrStrings.F_ERR_reason_error_string;  MinVer: 0),
-      (Name: 'ERR_peek_error_func';       VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_func;      MinVer: 0),
-      (Name: 'ERR_peek_last_error_func';  VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_func; MinVer: 0),
-      (Name: 'ERR_peek_error_data';       VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_data;      MinVer: 0),
-      (Name: 'ERR_peek_last_error_data';  VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_data; MinVer: 0),
-      (Name: 'ERR_get_error_all';         VarPtr: @@TOsslApiErrStrings.F_ERR_get_error_all;        MinVer: 0),
-      (Name: 'ERR_peek_error_all';        VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_all;       MinVer: 0),
-      (Name: 'ERR_peek_last_error_all';   VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_all;  MinVer: 0)
+      (Name: 'ERR_error_string';          VarPtr: @@TOsslApiErrStrings.F_ERR_error_string;         MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_error_string_n';        VarPtr: @@TOsslApiErrStrings.F_ERR_error_string_n;       MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_lib_error_string';      VarPtr: @@TOsslApiErrStrings.F_ERR_lib_error_string;     MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_reason_error_string';   VarPtr: @@TOsslApiErrStrings.F_ERR_reason_error_string;  MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_error_func';       VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_func;      MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_last_error_func';  VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_func; MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_error_data';       VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_data;      MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_last_error_data';  VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_data; MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_get_error_all';         VarPtr: @@TOsslApiErrStrings.F_ERR_get_error_all;        MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_error_all';        VarPtr: @@TOsslApiErrStrings.F_ERR_peek_error_all;       MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_peek_last_error_all';   VarPtr: @@TOsslApiErrStrings.F_ERR_peek_last_error_all;  MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
@@ -394,13 +394,12 @@ type
     F_ERR_set_mark:       TRoutine_ERR_set_mark;
     F_ERR_pop_to_mark:    TRoutine_ERR_pop_to_mark;
     F_ERR_print_errors:   TRoutine_ERR_print_errors;
-    F_ERR_put_error:      TRoutine_ERR_put_error;
 
   strict private const
     cBindings: array[0..2] of TOsslBindEntry = (
-      (Name: 'ERR_set_mark';       VarPtr: @@TOsslApiErrSystem.F_ERR_set_mark;       MinVer: 0),
-      (Name: 'ERR_pop_to_mark';    VarPtr: @@TOsslApiErrSystem.F_ERR_pop_to_mark;    MinVer: 0),
-      (Name: 'ERR_print_errors';   VarPtr: @@TOsslApiErrSystem.F_ERR_print_errors;   MinVer: 0)
+      (Name: 'ERR_set_mark';       VarPtr: @@TOsslApiErrSystem.F_ERR_set_mark;       MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_pop_to_mark';    VarPtr: @@TOsslApiErrSystem.F_ERR_pop_to_mark;    MinVer: 0; FallbackPtr: nil),
+      (Name: 'ERR_print_errors';   VarPtr: @@TOsslApiErrSystem.F_ERR_print_errors;   MinVer: 0; FallbackPtr: nil)
     );
 
   strict private
