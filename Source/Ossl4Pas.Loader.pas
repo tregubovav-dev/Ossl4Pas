@@ -1430,7 +1430,7 @@ begin
         begin
           Result:=SysLoadLibrary(lLibPath, lSuppressException);
 
-          if not CheckLibVersion(Result, lLibVer) then
+          if CheckLibVersion(Result, lLibVer) then
           begin
 
             if  lLibVer < cMinVersion then
