@@ -93,13 +93,6 @@ type
     procedure LoadVersion(ALibType: TLibType; AVersion: culong;
       AExpected: boolean);
 
-    [AutoNameTestCase('$3060000F,$3060000F,True')]
-    [AutoNameTestCase('$3060000F,$3060000A,True')]
-    [AutoNameTestCase('$3060000F,$3060100F,True')]
-    [AutoNameTestCase('$3060000F,$3000000F,False')]
-    [AutoNameTestCase('$3000000F,$3060000F,False')]
-    procedure LoadVersionDiff(ACryptoVer, ASslVer: culong; AExpected: boolean);
-
     [AutoNameTestCase('$3060000F')]
     [IgnoreMemoryLeaks]
     // DUnitX report false positive memory leak.
@@ -241,38 +234,6 @@ begin
     Assert.IsTrue(TOsslLoader.LibsLoaded = [], 'No library should remian be loaded.');
   end;
 
-end;
-
-
-procedure TOsslCustomLoaderIntegrationFixture.LoadVersionDiff(ACryptoVer,
-  ASslVer: culong; AExpected: boolean);
-begin
-  MockLibHandler.SetupMock(ltCrypto, TOsslVersion.Create(ACryptoVer));
-  MockLibHandler.SetupMock(ltSsl, TOsslVersion.Create(ASslVer));
-  if AExpected then
-  begin
-    Assert.WillNotRaise(
-      procedure
-      begin
-        TOsslLoader.Load(TOsslCustomLoader.cLibTypesAll, MockLibHandler.WorkDir);
-      end,
-      EOsslLoader
-    );
-    Assert.IsTrue(TOsslLoader.LibsLoaded = TOsslCustomLoader.cLibTypesAll,
-      'All libraries should be loaded.');
-  end
-  else
-  begin
-    Assert.WillRaise(
-      procedure
-      begin
-        TOsslLoader.Load(TOsslCustomLoader.cLibTypesAll, MockLibHandler.WorkDir);
-      end,
-      EOsslLoader
-    );
-    Assert.IsTrue(TOsslLoader.LibsLoaded = [ltCrypto],
-      'The only LibCrypto should remain be loaded.');
-  end;
 end;
 
 procedure TOsslCustomLoaderIntegrationFixture.LoadAndBindLib<T>(

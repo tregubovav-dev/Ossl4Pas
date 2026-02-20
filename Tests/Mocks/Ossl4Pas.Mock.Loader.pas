@@ -81,12 +81,11 @@ begin
   begin
     // Generate a fake non-zero handle (e.g., 1000+EnumValue)
     if not InstIsLibLoaded[lLibType] then
-    begin
       InstLibHandle[lLibType]:=TLibHandle(1000+Ord(lLibType));
-      // Simulate version 3.0.0
-      InstLibVersion[lLibType]:=TOsslVersion.Create(cVersion);
-    end;
   end;
+
+  // Simulate version 3.0.0
+  InstLibVersion:=TOsslVersion.Create(cVersion);
 
   // Simulate the binding process normally handled by InternalLoad
   try

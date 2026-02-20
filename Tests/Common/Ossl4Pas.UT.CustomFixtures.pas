@@ -168,7 +168,7 @@ begin
   // EOsslLoader strings
   lStr := resLoaderNotSet;
   lStr := resLoaderUnsupported;
-  lStr := resNoVersionFound;
+//  lStr := resNoVersionFound;
   lStr := resLoadLibVersionIncompatible;
   lStr := resLoadLibNotFound;
   lStr := resLoadLibVersionsIncompatible;

@@ -38,7 +38,7 @@ type
   [TestFixture]
   TOsslApiCustomFixture = class(TCustomFixture)
   protected
-    function GetLibVersion(ALibType: TLibType): TOsslVersion;
+    function GetLibVersion: TOsslVersion;
   public
     [SetupFixture]
     procedure SetupFixture;
@@ -46,7 +46,7 @@ type
     [TearDownFixture]
     procedure TearDownFixture;
 
-    property LibVersion[ALibType: TLibType]: TOsslVersion read GetLibVersion;
+    property LibVersion: TOsslVersion read GetLibVersion;
 
   end;
 
@@ -221,11 +221,11 @@ end;
 
 { TOsslApiCustomFixture }
 
-function TOsslApiCustomFixture.GetLibVersion(ALibType: TLibType): TOsslVersion;
+function TOsslApiCustomFixture.GetLibVersion: TOsslVersion;
 begin
-  Assert.IsTrue(TOsslLoader.IsLibLoaded[ALibType],
-    Format('OpenSsl library "%s" is not loaded', [TOsslLoader.LibName[ALibType]]));
-  Result:=TOsslLoader.LibVersion[ALibType];
+  Assert.IsTrue(TOsslLoader.IsLibLoaded[ltCrypto],
+    Format('OpenSsl library "%s" is not loaded', [TOsslLoader.LibName[ltCrypto]]));
+  Result:=TOsslLoader.LibVersion;
 end;
 
 procedure TOsslApiCustomFixture.SetupFixture;
@@ -249,11 +249,11 @@ begin
   if not cMethods[AMethod].IsCheckNeeded then
     Exit;
 
-  var lVer:=GetLibVersion(ltCrypto);
+  var lVer:=GetLibVersion;
   var lMinVer:=cMethods[AMethod].MinVer;
 
   if not (lVer.AreCompatible(lMinVer) or (lMinVer > lVer)) then
-    cMethods[AMethod].CheckMethod(LibVersion[ltCrypto], ANullExpected);
+    cMethods[AMethod].CheckMethod(LibVersion, ANullExpected);
   // Otherwise the method is not supported by LibCrypto. Test pass.
   // Do not use Assert.Pass as it reports a False Positive Memory Leak
 end;

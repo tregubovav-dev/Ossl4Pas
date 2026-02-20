@@ -236,7 +236,7 @@ type
   end;
 
   TLibHandleList   = array[TLibType] of TLibHandle;
-  TLibVersionList  = array[TLibType] of TOsslVersion;
+(*  TLibVersionList  = array[TLibType] of TOsslVersion; *)
 
   /// <summary>Callback signature for binding function pointers.</summary>
   TBindProc = procedure(const ALibHandle: TLibHandle;
