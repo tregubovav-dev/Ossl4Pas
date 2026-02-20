@@ -206,6 +206,7 @@ end;
 
 class function TTestApiClass.FallBackIsLibName(var ALibName: PChar): boolean;
 begin
+  Result:=False;
   ALibName:=PChar(nil);
   RaiseFallBackBind(cIsLibName);
 end;

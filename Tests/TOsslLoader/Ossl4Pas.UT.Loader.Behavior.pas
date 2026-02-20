@@ -259,7 +259,7 @@ begin
 
     TOsslCustomLoader.Load([ltCrypto]);
     Assert.AreEqual<culong>(TGlobalLoader.cVersion,
-      TOsslCustomLoader.LibVersion[ltCrypto], 'LibCrypto version mismatch.');
+      TOsslCustomLoader.LibVersion, 'OpenSSL version mismatch.');
 
     Assert.IsTrue(TOsslCustomLoader.IsLibLoaded[ltCrypto],
       'TOsslCustomLoader does not report LibCrypto loaded.');
@@ -285,11 +285,8 @@ begin
     lConsumerCrypto.RegisterBindings;
 
     TOsslCustomLoader.Load([ltSsl]);
-
     Assert.IsTrue(TOsslCustomLoader.IsLibLoaded[ltSsl],
       'TOsslCustomLoader does not report LibSsl loaded.');
-    Assert.AreEqual<culong>(TGlobalLoader.cVersion,
-      TOsslCustomLoader.LibVersion[ltSsl], 'LibSsl version mismatch.');
 
     Assert.IsTrue(lConsumerSsl.Registered, 'LibSsl binding failed.');
     Assert.AreEqual<TLibHandle>(TGlobalLoader.cHandleSsl, lConsumerSsl.Handle,
