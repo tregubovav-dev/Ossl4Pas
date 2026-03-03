@@ -119,7 +119,7 @@ The python script needs to support an "Inverted Matrix" for static builds:
 1.  Loop through defined `openssl_versions`.
 2.  For each version:
     *   Clean output directory.
-    *   Set `OpenSSL_LibPath` property to `lib/openssl/{Ver}/{Plat}/static`.
+    *   Set `OpenSSL_LibPath` property to `lib/openssl/{Ver}/{Plat}/lib/static`.
     *   Set `DCC_Define` to include `LINK_STATIC`.
     *   **Note:** We do *not* define `OSSL_3_x` manually; the inclusion of `ossl_version_scope.inc` handles it.
     *   Build `Test_Api_Static.dproj`.
