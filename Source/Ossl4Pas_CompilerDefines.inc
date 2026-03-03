@@ -24,24 +24,27 @@
 
 
 {$IFDEF CONDITIONALEXPRESSIONS}
-  {$IFDEF DCC}
-    {$IF not (Defined(EXTERNALLINKER) and Defined(LLVM))}
-      // Statick linking must be disabled for WIN32 and WIN64 platforms
-      // as native Delphi linkers for WIN32 and WIN64
-      // do not support `.lib` format.
-      // Possible workaround is to build `amalgamated` '.obj' file per library
-      {$UNDEF LINK_STATIC}
+	{$IFDEF DCC}
+    {$IF Defined(EXTERNALLINKER)}
+      {$IF not Defined(LLVM)}
+        {$DEFINE LLVM}
+      {$ENDIF}
     {$ENDIF}
-  {$ENDIF}
+		{$IF not Defined(LLVM)}
+			// Static linking is supported only witj LLVM-based toolchain
+			// D13 and lower do not support LLVM toolchain for Windows builds
+			{$UNDEF LINK_STATIC}
+		{$ENDIF}
+	{$ENDIF}
 
-  {$IFDEF FPC}
-    {$IF (Defined(WIN64) or Defined(WIN32))}
-      {$UNDEF LINK_STATIC}
-    {$ENDIF}
-  {$ENDIF}
+	{$IFDEF FPC}
+		{$IF (Defined(WIN64) or Defined(WIN32))}
+			{$UNDEF LINK_STATIC}
+		{$ENDIF}
+	{$ENDIF}
 
-  {$IFDEF LINK_STATIC}
-    {$UNDEF LINK_DYNAMIC}
+	{$IFDEF LINK_STATIC}
+		{$UNDEF LINK_DYNAMIC}
   {$ELSE}
     {$DEFINE LINK_DYNAMIC}
   {$ENDIF}
@@ -94,14 +97,14 @@
     {$IFNDEF POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
-  {$IFEND}
+  {$ENDIF}
 
   {$IF Defined(DCC) AND Defined(IOS)}
     {$DEFINE T_IOS}
     {$IFNDEF POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
-  {$IFEND}
+  {$ENDIF}
 
   {$IF Defined(FPC) AND
     (Defined(MACOS) AND Defined(DARWIN) AND (NOT Defined(IOS)))}
@@ -109,14 +112,14 @@
     {$IFNDEF POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
-  {$IFEND}
+  {$ENDIF}
 
   {$IF Defined(FPC) AND (Defined(DARWIN) AND Defined(IOS))}
     {$DEFINE T_IOS}
     {$IFNDEF POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
-  {$IFEND}
+  {$ENDIF}
 
   // noreturn directive
   {$IFNDEF NORETURN}
@@ -124,17 +127,17 @@
       {$DEFINE NORETURN}
     {$ELSEIF Defined(FPC) AND (FPC_FULLVERSION >= 30200)}
       {$DEFINE NORETURN}
-    {$IFEND}
+    {$ENDIF}
   {$ENDIF}
 
   // Define inlining support
   {$IF (NOT Defined(DEBUG)) OR Defined(INLINE_OFF)}
     {$DEFINE INLINE_ON}
-  {$IFEND}
+  {$ENDIF}
 
   {$IF NOT (Defined(INLINE_ON)) AND Defined(INLINE_FORCE_ON)}
     {$DEFINE INLINE_ON}
-  {$IFEND}
+  {$ENDIF}
 
   {$IF Defined(DCC) and (CompilerVersion >= 36)}
     {$DEFINE USE_TINTERLOCKED}
@@ -162,7 +165,8 @@
   // static linkage
   {$IF Defined(T_IOS)}
     {$DEFINE LINK_STATIC}
-  {$IFEND}
+	{$ENDIF}
+
 
 {$ELSE}
   {$MESSAGE Warning 'Unsupported compiler version'}
