@@ -1575,8 +1575,10 @@ type
 
 implementation
 
+{$IFDEF LINK_STATIC}
 uses
 	Ossl4Pas.Static;
+{$ENDIF}
 
 {$I Ossl4Pas_Versions.inc}
 
@@ -1611,7 +1613,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_mem: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_mem';
+function F_BIO_s_mem: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_mem';
 {$ENDIF}
 
 class function TOsslApiBioMethodMem.GetMethodHandle: PBIO_METHOD;
@@ -1653,7 +1655,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_file: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_file';
+function F_BIO_s_file: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_file';
 {$ENDIF}
 
 class function TOsslApiBioMethodFile.GetMethodHandle: PBIO_METHOD;
@@ -1695,7 +1697,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_socket: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_socket';
+function F_BIO_s_socket: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_socket';
 {$ENDIF}
 
 
@@ -1738,7 +1740,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_null: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_null';
+function F_BIO_s_null: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_null';
 {$ENDIF}
 
 class function TOsslApiBioMethodNull.GetMethodHandle: PBIO_METHOD;
@@ -1778,7 +1780,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_secmem: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_secmem';
+function F_BIO_s_secmem: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_secmem';
 {$ENDIF}
 
 class function TOsslApiBioMethodSecMem.GetMethodHandle: PBIO_METHOD;
@@ -1818,7 +1820,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_connect: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_connect';
+function F_BIO_s_connect: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_connect';
 {$ENDIF}
 
 class function TOsslApiBioMethodConnect.GetMethodHandle: PBIO_METHOD;
@@ -1858,7 +1860,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_accept: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_accept';
+function F_BIO_s_accept: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_accept';
 {$ENDIF}
 
 class function TOsslApiBioMethodAccept.GetMethodHandle: PBIO_METHOD;
@@ -1898,7 +1900,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_fd: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_fd';
+function F_BIO_s_fd: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_fd';
 {$ENDIF}
 
 class function TOsslApiBioMethodFd.GetMethodHandle: PBIO_METHOD;
@@ -1938,7 +1940,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_log: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_log';
+function F_BIO_s_log: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_log';
 {$ENDIF}
 
 class function TOsslApiBioMethodLog.GetMethodHandle: PBIO_METHOD;
@@ -1978,7 +1980,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_bio: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_bio';
+function F_BIO_s_bio: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_bio';
 {$ENDIF}
 
 class function TOsslApiBioMethodBio.GetMethodHandle: PBIO_METHOD;
@@ -2018,7 +2020,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_core: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_core';
+function F_BIO_s_core: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_core';
 {$ENDIF}
 
 class function TOsslApiBioMethodCore.GetMethodHandle: PBIO_METHOD;
@@ -2060,7 +2062,7 @@ end;
 
 {$IFDEF LINK_STATIC}
   {$IFDEF OSSL_3_2}
-function F_BIO_s_dgram_pair: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_dgram_pair';
+function F_BIO_s_dgram_pair: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_dgram_pair';
   {$ELSE}
 function F_BIO_s_dgram_pair: PBIO_METHOD; cdecl;
 begin
@@ -2106,7 +2108,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_s_datagram: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_datagram';
+function F_BIO_s_datagram: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_datagram';
 {$ENDIF}
 
 class function TOsslApiBioMethodDatagram.GetMethodHandle: PBIO_METHOD;
@@ -2147,7 +2149,7 @@ end;
 
 {$IFDEF LINK_STATIC}
   {$IFDEF T_LINUX}
-function F_BIO_s_datagram_sctp: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_s_datagram_sctp';
+function F_BIO_s_datagram_sctp: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_s_datagram_sctp';
   {$ELSE}
 function F_BIO_s_datagram_sctp: PBIO_METHOD; cdecl;
 begin
@@ -2198,7 +2200,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_f_null: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_f_null';
+function F_BIO_f_null: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_f_null';
 {$ENDIF}
 
 class function TOsslApiBioFilterNull.GetMethodHandle: PBIO_METHOD;
@@ -2238,7 +2240,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_f_buffer: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_f_buffer';
+function F_BIO_f_buffer: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_f_buffer';
 {$ENDIF}
 
 class function TOsslApiBioFilterBuffer.GetMethodHandle: PBIO_METHOD;
@@ -2278,7 +2280,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_f_readbuffer: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_f_readbuffer';
+function F_BIO_f_readbuffer: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_f_readbuffer';
 {$ENDIF}
 
 class function TOsslApiBioFilterReadBuffer.GetMethodHandle: PBIO_METHOD;
@@ -2318,7 +2320,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_f_linebuffer: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_f_linebuffer';
+function F_BIO_f_linebuffer: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_f_linebuffer';
 {$ENDIF}
 
 class function TOsslApiBioFilterLineBuffer.GetMethodHandle: PBIO_METHOD;
@@ -2358,7 +2360,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_f_nbio_test: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_f_nbio_test';
+function F_BIO_f_nbio_test: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_f_nbio_test';
 {$ENDIF}
 
 class function TOsslApiBioFilterNbioTest.GetMethodHandle: PBIO_METHOD;
@@ -2398,7 +2400,7 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_f_prefix: PBIO_METHOD; cdecl; external 'libcrypto.a' name 'BIO_f_prefix';
+function F_BIO_f_prefix: PBIO_METHOD; cdecl; external cLibCryptoLib name 'BIO_f_prefix';
 {$ENDIF}
 
 class function TOsslApiBioFilterPrefix.BIO_f_prefix: PBIO_METHOD;
@@ -2440,30 +2442,30 @@ end;
 // ... Implementation of static wrappers ...
 
 {$IFDEF LINK_STATIC}
-function F_BIO_new_ex(libctx: POSSL_LIB_CTX; propq: PAnsiChar; Method: PBIO_METHOD): PBIO; cdecl; external 'libcrypto.a' name 'BIO_new_ex';
-function F_BIO_free(a: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_free';
-procedure F_BIO_free_all(a: PBIO); cdecl; external 'libcrypto.a' name 'BIO_free_all';
-procedure F_BIO_vfree(a: PBIO); cdecl; external 'libcrypto.a' name 'BIO_vfree';
-function F_BIO_up_ref(a: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_up_ref';
-function F_BIO_read(b: PBIO; data: pointer; dlen: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_read';
-function F_BIO_write(b: PBIO; data: pointer; dlen: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_write';
-function F_BIO_read_ex(b: PBIO; data: pointer; dlen: csize_t; readbytes: pcsize_t): cint; cdecl; external 'libcrypto.a' name 'BIO_read_ex';
-function F_BIO_write_ex(b: PBIO; data: pointer; dlen: csize_t; written: pcsize_t): cint; cdecl; external 'libcrypto.a' name 'BIO_write_ex';
-function F_BIO_ctrl(b: PBIO; cmd: cint; larg: clong; parg: pointer): clong; cdecl; external 'libcrypto.a' name 'BIO_ctrl';
-function F_BIO_callback_ctrl(b: PBIO; cmd: cint; fp: pointer): clong; cdecl; external 'libcrypto.a' name 'BIO_callback_ctrl';
-function F_BIO_push(b: PBIO; append: PBIO): PBIO; cdecl; external 'libcrypto.a' name 'BIO_push';
-function F_BIO_pop(b: PBIO): PBIO; cdecl; external 'libcrypto.a' name 'BIO_pop';
-function F_BIO_next(b: PBIO): PBIO; cdecl; external 'libcrypto.a' name 'BIO_next';
-function F_BIO_find_type(b: PBIO; bio_type: cint): PBIO; cdecl; external 'libcrypto.a' name 'BIO_find_type';
-function F_BIO_method_name(b: PBIO): PAnsiChar; cdecl; external 'libcrypto.a' name 'BIO_method_name';
-function F_BIO_method_type(b: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_method_type';
-function F_BIO_set_callback_ex(b: PBIO; cb: TBIO_callback_fn_ex): cint; cdecl; external 'libcrypto.a' name 'BIO_set_callback_ex';
-function F_BIO_get_callback_ex(b: PBIO): TBIO_callback_fn_ex; cdecl; external 'libcrypto.a' name 'BIO_get_callback_ex';
-function F_BIO_set_ex_data(bio: PBIO; idx: cint; data: pointer): cint; cdecl; external 'libcrypto.a' name 'BIO_set_ex_data';
-function F_BIO_get_ex_data(bio: PBIO; idx: cint): pointer; cdecl; external 'libcrypto.a' name 'BIO_get_ex_data';
+function F_BIO_new_ex(libctx: POSSL_LIB_CTX; propq: PAnsiChar; Method: PBIO_METHOD): PBIO; cdecl; external cLibCryptoLib name 'BIO_new_ex';
+function F_BIO_free(a: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_free';
+procedure F_BIO_free_all(a: PBIO); cdecl; external cLibCryptoLib name 'BIO_free_all';
+procedure F_BIO_vfree(a: PBIO); cdecl; external cLibCryptoLib name 'BIO_vfree';
+function F_BIO_up_ref(a: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_up_ref';
+function F_BIO_read(b: PBIO; data: pointer; dlen: cint): cint; cdecl; external cLibCryptoLib name 'BIO_read';
+function F_BIO_write(b: PBIO; data: pointer; dlen: cint): cint; cdecl; external cLibCryptoLib name 'BIO_write';
+function F_BIO_read_ex(b: PBIO; data: pointer; dlen: csize_t; readbytes: pcsize_t): cint; cdecl; external cLibCryptoLib name 'BIO_read_ex';
+function F_BIO_write_ex(b: PBIO; data: pointer; dlen: csize_t; written: pcsize_t): cint; cdecl; external cLibCryptoLib name 'BIO_write_ex';
+function F_BIO_ctrl(b: PBIO; cmd: cint; larg: clong; parg: pointer): clong; cdecl; external cLibCryptoLib name 'BIO_ctrl';
+function F_BIO_callback_ctrl(b: PBIO; cmd: cint; fp: pointer): clong; cdecl; external cLibCryptoLib name 'BIO_callback_ctrl';
+function F_BIO_push(b: PBIO; append: PBIO): PBIO; cdecl; external cLibCryptoLib name 'BIO_push';
+function F_BIO_pop(b: PBIO): PBIO; cdecl; external cLibCryptoLib name 'BIO_pop';
+function F_BIO_next(b: PBIO): PBIO; cdecl; external cLibCryptoLib name 'BIO_next';
+function F_BIO_find_type(b: PBIO; bio_type: cint): PBIO; cdecl; external cLibCryptoLib name 'BIO_find_type';
+function F_BIO_method_name(b: PBIO): PAnsiChar; cdecl; external cLibCryptoLib name 'BIO_method_name';
+function F_BIO_method_type(b: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_method_type';
+function F_BIO_set_callback_ex(b: PBIO; cb: TBIO_callback_fn_ex): cint; cdecl; external cLibCryptoLib name 'BIO_set_callback_ex';
+function F_BIO_get_callback_ex(b: PBIO): TBIO_callback_fn_ex; cdecl; external cLibCryptoLib name 'BIO_get_callback_ex';
+function F_BIO_set_ex_data(bio: PBIO; idx: cint; data: pointer): cint; cdecl; external cLibCryptoLib name 'BIO_set_ex_data';
+function F_BIO_get_ex_data(bio: PBIO; idx: cint): pointer; cdecl; external cLibCryptoLib name 'BIO_get_ex_data';
 {$ENDIF}
 
-function F_BIO_new(Method: PBIO_METHOD): PBIO; cdecl; external 'libcrypto.a' name 'BIO_new';
+function F_BIO_new(Method: PBIO_METHOD): PBIO; cdecl; external cLibCryptoLib name 'BIO_new';
 
 class function TOsslApiBioBase.BIO_new(Method: PBIO_METHOD): PBIO;
 begin
@@ -2660,13 +2662,13 @@ end;
 // -----------------------------------------------------------------------------
 
 {$IFDEF LINK_STATIC}
-function F_BIO_new_bio_pair(bio1: PPBIO; writebuf1: csize_t; bio2: PPBIO; writebuf2: csize_t): cint; cdecl; external 'libcrypto.a' name 'BIO_new_bio_pair';
-function F_BIO_make_bio_pair(b1: PBIO; b2: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_make_bio_pair';
-function F_BIO_destroy_bio_pair(b: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_destroy_bio_pair';
-function F_BIO_shutdown_wr(b: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_shutdown_wr';
-function F_BIO_ctrl_get_write_guarantee(b: PBIO): csize_t; cdecl; external 'libcrypto.a' name 'BIO_ctrl_get_write_guarantee';
-function F_BIO_ctrl_get_read_request(b: PBIO): csize_t; cdecl; external 'libcrypto.a' name 'BIO_ctrl_get_read_request';
-function F_BIO_ctrl_reset_read_request(b: PBIO): cint; cdecl; external 'libcrypto.a' name 'BIO_ctrl_reset_read_request';
+function F_BIO_new_bio_pair(bio1: PPBIO; writebuf1: csize_t; bio2: PPBIO; writebuf2: csize_t): cint; cdecl; external cLibCryptoLib name 'BIO_new_bio_pair';
+function F_BIO_make_bio_pair(b1: PBIO; b2: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_make_bio_pair';
+function F_BIO_destroy_bio_pair(b: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_destroy_bio_pair';
+function F_BIO_shutdown_wr(b: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_shutdown_wr';
+function F_BIO_ctrl_get_write_guarantee(b: PBIO): csize_t; cdecl; external cLibCryptoLib name 'BIO_ctrl_get_write_guarantee';
+function F_BIO_ctrl_get_read_request(b: PBIO): csize_t; cdecl; external cLibCryptoLib name 'BIO_ctrl_get_read_request';
+function F_BIO_ctrl_reset_read_request(b: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_ctrl_reset_read_request';
 {$ENDIF}
 
 
@@ -2764,12 +2766,12 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_gets';
-function F_BIO_puts(b: PBIO; buf: PAnsiChar): cint; cdecl; external 'libcrypto.a' name 'BIO_puts';
-function F_BIO_indent(b: PBIO; indent, max: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_indent';
-function F_BIO_dump(b: PBIO; data: Pointer; len: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_dump';
-function F_BIO_dump_indent(b: PBIO; data: Pointer; len: cint; indent: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_dump_indent';
-function F_BIO_hex_string(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_hex_string';
+function F_BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint; cdecl; external cLibCryptoLib name 'BIO_gets';
+function F_BIO_puts(b: PBIO; buf: PAnsiChar): cint; cdecl; external cLibCryptoLib name 'BIO_puts';
+function F_BIO_indent(b: PBIO; indent, max: cint): cint; cdecl; external cLibCryptoLib name 'BIO_indent';
+function F_BIO_dump(b: PBIO; data: Pointer; len: cint): cint; cdecl; external cLibCryptoLib name 'BIO_dump';
+function F_BIO_dump_indent(b: PBIO; data: Pointer; len: cint; indent: cint): cint; cdecl; external cLibCryptoLib name 'BIO_dump_indent';
+function F_BIO_hex_string(out_: PBIO; indent, width: cint; data: Pointer; len: cint): cint; cdecl; external cLibCryptoLib name 'BIO_hex_string';
 {$ENDIF}
 
 
@@ -2830,17 +2832,17 @@ end;
 // -----------------------------------------------------------------------------
 
 {$IFDEF LINK_STATIC}
-function F_BIO_addr_new: PBIO_ADDR; cdecl; external 'libcrypto.a' name 'BIO_ADDR_new';
-procedure F_BIO_addr_free(ap: PBIO_ADDR); cdecl; external 'libcrypto.a' name 'BIO_ADDR_free';
-procedure F_BIO_addr_clear(ap: PBIO_ADDR); cdecl; external 'libcrypto.a' name 'BIO_ADDR_clear';
-function F_BIO_addr_family(ap: PBIO_ADDR): cint; cdecl; external 'libcrypto.a' name 'BIO_ADDR_family';
-function F_BIO_lookup_ex(host: PAnsiChar; service: PAnsiChar; lookup_type: cint; family: cint; socktype: cint; protocol: cint; out res: PBIO_ADDRINFO): cint; cdecl; external 'libcrypto.a' name 'BIO_lookup_ex';
-function F_BIO_addrinfo_next(bai: PBIO_ADDRINFO): PBIO_ADDRINFO; cdecl; external 'libcrypto.a' name 'BIO_ADDRINFO_next';
-procedure F_BIO_addrinfo_free(bai: PBIO_ADDRINFO); cdecl; external 'libcrypto.a' name 'BIO_ADDRINFO_free';
-function F_BIO_addrinfo_family(bai: PBIO_ADDRINFO): cint; cdecl; external 'libcrypto.a' name 'BIO_ADDRINFO_family';
-function F_BIO_addrinfo_socktype(bai: PBIO_ADDRINFO): cint; cdecl; external 'libcrypto.a' name 'BIO_ADDRINFO_socktype';
-function F_BIO_addrinfo_protocol(bai: PBIO_ADDRINFO): cint; cdecl; external 'libcrypto.a' name 'BIO_ADDRINFO_protocol';
-function F_BIO_addrinfo_address(bai: PBIO_ADDRINFO): PBIO_ADDR; cdecl; external 'libcrypto.a' name 'BIO_ADDRINFO_address';
+function F_BIO_addr_new: PBIO_ADDR; cdecl; external cLibCryptoLib name 'BIO_ADDR_new';
+procedure F_BIO_addr_free(ap: PBIO_ADDR); cdecl; external cLibCryptoLib name 'BIO_ADDR_free';
+procedure F_BIO_addr_clear(ap: PBIO_ADDR); cdecl; external cLibCryptoLib name 'BIO_ADDR_clear';
+function F_BIO_addr_family(ap: PBIO_ADDR): cint; cdecl; external cLibCryptoLib name 'BIO_ADDR_family';
+function F_BIO_lookup_ex(host: PAnsiChar; service: PAnsiChar; lookup_type: cint; family: cint; socktype: cint; protocol: cint; out res: PBIO_ADDRINFO): cint; cdecl; external cLibCryptoLib name 'BIO_lookup_ex';
+function F_BIO_addrinfo_next(bai: PBIO_ADDRINFO): PBIO_ADDRINFO; cdecl; external cLibCryptoLib name 'BIO_ADDRINFO_next';
+procedure F_BIO_addrinfo_free(bai: PBIO_ADDRINFO); cdecl; external cLibCryptoLib name 'BIO_ADDRINFO_free';
+function F_BIO_addrinfo_family(bai: PBIO_ADDRINFO): cint; cdecl; external cLibCryptoLib name 'BIO_ADDRINFO_family';
+function F_BIO_addrinfo_socktype(bai: PBIO_ADDRINFO): cint; cdecl; external cLibCryptoLib name 'BIO_ADDRINFO_socktype';
+function F_BIO_addrinfo_protocol(bai: PBIO_ADDRINFO): cint; cdecl; external cLibCryptoLib name 'BIO_ADDRINFO_protocol';
+function F_BIO_addrinfo_address(bai: PBIO_ADDRINFO): PBIO_ADDR; cdecl; external cLibCryptoLib name 'BIO_ADDRINFO_address';
 {$ENDIF}
 
 
@@ -2928,15 +2930,15 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_socket(domain: cint; socktype: cint; protocol: cint; options: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_socket';
-function F_BIO_connect(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_connect';
-function F_BIO_bind(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_bind';
-function F_BIO_listen(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_listen';
-function F_BIO_accept_ex(accept_sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_accept_ex';
-function F_BIO_closesocket(sock: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_closesocket';
-function F_BIO_sock_info(sock: cint; type_: cint; info: Pointer): cint; cdecl; external 'libcrypto.a' name 'BIO_sock_info';
-function F_BIO_sock_error(sock: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_sock_error';
-function F_BIO_sock_non_fatal_error(error: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_sock_non_fatal_error';
+function F_BIO_socket(domain: cint; socktype: cint; protocol: cint; options: cint): cint; cdecl; external cLibCryptoLib name 'BIO_socket';
+function F_BIO_connect(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external cLibCryptoLib name 'BIO_connect';
+function F_BIO_bind(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external cLibCryptoLib name 'BIO_bind';
+function F_BIO_listen(sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external cLibCryptoLib name 'BIO_listen';
+function F_BIO_accept_ex(accept_sock: cint; addr: PBIO_ADDR; options: cint): cint; cdecl; external cLibCryptoLib name 'BIO_accept_ex';
+function F_BIO_closesocket(sock: cint): cint; cdecl; external cLibCryptoLib name 'BIO_closesocket';
+function F_BIO_sock_info(sock: cint; type_: cint; info: Pointer): cint; cdecl; external cLibCryptoLib name 'BIO_sock_info';
+function F_BIO_sock_error(sock: cint): cint; cdecl; external cLibCryptoLib name 'BIO_sock_error';
+function F_BIO_sock_non_fatal_error(error: cint): cint; cdecl; external cLibCryptoLib name 'BIO_sock_non_fatal_error';
 {$ENDIF}
 
 class function TOsslApiBioSock.BIO_socket(domain, socktype, protocol,
@@ -3012,13 +3014,13 @@ end;
 {$ENDIF}
 
 {$IFDEF LINK_STATIC}
-function F_BIO_dgram_non_fatal_error(error: cint): cint; cdecl; external 'libcrypto.a' name 'BIO_dgram_non_fatal_error';
+function F_BIO_dgram_non_fatal_error(error: cint): cint; cdecl; external cLibCryptoLib name 'BIO_dgram_non_fatal_error';
   {$IFDEF OSSL_3_2}
-function F_BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t; num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; cdecl; external 'libcrypto.a' name 'BIO_sendmmsg';
-function F_BIO_recvmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t; num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; cdecl; external 'libcrypto.a' name 'BIO_recvmmsg';
-function F_BIO_get_rpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl; external 'libcrypto.a' name 'BIO_get_rpoll_descriptor';
-function F_BIO_get_wpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl; external 'libcrypto.a' name 'BIO_get_wpoll_descriptor';
-function F_BIO_wait(b: PBIO; max_time: time_t; flags: cuint): cint; cdecl; external 'libcrypto.a' name 'BIO_wait';
+function F_BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t; num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; cdecl; external cLibCryptoLib name 'BIO_sendmmsg';
+function F_BIO_recvmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t; num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; cdecl; external cLibCryptoLib name 'BIO_recvmmsg';
+function F_BIO_get_rpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl; external cLibCryptoLib name 'BIO_get_rpoll_descriptor';
+function F_BIO_get_wpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; cdecl; external cLibCryptoLib name 'BIO_get_wpoll_descriptor';
+function F_BIO_wait(b: PBIO; max_time: time_t; flags: cuint): cint; cdecl; external cLibCryptoLib name 'BIO_wait';
   {$ELSE}
 function F_BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t; num_msg: csize_t;
   flags: UInt64; msgs_processed: pcsize_t): cint; cdecl;

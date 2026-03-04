@@ -443,29 +443,29 @@ uses
 {$REGION 'Static reoutine declarations'}
   {$IFDEF LINK_STATIC}
   // 1. STATIC LINKING
-  // Map internal F_XXX names to external symbols
-  function F_ERR_get_error: culong; cdecl; external 'libcrypto.a' name 'ERR_get_error';
-  function F_ERR_peek_error: culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error';
-  function F_ERR_peek_last_error: culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error';
-  procedure F_ERR_clear_error; cdecl; external 'libcrypto.a' name 'ERR_clear_error';
+	// Map internal F_XXX names to external symbols
+	function F_ERR_get_error: culong; cdecl; external cLibCryptoLib name 'ERR_get_error';
+	function F_ERR_peek_error: culong; cdecl; external cLibCryptoLib name 'ERR_peek_error';
+  function F_ERR_peek_last_error: culong; cdecl; external cLibCryptoLib name 'ERR_peek_last_error';
+  procedure F_ERR_clear_error; cdecl; external cLibCryptoLib name 'ERR_clear_error';
 
-  function F_ERR_error_string(e: culong; buf: PAnsiChar): PAnsiChar; cdecl; external 'libcrypto.a' name 'ERR_error_string';
-  procedure F_ERR_error_string_n(e: culong; buf: PAnsiChar; len: size_t); cdecl; external 'libcrypto.a' name 'ERR_error_string_n';
-  function F_ERR_lib_error_string(e: culong): PAnsiChar; cdecl; external 'libcrypto.a' name 'ERR_lib_error_string';
-  function F_ERR_reason_error_string(e: culong): PAnsiChar; cdecl; external 'libcrypto.a' name 'ERR_reason_error_string';
+  function F_ERR_error_string(e: culong; buf: PAnsiChar): PAnsiChar; cdecl; external cLibCryptoLib name 'ERR_error_string';
+  procedure F_ERR_error_string_n(e: culong; buf: PAnsiChar; len: size_t); cdecl; external cLibCryptoLib name 'ERR_error_string_n';
+  function F_ERR_lib_error_string(e: culong): PAnsiChar; cdecl; external cLibCryptoLib name 'ERR_lib_error_string';
+  function F_ERR_reason_error_string(e: culong): PAnsiChar; cdecl; external cLibCryptoLib name 'ERR_reason_error_string';
 
-  function F_ERR_peek_error_func(func: PPAnsiChar): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error_func';
-  function F_ERR_peek_last_error_func(func: PPAnsiChar): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error_func';
-  function F_ERR_peek_error_data(data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error_data';
-  function F_ERR_peek_last_error_data(data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error_data';
+  function F_ERR_peek_error_func(func: PPAnsiChar): culong; cdecl; external cLibCryptoLib name 'ERR_peek_error_func';
+  function F_ERR_peek_last_error_func(func: PPAnsiChar): culong; cdecl; external cLibCryptoLib name 'ERR_peek_last_error_func';
+  function F_ERR_peek_error_data(data: PPAnsiChar; flags: Pcint): culong; cdecl; external cLibCryptoLib name 'ERR_peek_error_data';
+  function F_ERR_peek_last_error_data(data: PPAnsiChar; flags: Pcint): culong; cdecl; external cLibCryptoLib name 'ERR_peek_last_error_data';
 
-  function F_ERR_get_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_get_error_all';
-  function F_ERR_peek_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_error_all';
-  function F_ERR_peek_last_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external 'libcrypto.a' name 'ERR_peek_last_error_all';
+  function F_ERR_get_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external cLibCryptoLib name 'ERR_get_error_all';
+  function F_ERR_peek_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external cLibCryptoLib name 'ERR_peek_error_all';
+  function F_ERR_peek_last_error_all(file_: PPAnsiChar; line: Pcint; func: PPAnsiChar; data: PPAnsiChar; flags: Pcint): culong; cdecl; external cLibCryptoLib name 'ERR_peek_last_error_all';
 
-  function F_ERR_set_mark: cint; cdecl; external 'libcrypto.a' name 'ERR_set_mark';
-  function F_ERR_pop_to_mark: cint; cdecl; external 'libcrypto.a' name 'ERR_pop_to_mark';
-  procedure F_ERR_print_errors(bp: PBIO); cdecl; external 'libcrypto.a' name 'ERR_print_errors';
+  function F_ERR_set_mark: cint; cdecl; external cLibCryptoLib name 'ERR_set_mark';
+  function F_ERR_pop_to_mark: cint; cdecl; external cLibCryptoLib name 'ERR_pop_to_mark';
+	procedure F_ERR_print_errors(bp: PBIO); cdecl; external cLibCryptoLib name 'ERR_print_errors';
   {$ENDIF}
 {$ENDREGION}
 
