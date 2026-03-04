@@ -426,15 +426,19 @@ type
 
 implementation
 
-{$I Ossl4Pas_Versions.inc}
-{$I Ossl4Pas_StaticDeps.inc}
-
 uses
-  {$IFDEF DCC}
-  System.AnsiStrings,
-  {$ENDIF}
-  Ossl4Pas.Loader,
-  Ossl4Pas.ResStrings;
+	{$IFDEF DCC}
+	System.AnsiStrings,
+	{$ENDIF}
+	{$IFDEF LINK_STATIC}
+	Ossl4Pas.Static,
+	{$ENDIF}
+	{$IFDEF LINK_DYNAMIC}
+	Ossl4Pas.Loader,
+	{$ENDIF}
+	Ossl4Pas.ResStrings;
+
+{$I Ossl4Pas_Versions.inc}
 
 {$REGION 'Static reoutine declarations'}
   {$IFDEF LINK_STATIC}

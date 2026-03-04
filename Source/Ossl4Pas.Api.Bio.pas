@@ -1575,8 +1575,10 @@ type
 
 implementation
 
+uses
+	Ossl4Pas.Static;
+
 {$I Ossl4Pas_Versions.inc}
-{$I Ossl4Pas_StaticDeps.inc}
 
 { TOsslApiBioCustomMethod }
 

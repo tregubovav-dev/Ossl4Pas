@@ -16,27 +16,38 @@
 {                                                                              }
 {******************************************************************************}
 
+unit Ossl4Pas.Static;
+
+{$I Ossl4Pas_CompilerDefines.inc}
+
+interface
+
 {$IFDEF LINK_STATIC}
-  {$IFDEF T_WINDOWS}
-  // There is a Delphi Native linker limitation to use '.lib' files
-  // This clause should not be used with Win32/Win64 Platforms
-    {$IFDEF DCC}
-      {$LINK 'libssl.lib'}
-      {$LINK 'libcrypto.lib'}
-    {$ENDIF}
-    {$IFDEF FPC}
-      {$LINKLIB 'libssl.lib'}
-      {$LINKLIB 'libcrypto.lib'}
-    {$ENDIF}
-  {$ENDIF}
-  {$IFDEF T_POSIX}
-    {$IFDEF DCC}
-      {$LINK 'libssl.a'}
-      {$LINK 'libcrypto.a'}
-    {$ENDIF}
-    {$IFDEF FPC}
-      {$LINKLIB 'libssl.a'}
-      {$LINKLIB 'libcrypto.a'}
-    {$ENDIF}
-  {$ENDIF}
+	{$IFDEF T_WINDOWS}
+const
+	cLibCryptoLib = 'libcrypto.lib';
+	cLibSslLib    = 'libssl.lib';
+	{$ENDIF}
+	{$IFDEF T_POSIX}
+const
+	cLibCryptoLib = 'libcrypto.a';
+	cLibSslLib    = 'libssl.a';
+	{$ENDIF}
 {$ENDIF}
+
+implementation
+
+{$IFDEF T_LINUX}
+{$HINTS OFF}
+// We have to export __dso_handle in Linux if OpenSSL static library
+// built without 'no-dso' flag.
+procedure  __dso_handle; cdecl;
+begin
+end;
+
+exports
+	__dso_handle;
+{$HINTS ON}
+{$ENDIF}
+
+end.
