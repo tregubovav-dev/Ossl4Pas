@@ -18,3 +18,4 @@
 
 // Currenlty supported OpenSsl shared library version
 {$DEFINE OSSL_3_6}
+{$DEFINE OSSL_STRICT_3_6}
