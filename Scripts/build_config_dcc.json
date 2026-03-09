@@ -49,8 +49,8 @@
   },
 
   "dependencies": {
-    "openssl_root": "CI\\lib\\ossl\\{platform}\\{version}",
-    "openssl_versions": ["3.0", "3.6"]
+    "openssl_root": "lib\\openssl\\{version}\\{platform}\\shared",
+    "openssl_versions": ["3.0.19", "3.6.1"]
   },
 
   "common_params": {

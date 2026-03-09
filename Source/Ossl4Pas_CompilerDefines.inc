@@ -73,6 +73,11 @@
     {$DEFINE T_WINDOWS}
   {$ENDIF}
 
+  {$IFDEF WIN64EC}
+    {$DEFINE T_WIN64EC}
+    {$DEFINE T_WINDOWS}
+  {$ENDIF}
+
   {$IFDEF WIN32}
     {$DEFINE T_WIN32}
     {$DEFINE T_WINDOWS}
@@ -109,7 +114,7 @@
 	{$IF Defined(FPC) AND
 		(Defined(MACOS) AND Defined(DARWIN) AND (NOT Defined(IOS)))}
 		{$DEFINE T_OSX}
-		{$IFNDEF POSIX}
+		{$IFNDEF T_POSIX}
 			{$DEFINE T_POSIX}
 		{$ENDIF}
 	{$ENDIF}
