@@ -24,27 +24,24 @@
 
 
 {$IFDEF CONDITIONALEXPRESSIONS}
-	{$IFDEF DCC}
-    {$IF Defined(EXTERNALLINKER)}
-      {$IF not Defined(LLVM)}
-        {$DEFINE LLVM}
-      {$ENDIF}
+  {$IFDEF DCC}
+    {$IF not (Defined(EXTERNALLINKER) and Defined(LLVM))}
+      // Statick linking must be disabled for WIN32 and WIN64 platforms
+      // as native Delphi linkers for WIN32 and WIN64
+      // do not support `.lib` format.
+      // Possible workaround is to build `amalgamated` '.obj' file per library
+      {$UNDEF LINK_STATIC}
     {$ENDIF}
-		{$IF not Defined(LLVM)}
-			// Static linking is supported only witj LLVM-based toolchain
-			// D13 and lower do not support LLVM toolchain for Windows builds
-			{$UNDEF LINK_STATIC}
-		{$ENDIF}
-	{$ENDIF}
+  {$ENDIF}
 
-	{$IFDEF FPC}
-		{$IF (Defined(WIN64) or Defined(WIN32))}
-			{$UNDEF LINK_STATIC}
-		{$ENDIF}
-	{$ENDIF}
+  {$IFDEF FPC}
+    {$IF (Defined(WIN64) or Defined(WIN32))}
+      {$UNDEF LINK_STATIC}
+    {$ENDIF}
+  {$ENDIF}
 
-	{$IFDEF LINK_STATIC}
-		{$UNDEF LINK_DYNAMIC}
+  {$IFDEF LINK_STATIC}
+    {$UNDEF LINK_DYNAMIC}
   {$ELSE}
     {$DEFINE LINK_DYNAMIC}
   {$ENDIF}
@@ -73,107 +70,101 @@
     {$DEFINE T_WINDOWS}
   {$ENDIF}
 
-  {$IFDEF WIN64EC}
-    {$DEFINE T_WIN64EC}
-    {$DEFINE T_WINDOWS}
-  {$ENDIF}
-
   {$IFDEF WIN32}
     {$DEFINE T_WIN32}
     {$DEFINE T_WINDOWS}
   {$ENDIF}
 
-	{$IFDEF LINUX}
-		{$DEFINE T_LINUX}
-		{$IFNDEF T_POSIX}
-			{$DEFINE T_POSIX}
-		{$ENDIF}
-	{$ENDIF}
+  {$IFDEF LINUX}
+    {$DEFINE T_LINUX}
+    {$IFNDEF POSIX}
+      {$DEFINE T_POSIX}
+    {$ENDIF}
+  {$ENDIF}
 
-	{$IFDEF ANDROID}
-		{$DEFINE T_ANDROID}
-		{$IFNDEF T_POSIX}
-			{$DEFINE T_POSIX}
-		{$ENDIF}
-	{$ENDIF}
+  {$IFDEF ANDROID}
+    {$DEFINE T_ANDROID}
+    {$IFNDEF POSIX}
+      {$DEFINE T_POSIX}
+    {$ENDIF}
+  {$ENDIF}
 
-	{$IF Defined(DCC) AND Defined(OSX)}
-		{$DEFINE T_OSX}
-		{$IFNDEF T_POSIX}
-			{$DEFINE T_POSIX}
-		{$ENDIF}
-	{$ENDIF}
+  {$IF Defined(DCC) AND Defined(OSX)}
+    {$DEFINE T_OSX}
+    {$IFNDEF POSIX}
+      {$DEFINE T_POSIX}
+    {$ENDIF}
+  {$IFEND}
 
-	{$IF Defined(DCC) AND Defined(IOS)}
-		{$DEFINE T_IOS}
-		{$IFNDEF T_POSIX}
-			{$DEFINE T_POSIX}
-		{$ENDIF}
-	{$ENDIF}
+  {$IF Defined(DCC) AND Defined(IOS)}
+    {$DEFINE T_IOS}
+    {$IFNDEF POSIX}
+      {$DEFINE T_POSIX}
+    {$ENDIF}
+  {$IFEND}
 
-	{$IF Defined(FPC) AND
-		(Defined(MACOS) AND Defined(DARWIN) AND (NOT Defined(IOS)))}
-		{$DEFINE T_OSX}
-		{$IFNDEF T_POSIX}
-			{$DEFINE T_POSIX}
-		{$ENDIF}
-	{$ENDIF}
+  {$IF Defined(FPC) AND
+    (Defined(MACOS) AND Defined(DARWIN) AND (NOT Defined(IOS)))}
+    {$DEFINE T_OSX}
+    {$IFNDEF POSIX}
+      {$DEFINE T_POSIX}
+    {$ENDIF}
+  {$IFEND}
 
-	{$IF Defined(FPC) AND (Defined(DARWIN) AND Defined(IOS))}
-		{$DEFINE T_IOS}
-		{$IFNDEF T_POSIX}
-			{$DEFINE T_POSIX}
-		{$ENDIF}
-	{$ENDIF}
+  {$IF Defined(FPC) AND (Defined(DARWIN) AND Defined(IOS))}
+    {$DEFINE T_IOS}
+    {$IFNDEF POSIX}
+      {$DEFINE T_POSIX}
+    {$ENDIF}
+  {$IFEND}
 
-	// noreturn directive
-	{$IFNDEF NORETURN}
-		{$IF Defined(DCC) AND (CompilerVersion >= 37.0)}
-			{$DEFINE NORETURN}
-		{$ELSEIF Defined(FPC) AND (FPC_FULLVERSION >= 30200)}
-			{$DEFINE NORETURN}
-		{$ENDIF}
-	{$ENDIF}
+  // noreturn directive
+  {$IFNDEF NORETURN}
+    {$IF Defined(DCC) AND (CompilerVersion >= 37.0)}
+      {$DEFINE NORETURN}
+    {$ELSEIF Defined(FPC) AND (FPC_FULLVERSION >= 30200)}
+      {$DEFINE NORETURN}
+    {$IFEND}
+  {$ENDIF}
 
-	// Define inlining support
-	{$IF (NOT Defined(DEBUG)) OR Defined(INLINE_OFF)}
-		{$DEFINE INLINE_ON}
-	{$ENDIF}
+  // Define inlining support
+  {$IF (NOT Defined(DEBUG)) OR Defined(INLINE_OFF)}
+    {$DEFINE INLINE_ON}
+  {$IFEND}
 
-	{$IF NOT (Defined(INLINE_ON)) AND Defined(INLINE_FORCE_ON)}
-		{$DEFINE INLINE_ON}
-	{$ENDIF}
+  {$IF NOT (Defined(INLINE_ON)) AND Defined(INLINE_FORCE_ON)}
+    {$DEFINE INLINE_ON}
+  {$IFEND}
 
-	{$IF Defined(DCC) and (CompilerVersion >= 36)}
-		{$DEFINE USE_TINTERLOCKED}
-	{$ENDIF}
+  {$IF Defined(DCC) and (CompilerVersion >= 36)}
+    {$DEFINE USE_TINTERLOCKED}
+  {$ENDIF}
 
-	{$IF Defined(FPC) and (FPC_FULLVERSION >= 30204)}
-		{$DEFINE USE_TINTERLOCKED}
-	{$ENDIF}
-
-
-	{$IF (not Defined(USE_TINTERLOCKED)) and
-		(Defined(FPC) and (FPC_FULLVERSION < 30204))}
-		{$DEFINE USE_ATOMIC_FPC}
-	{$ENDIF}
-
-	{$IF (not Defined(USE_TINTERLOCKED)) and Defined(DCC)}
-		{$DEFINE USE_ATOMIC_DCC}
-	{$ENDIF}
-
-	{$IF not Defined(DCC)}
-		{$DEFINE EMULATE_TSPINWAIT}
-	{$ENDIF}
+  {$IF Defined(FPC) and (FPC_FULLVERSION >= 30204)}
+    {$DEFINE USE_TINTERLOCKED}
+  {$ENDIF}
 
 
-	// static linkage
-	{$IF Defined(T_IOS)}
-		{$DEFINE LINK_STATIC}
-	{$ENDIF}
+  {$IF (not Defined(USE_TINTERLOCKED)) and
+    (Defined(FPC) and (FPC_FULLVERSION < 30204))}
+    {$DEFINE USE_ATOMIC_FPC}
+  {$ENDIF}
 
+  {$IF (not Defined(USE_TINTERLOCKED)) and Defined(DCC)}
+    {$DEFINE USE_ATOMIC_DCC}
+  {$ENDIF}
+
+  {$IF not Defined(DCC)}
+    {$DEFINE EMULATE_TSPINWAIT}
+  {$ENDIF}
+
+
+  // static linkage
+  {$IF Defined(T_IOS)}
+    {$DEFINE LINK_STATIC}
+  {$IFEND}
 
 {$ELSE}
-	{$MESSAGE Warning 'Unsupported compiler version'}
+  {$MESSAGE Warning 'Unsupported compiler version'}
 {$ENDIF}
 

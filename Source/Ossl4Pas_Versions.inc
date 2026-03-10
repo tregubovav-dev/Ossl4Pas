@@ -18,14 +18,6 @@
 
 
 // Ossl4Pas_Versions.inc
-{$IFDEF LINK_DYNAMIC}
-	{$I Ossl4Pas_version_shared.inc}
-{$ENDIF}
-
-{$IFDEF LINK_STATIC}
-	{$I ossl_version_scope.inc}
-{$ENDIF}
-
 {$IFDEF OSSL_3_7}
   {$DEFINE OSSL_3_6}
 {$ENDIF}
