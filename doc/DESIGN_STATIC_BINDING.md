@@ -13,21 +13,25 @@ To support parallel testing of multiple OpenSSL versions and linkage types, we d
 **Example Layout:**
 ```text
 lib/openssl/
-├── 3.0.15/
-│   ├── Win64/
+├── 3.0.19/
+│   ├── Win64EC/
 │   │   ├── static/    
 │   │   │   ├── libcrypto.lib
 │   │   │   ├── libssl.lib
-│   │   │   └── ossl_version_scope.inc  <-- Auto-generated definition (e.g. {$DEFINE OSSL_3_0})
-│   │   └── shared/    
-│   │       └── libcrypto-3-x64.dll
+│   │   │   └── ossl_version_scope.inc  <-- Auto-generated definitions (e.g. {$DEFINE OSSL_3_0}, {$DEFINE OSSL_STRICT_3_0})
+│       ├── lib/static    
+│       │       ├── libcrypto.lib
+│       │       ├── libssl.lib
+│       │       └── ossl_version_scope.inc
+│       └── libcrypto.dll    
+│       └── libss.dll    
 │   └── Linux64/
-│       ├── static/    
-│       │   ├── libcrypto.a
-│       │   ├── libssl.a
-│       │   └── ossl_version_scope.inc
-│       └── shared/    
-│           └── libcrypto.so
+│       ├── lib/static    
+│       │       ├── libcrypto.a
+│       │       ├── libssl.a
+│       │       └── ossl_version_scope.inc
+│       └── libcrypto.so    
+│       └── libss.so    
 ├── 3.3.6/
 │   └── ...
 ```
@@ -37,9 +41,10 @@ lib/openssl/
 ### A. Versioning Strategy (Injection + Cascade)
 To ensure code compiles correctly against the specific OpenSSL version being linked:
 
-1.  **Injection:** The build script adds the specific `static` folder (e.g., `.../3.3.6/Win64/static`) to the Search Path.
-2.  **Scope:** The compiler finds `ossl_version_scope.inc` in that folder, which contains a single define: `{$DEFINE OSSL_3_3}`.
+1.  **Injection:** The build script adds the specific `lib/static` folder (e.g., `.../3.3.6/Win64EC/lib/static`) to the Search Path.
+2.  **Scope:** The compiler finds `ossl_version_scope.inc` in that folder, which contains a couple defines: `{$DEFINE OSSL_3_3}` and `{$DEFINE OSSL_STRICT_3_3}`
 3.  **Cascade:** The unit `Ossl4Pas_Version.inc` (included globally) detects `OSSL_3_3` and automatically defines all lower versions (`OSSL_3_2`, `OSSL_3_1`, `OSSL_3_0`).
+4.  **Strict:** The define `{$DEFINE OSSL_STRICT_3_3}` in `ossl_version_scope.inc` declares the distinct OpenSSL library version. 
 
 ### B. Unit Adaptation Pattern (`Ossl4Pas.Api.*`)
 
@@ -104,14 +109,19 @@ end;
 ```
 
 ### D. System Dependencies
-Static OpenSSL libraries depend on system libraries. We will create a helper include file `Ossl4Pas_StaticDeps.inc` to handle `{$LINKLIB}` directives automatically when `LINK_STATIC` is defined.
+The research displayed serious incompatibilities between native linkes used for `Win32` and `Win64` targets and `LLVM` based linkers for all other targts.
+We made a decision to support only `LLVM` linkers as native linkes do not support linkage with `static` libraries and require to build amalgamated object file and include all external routines into the single unit. Otherwise the `LLVM` linkers allows to declare a single external routine in any unit.
+We created the `Ossl4Pas.Static.pas` unit that declares static library file names.
 
-**Required Links (Windows):**
+**Required Links (Windows):** (Currently the ARM64EC can support static linking)
 *   `ws2_32.lib` (Winsock)
 *   `gdi32.lib`
 *   `advapi32.lib`
 *   `crypt32.lib`
 *   `user32.lib`
+
+**Required Exports: (Linux)**
+* `__dso_handle` routine must be exported 
 
 ## 3. Build Script Updates (`build_dcc.py`)
 
@@ -119,7 +129,7 @@ The python script needs to support an "Inverted Matrix" for static builds:
 1.  Loop through defined `openssl_versions`.
 2.  For each version:
     *   Clean output directory.
-    *   Set `OpenSSL_LibPath` property to `lib/openssl/{Ver}/{Plat}/static`.
+    *   Set `OpenSSL_LibPath` property to `lib/openssl/{Ver}/{Plat}/lib/static`.
     *   Set `DCC_Define` to include `LINK_STATIC`.
     *   **Note:** We do *not* define `OSSL_3_x` manually; the inclusion of `ossl_version_scope.inc` handles it.
     *   Build `Test_Api_Static.dproj`.
@@ -136,10 +146,10 @@ The python script needs to support an "Inverted Matrix" for static builds:
 - [x] Run setup script and verify directory structure.
 
 ### Phase 2: Base Code Adaptation
-- [ ] Create `Ossl4Pas_StaticDeps.inc`.
-- [ ] Create `Ossl4Pas_Version.inc` (Cascade logic).
-- [ ] Modify `Ossl4Pas_CompilerDefines.inc` to include version logic.
-- [ ] Refactor `Ossl4Pas.Api.Bio` to support `{$IFDEF LINK_STATIC}` using the "Same Name" pattern.
+- [x] Create `Ossl4Pas.Static.pas`.
+- [x] Create `Ossl4Pas_Version.inc` (Cascade logic).
+- [x] Modify `Ossl4Pas_CompilerDefines.inc` to include version logic.
+- [x] Refactor `Ossl4Pas.Api.Bio` to support `{$IFDEF LINK_STATIC}` using the "Same Name" pattern.
 - [ ] Refactor `Ossl4Pas.Api.Err` to support `{$IFDEF LINK_STATIC}`.
 
 ### Phase 3: Build System
