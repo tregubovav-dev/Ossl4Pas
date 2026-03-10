@@ -77,28 +77,28 @@
 
   {$IFDEF LINUX}
     {$DEFINE T_LINUX}
-    {$IFNDEF POSIX}
+    {$IFNDEF T_POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
   {$ENDIF}
 
   {$IFDEF ANDROID}
     {$DEFINE T_ANDROID}
-    {$IFNDEF POSIX}
+    {$IFNDEF T_POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
   {$ENDIF}
 
   {$IF Defined(DCC) AND Defined(OSX)}
     {$DEFINE T_OSX}
-    {$IFNDEF POSIX}
+    {$IFNDEF T_POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
   {$IFEND}
 
   {$IF Defined(DCC) AND Defined(IOS)}
     {$DEFINE T_IOS}
-    {$IFNDEF POSIX}
+    {$IFNDEF T_POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
   {$IFEND}
@@ -106,14 +106,14 @@
   {$IF Defined(FPC) AND
     (Defined(MACOS) AND Defined(DARWIN) AND (NOT Defined(IOS)))}
     {$DEFINE T_OSX}
-    {$IFNDEF POSIX}
+    {$IFNDEF T_POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
   {$IFEND}
 
   {$IF Defined(FPC) AND (Defined(DARWIN) AND Defined(IOS))}
     {$DEFINE T_IOS}
-    {$IFNDEF POSIX}
+    {$IFNDEF T_POSIX}
       {$DEFINE T_POSIX}
     {$ENDIF}
   {$IFEND}
