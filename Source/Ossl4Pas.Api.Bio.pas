@@ -2442,6 +2442,7 @@ end;
 // ... Implementation of static wrappers ...
 
 {$IFDEF LINK_STATIC}
+function F_BIO_new(Method: PBIO_METHOD): PBIO; cdecl; external cLibCryptoLib name 'BIO_new';
 function F_BIO_new_ex(libctx: POSSL_LIB_CTX; propq: PAnsiChar; Method: PBIO_METHOD): PBIO; cdecl; external cLibCryptoLib name 'BIO_new_ex';
 function F_BIO_free(a: PBIO): cint; cdecl; external cLibCryptoLib name 'BIO_free';
 procedure F_BIO_free_all(a: PBIO); cdecl; external cLibCryptoLib name 'BIO_free_all';
@@ -2464,8 +2465,6 @@ function F_BIO_get_callback_ex(b: PBIO): TBIO_callback_fn_ex; cdecl; external cL
 function F_BIO_set_ex_data(bio: PBIO; idx: cint; data: pointer): cint; cdecl; external cLibCryptoLib name 'BIO_set_ex_data';
 function F_BIO_get_ex_data(bio: PBIO; idx: cint): pointer; cdecl; external cLibCryptoLib name 'BIO_get_ex_data';
 {$ENDIF}
-
-function F_BIO_new(Method: PBIO_METHOD): PBIO; cdecl; external cLibCryptoLib name 'BIO_new';
 
 class function TOsslApiBioBase.BIO_new(Method: PBIO_METHOD): PBIO;
 begin
