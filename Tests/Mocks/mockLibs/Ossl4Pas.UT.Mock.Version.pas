@@ -56,6 +56,9 @@ type
 
 class function TFIleHelper.GetSize(AFileName: string): Int64;
 begin
+  if not TFile.Exists(AFileName) then
+    Exit(-1);
+
   var lStream: TFileStream:=nil;
   try
     lStream:=TFileStream.Create(AFileName, fmOpenRead);
@@ -74,20 +77,24 @@ var
   lVer: Int64;
 
 begin
-  Result:=cDefaultVersion;
-  if Length(GLibPath) = 0 then
-    Exit; // Leave default version
+  try
+    Result:=cDefaultVersion;
+    if GLibPath.IsEmpty then
+      Exit; // Leave default version
 
-  lPath:=TPath.ChangeExtension(GLibPath, 'ver');
-  if TFile.GetSize(lPath) > 64 then // Restrict reading size.
-    Exit; //
+    lPath:=GLibPath+'.ver';
+    if not  (TFile.GetSize(lPath) in [1..64]) then // Restrict reading size.
+      Exit; //
 
-  lVerStr:=TFile.ReadAllText(lPath).Trim;
-  if not Int64.TryParse(lVerStr, lVer) then
-    Exit;
+    lVerStr:=TFile.ReadAllText(lPath).Trim;
+    if not Int64.TryParse(lVerStr, lVer) then
+      Exit;
 
-  if (lVer >= 0) and (lVer <= $FFFFFFFF) then
-    Result:=lVer;
+    if (lVer >= 0) and (lVer <= $FFFFFFFF) then
+      Result:=lVer;
+  except
+    Result:=$FFFFFFFF;
+  end;
 end;
 
 function OpenSSL_version_num: culong; cdecl;
@@ -134,7 +141,6 @@ begin
       Result:=Result and SameStr(TPath.GetDirectoryName(GLibPath), lDirName);
     {$ENDIF}
     ALibName:=PChar(GLibPath);
-
   except
     Result:=False;
     ALibName:=nil;
@@ -147,10 +153,12 @@ var
 
 begin
   SetLength(lPath, MAX_PATH);
-  SetLength(lPath,
-    GetModuleFileName(HInstance, PChar(lPath), MAX_PATH));
+  GetModuleFileName(HInstance, PChar(lPath), MAX_PATH);
+  SetLength(lPath, Length(PChar(lPath)));
   if not lPath.IsEmpty then
-    GLibPath:=lPath;
+    GLibPath:=lPath
+  else
+    GLibPath:='';
 end;
 
 { TFIleHelper }

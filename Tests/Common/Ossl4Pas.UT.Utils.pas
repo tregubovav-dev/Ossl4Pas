@@ -70,15 +70,14 @@ type
     cLongOptNameWorkDir   = 'mock-workdir';
     cShortOptNameWorkDir  = 'mkw';
 
-    cDefaultMockLibName   = 'mocklib';
     {$IF Defined(MSWINDOWS)}
-    cLibExt               = 'dll';
+    cDefaultMockLibName   = 'mocklib';
     {$ELSEIF Defined(LINUX) or Defined(ANDROID)}
-    cLibExt               = 'so';
+    cDefaultMockLibName   = 'libmocklib.so';
     {$ELSEIF Defined(OSX)}
-    cLibExt               = 'dylyb';
+    cDefaultMockLibName   = 'libmocklib.dylib';
     {$ENDIF}
-    cVerExt               = 'ver';
+    cVerExt               = '.ver';
 
   private class var
     FMockLibPath: string;
@@ -256,7 +255,7 @@ begin
   if string.IsNullOrWhiteSpace(Value) then
     FMockLibPath:=TPath.Combine(
       TDirectory.GetCurrentDirectory,
-      cDefaultMockLibName+TPath.ExtensionSeparatorChar+cLibExt)
+      cDefaultMockLibName)
   else
     FMockLibPath:=TPath.GetFullPath(Value);
 end;
@@ -271,12 +270,12 @@ end;
 
 class function TMockLibConfig.GetMockLibVerFile(ALibName: string): string;
 begin
-  Result:=TPath.Combine(FMockWorkDir, TPath.ChangeExtension(ALibName, cVerExt));
+  Result:=TPath.Combine(FMockWorkDir, ALibName+cVerExt);
 end;
 
 class function TMockLibConfig.GetWorkMockLibPath(ALibName: string): string;
 begin
-  Result:=TPath.Combine(FMockWorkDir, TPath.ChangeExtension(ALibName, cLibExt));
+  Result:=TPath.Combine(FMockWorkDir, ALibName);
 end;
 
 { TOsslLibPathConfig }
