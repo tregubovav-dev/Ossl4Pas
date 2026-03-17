@@ -5,11 +5,10 @@
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Platform Condition="'$(Platform)'==''">OSX64</Platform>
         <TargetedPlatforms>4243</TargetedPlatforms>
         <AppType>Console</AppType>
         <MainSource>Ossl4PasApi_UT.dpr</MainSource>
-        <ProjectName Condition="'$(ProjectName)'==''">Ossl4PasApi_UT</ProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -167,7 +166,7 @@
         <Debugger_Launcher>/usr/bin/gnome-terminal -- &quot;%debuggee%&quot;</Debugger_Launcher>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_OSX64)'!=''">
-        <Debugger_RunParams>-exit:Pause -mkw:Temp/ -osp:&quot;~/Downloads/ossl/&quot;</Debugger_RunParams>
+        <Debugger_RunParams>-mkw:/tmp -osp:&quot;~/Downloads/ossl/3.6&quot;</Debugger_RunParams>
         <Debugger_UseLauncher>true</Debugger_UseLauncher>
         <Debugger_Launcher>/usr/X11/bin/xterm -e &quot;%debuggee%&quot;</Debugger_Launcher>
     </PropertyGroup>
