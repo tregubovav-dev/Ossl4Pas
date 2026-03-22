@@ -22,8 +22,7 @@ def log(msg, level="INFO"):
 
 def get_git_branch(git_exe):
     try:
-        result = subprocess.run(
-            [git_exe, "rev-parse", "--abbrev-ref", "HEAD"],
+        result = subprocess.run([git_exe, "rev-parse", "--abbrev-ref", "HEAD"],
             capture_output=True, text=True, check=True
         )
         return result.stdout.strip().replace('/', '_')
@@ -48,7 +47,7 @@ def load_config(args):
         "platforms": ["Win64"],
         "projects": [],
         "dependencies": {},
-        "build_options": {"common": {"search_paths": [], "defines": []}}
+        "build_options": {"common": {"search_paths":[], "defines":[]}}
     }
     
     # Load File
@@ -64,7 +63,7 @@ def load_config(args):
 
     # CLI Overrides
     if args.platforms:
-        cfg["platforms"] = [p.strip() for p in args.platforms.split(',')]
+        cfg["platforms"] =[p.strip() for p in args.platforms.split(',')]
     if args.compilers: 
         cfg["default_compilers"] = [c.strip() for c in args.compilers.split(',')]
     if args.build_config:
@@ -74,9 +73,8 @@ def load_config(args):
         
     # NEW: Override OpenSSL Versions from CLI
     if args.openssl_versions:
-        # We inject this into dependencies so run_test_project sees it
         if "dependencies" not in cfg: cfg["dependencies"] = {}
-        cfg["dependencies"]["openssl_versions"] = [v.strip() for v in args.openssl_versions.split(',')]
+        cfg["dependencies"]["openssl_versions"] =[v.strip() for v in args.openssl_versions.split(',')]
 
     return cfg
 
@@ -101,7 +99,6 @@ def run_msbuild(rsvars, project, platform, config_name, output_dir, log_file, co
     def merge_env(source_dict):
         for k, v in source_dict.items():
             val_str = str(v)
-            # Resolve relative paths to absolute based on CWD (Repo Root)
             if not os.path.isabs(val_str) and "$(" not in val_str and "%" not in val_str:
                 if os.path.exists(val_str):
                     build_env[k] = os.path.abspath(val_str)
@@ -115,28 +112,24 @@ def run_msbuild(rsvars, project, platform, config_name, output_dir, log_file, co
     merge_env(project.get("env_vars", {}))
 
     # 3. Resolve Defines
-    defines = common_opts.get("defines", []) + config_opts.get("defines", [])
+    defines = common_opts.get("defines", []) + config_opts.get("defines",[])
     define_arg = ""
     if defines:
         defines_joined = ";".join(defines)
         define_arg = f'/p:DCC_Define="{defines_joined};$(DCC_Define)"'
 
-    # 4. Resolve Search Paths (Restored Logic)
-    search_paths = common_opts.get("search_paths", []) + config_opts.get("search_paths", [])
-    search_path_args = []
+    # 4. Resolve Search Paths
+    search_paths = common_opts.get("search_paths",[]) + config_opts.get("search_paths", [])
+    search_path_args =[]
     
     if search_paths:
-        # Convert all to Absolute
         abs_paths = [os.path.abspath(p) for p in search_paths]
         paths_joined = ";".join(abs_paths)
-        
-        # Override SysLibPath to force precedence over standard libs
         search_path_args.append(f'/p:DCC_SysLibPath="{paths_joined};$(DCC_SysLibPath)"')
-        # Override UnitSearchPath for standard visibility
         search_path_args.append(f'/p:DCC_UnitSearchPath="{paths_joined};$(DCC_UnitSearchPath)"')
 
     # 5. Construct Command
-    cmd = [
+    cmd =[
         f'"{rsvars}"',
         "&&",
         "msbuild",
@@ -151,14 +144,12 @@ def run_msbuild(rsvars, project, platform, config_name, output_dir, log_file, co
         f'/p:DCC_BplOutput="{output_dir}"',
         f'/p:DCC_DcpOutput="{output_dir}"',
         define_arg
-    ] + search_path_args # Add search paths
+    ] + search_path_args
         
     full_cmd = " ".join(filter(None, cmd))
 
     with open(log_file, "a") as lf:
         lf.write(f"\n{'='*80}\nBUILDING: {project['name']} ({platform})\n{'='*80}\n")
-        
-        # Log relevant vars
         all_custom_keys = set(common_opts.get("env_vars", {}).keys()) | \
                           set(config_opts.get("env_vars", {}).keys()) | \
                           set(project.get("env_vars", {}).keys())
@@ -168,7 +159,6 @@ def run_msbuild(rsvars, project, platform, config_name, output_dir, log_file, co
                 lf.write(f"  [ENV] {k}={build_env[k]}\n")
 
         lf.write(f"\n  [CMD] {full_cmd}\n")
-            
         lf.flush()
         
         result = subprocess.run(
@@ -180,6 +170,208 @@ def run_msbuild(rsvars, project, platform, config_name, output_dir, log_file, co
         )
     
     return result.returncode == 0
+
+# ==============================================================================
+# EXECUTION PROVIDERS
+# ==============================================================================
+class ExecutionProvider:
+    """Abstract Base Class for running test executables across different environments."""
+    def __init__(self, profile_name, profile_data):
+        self.profile_name = profile_name
+        self.profile_data = profile_data
+        self.path_mapping = profile_data.get("path_mapping", {})
+
+    def translate_path(self, path):
+        if not path:
+            return ""
+        abs_path = os.path.abspath(path)
+        for win_prefix, posix_prefix in self.path_mapping.items():
+            if abs_path.lower().startswith(win_prefix.lower()):
+                translated = abs_path[len(win_prefix):].replace('\\', '/')
+                return posix_prefix.rstrip('/') + '/' + translated.lstrip('/')
+        return abs_path.replace('\\', '/')
+
+    def get_extension(self):
+        return ""
+
+    def get_lib_prefix(self):
+        return "lib" if "Win" not in self.profile_name else ""
+
+    def get_lib_ext(self):
+        if "Win" in self.profile_name:
+            return ".dll"
+        if "OSX" in self.profile_name or "iOS" in self.profile_name:
+            return ".dylib"
+        return ".so"
+
+    def pull_results(self, remote_file, local_file, log_file):
+        return True
+
+    def execute(self, cmd_args, log_file, work_dir=None):
+        raise NotImplementedError()
+
+class LocalExecutionProvider(ExecutionProvider):
+    def get_extension(self):
+        return ".exe"
+
+    def execute(self, cmd_args, log_file, work_dir=None):
+        return execute_test_process(cmd_args, log_file)
+
+class WSLExecutionProvider(ExecutionProvider):
+    def __init__(self, profile_name, profile_data):
+        super().__init__(profile_name, profile_data)
+        self.distro = profile_data.get("distribution", "ubuntu24.04")
+        self.work_dir = profile_data.get("work_dir", "/tmp/ossl4pas_tests")
+
+    def pull_results(self, remote_file, local_file, log_file):
+        """Pulls results from WSL by streaming stdout to bypass read-only mounts."""
+        log(f"    [WSL] Pulling results {remote_file} -> {local_file}", "INFO")
+        
+        # Command streams the file content to standard output
+        wsl_cmd =["wsl", "-d", self.distro, "--", "cat", remote_file]
+        
+        try:
+            os.makedirs(os.path.dirname(local_file), exist_ok=True)
+            # Python natively catches the stream and writes it to the Windows disk
+            with open(local_file, "wb") as f:
+                result = subprocess.run(wsl_cmd, stdout=f, stderr=subprocess.PIPE)
+                
+            if result.returncode != 0:
+                err_msg = result.stderr.decode('utf-8', errors='replace')
+                execute_test_process(["echo", f"[WARN] WSL Pull Error: {err_msg}"], log_file)
+                return False
+                
+            return True
+        except Exception as e:
+            execute_test_process(["echo", f"[WARN] WSL Pull Exception: {e}"], log_file)
+            return False
+
+    def execute(self, cmd_args, log_file, work_dir=None):
+        mkdir_cmd =["wsl", "-d", self.distro, "--", "mkdir", "-p", self.work_dir]
+        execute_test_process(mkdir_cmd, log_file)
+
+        escaped_cmd = " ".join([f'"{arg}"' for arg in cmd_args])
+        wsl_cmd =["wsl", "-d", self.distro, "--", "sh", "-c", escaped_cmd]
+        
+        return execute_test_process(wsl_cmd, log_file)
+
+class SSHExecutionProvider(ExecutionProvider):
+    def __init__(self, profile_name, profile_data):
+        super().__init__(profile_name, profile_data)
+        self.host = profile_data.get("host")
+        self.user = profile_data.get("user")
+        self.remote_root = profile_data.get("remote_root")
+        self.identity_file = profile_data.get("identity_file")
+
+    def get_ssh_base_args(self, is_scp=False):
+        """Constructs base SSH/SCP command including the identity file if provided."""
+        cmd = ["scp"] if is_scp else ["ssh"]
+        if self.identity_file:
+            expanded_path = os.path.expanduser(self.identity_file)
+            cmd.extend(["-i", expanded_path])
+        return cmd
+
+    def sync_files(self, local_dir, log_file, exe_name=None):
+        """Automatically syncs the compiled executable and mock libraries."""
+        remote_path = self.translate_path(local_dir)
+
+        # 1. Ensure remote directory exists
+        ssh_base = self.get_ssh_base_args(is_scp=False)
+        mkdir_cmd = ssh_base + [f"{self.user}@{self.host}", f"mkdir -p \"{remote_path}\""]
+        if not execute_test_process(mkdir_cmd, log_file):
+            return False
+
+        # 2. Sync binaries automatically using wildcards
+        scp_base = self.get_ssh_base_args(is_scp=True)
+        targets = ["*.dylib", "*.so*", "*.dll"]
+        if exe_name:
+            targets.append(exe_name)
+
+        import glob
+        for pattern in targets:
+            local_pattern = os.path.join(local_dir, pattern)
+            for match in glob.glob(local_pattern):
+                filename = os.path.basename(match)
+                log(f"    [SSH] Uploading Artifact: {filename}", "INFO")
+                scp_cmd = scp_base + [match, f"{self.user}@{self.host}:{remote_path}/"]
+                execute_test_process(scp_cmd, log_file)
+                
+                # --- NEW: Set executable permissions for the main test binary ---
+                if filename == exe_name:
+                    log(f"    [SSH] Setting executable permissions for: {filename}", "DEBUG")
+                    chmod_cmd = ssh_base +[f"{self.user}@{self.host}", f"chmod +x \"{remote_path}/{filename}\""]
+                    execute_test_process(chmod_cmd, log_file)
+
+        return True
+
+    def sync_openssl(self, local_ossl_path, log_file):
+        """Syncs OpenSSL dylibs to the remote host."""
+        if not local_ossl_path or not os.path.exists(local_ossl_path):
+            log(f"[WARN] OpenSSL path missing locally: {local_ossl_path}", "WARN")
+            return True
+
+        remote_ossl_path = self.translate_path(local_ossl_path)
+        ssh_base = self.get_ssh_base_args(is_scp=False)
+        scp_base = self.get_ssh_base_args(is_scp=True)
+
+        mkdir_cmd = ssh_base +[f"{self.user}@{self.host}", f"mkdir -p \"{remote_ossl_path}\""]
+        execute_test_process(mkdir_cmd, log_file)
+
+        import glob
+        for pattern in ["*.dylib", "*.so*", "*.dll"]:
+            local_pattern = os.path.join(local_ossl_path, pattern)
+            for match in glob.glob(local_pattern):
+                log(f"    [SSH] Uploading OpenSSL: {os.path.basename(match)}", "INFO")
+                # REMOVED literal quotes from the remote path here
+                scp_cmd = scp_base +[match, f"{self.user}@{self.host}:{remote_ossl_path}/"]
+                execute_test_process(scp_cmd, log_file)
+
+        return True
+
+    def pull_results(self, remote_file, local_file, log_file):
+        """Pulls test result files from remote host."""
+        ssh_base = self.get_ssh_base_args(is_scp=False)
+        scp_base = self.get_ssh_base_args(is_scp=True)
+        
+        check_cmd = ssh_base +[f"{self.user}@{self.host}", f"test -f \"{remote_file}\""]
+        if execute_test_process(check_cmd, log_file):
+            log(f"    [SSH] Pulling results: {os.path.basename(local_file)}", "INFO")
+            os.makedirs(os.path.dirname(local_file), exist_ok=True)
+            # REMOVED literal quotes from both the remote file and local file paths here
+            scp_cmd = scp_base +[f"{self.user}@{self.host}:{remote_file}", local_file]
+            return execute_test_process(scp_cmd, log_file)
+        return False
+
+    def execute(self, cmd_args, log_file, work_dir=None):
+        ssh_base = self.get_ssh_base_args(is_scp=False)
+        remote_cmd = " ".join([f'"{arg}"' for arg in cmd_args])
+        
+        if self.remote_root:
+            remote_cmd = f"mkdir -p \"{self.remote_root}\" && cd \"{self.remote_root}\" && {remote_cmd}"
+            
+        ssh_cmd = ssh_base +[f"{self.user}@{self.host}", remote_cmd]
+        return execute_test_process(ssh_cmd, log_file)
+
+def get_execution_provider(platform, config_data):
+    """Factory to create the correct provider based on platform and config."""
+    profiles = config_data.get("execution_profiles", {})
+    profile = profiles.get(platform)
+    
+    if not profile:
+        if "Win" in platform:
+            return LocalExecutionProvider(platform, {"type": "local"})
+        else:
+            return None
+
+    p_type = profile.get("type")
+    if p_type == "local":
+        return LocalExecutionProvider(platform, profile)
+    elif p_type == "wsl":
+        return WSLExecutionProvider(platform, profile)
+    elif p_type == "ssh":
+        return SSHExecutionProvider(platform, profile)
+    
+    return None
 
 # ==============================================================================
 # TEST ENGINE
@@ -196,20 +388,20 @@ def execute_test_process(cmd_args, log_file):
             lf.write(f"EXECUTION ERROR: {e}\n")
             return False
 
-def run_test_project(project, output_dir, common_params, dependencies, build_id, platform, config_name, log_file):
+def run_test_project(project, output_dir, common_params, dependencies, build_id, platform, config_name, log_file, provider):
     """
-    Runs the test executable. 
-    Supports 'Matrix' execution with variable substitution for OpenSSL paths.
+    Runs the test executable using the provided ExecutionProvider.
     """
-    exe_name = os.path.splitext(os.path.basename(project["path"]))[0] + ".exe"
-    exe_path = os.path.join(output_dir, exe_name)
+    ext = provider.get_extension()
+    exe_name = os.path.splitext(os.path.basename(project["path"]))[0] + ext
+    local_exe_path = os.path.join(output_dir, exe_name)
     
-    if not os.path.exists(exe_path):
-        log(f"Test executable missing: {exe_path}", "FAIL")
+    if not os.path.exists(local_exe_path):
+        log(f"Test executable missing: {local_exe_path}", "FAIL")
         return False
 
     # 1. Determine Versions
-    versions = []
+    versions =[]
     if project.get("matrix", False):
         versions = dependencies.get("openssl_versions", [])
         if not versions:
@@ -218,10 +410,7 @@ def run_test_project(project, output_dir, common_params, dependencies, build_id,
     else:
         versions = [None] 
 
-    # Get the raw path template
-    # Fallback to "openssl_root" for backward compat if "openssl_path" is missing
     raw_ossl_path = dependencies.get("openssl_path", dependencies.get("openssl_root", ""))
-    
     overall_success = True
 
     # 2. Iterate Versions
@@ -235,27 +424,30 @@ def run_test_project(project, output_dir, common_params, dependencies, build_id,
             "config": config_name,
             "compiler": "DCC",
             "output_dir": output_dir,
-            "exe_path": exe_path,
+            "exe_path": local_exe_path,
             "project_name": f"{project['name']}{version_suffix}",
-            "version": ver if ver else "" 
+            "version": ver if ver else "",
+            "lib_prefix": provider.get_lib_prefix(),
+            "lib_ext": provider.get_lib_ext(),
+            "exe_ext": ext
         }
 
         # --- B. Resolve OpenSSL Path ---
         current_ossl_path = ""
+        local_ossl_path_for_sync = ""
         if raw_ossl_path:
             try:
-                # 1. Substitute variables (e.g. {version})
                 substituted_path = raw_ossl_path.format(**context)
+                substituted_path = os.path.abspath(os.path.normpath(substituted_path))
                 
-                # 2. Normalize separators (fix / vs \)
-                substituted_path = os.path.normpath(substituted_path)
-                
-                # 3. Absolutize ONLY if not already absolute
-                if os.path.isabs(substituted_path):
-                    current_ossl_path = substituted_path
-                else:
-                    current_ossl_path = os.path.abspath(substituted_path)
-                    
+                # Auto-Fallback for macOS OSX vs OSX64 directory naming mismatch
+                if not os.path.exists(substituted_path) and "OSX64" in substituted_path:
+                    fallback = substituted_path.replace("OSX64", "OSX")
+                    if os.path.exists(fallback):
+                        substituted_path = fallback
+                        
+                local_ossl_path_for_sync = substituted_path
+                current_ossl_path = provider.translate_path(substituted_path)
             except KeyError as e:
                 log(f"    [WARN] openssl_path config missing variable {e}. Path ignored.", "WARN")
 
@@ -264,27 +456,47 @@ def run_test_project(project, output_dir, common_params, dependencies, build_id,
         else:
             log(f"    > Running {project['name']}...")
 
+        # --- SSH Specific Transfer (AUTOMATED) ---
+        if isinstance(provider, SSHExecutionProvider):
+            # 1. Auto-upload executable and mock libraries
+            if not provider.sync_files(output_dir, log_file, exe_name=exe_name):
+                log(f"    [FAIL] SSH Sync failed for project: {project['name']}", "ERROR")
+                overall_success = False
+                continue
+            
+            # 2. Auto-upload OpenSSL
+            if local_ossl_path_for_sync:
+                provider.sync_openssl(local_ossl_path_for_sync, log_file)
+
         # --- C. Merge Parameters ---
         final_params = common_params.copy()
         final_params.update(project.get("params", {}))
 
         # --- D. Construct Command ---
-        cmd = [exe_path]
+        remote_exe_path = provider.translate_path(local_exe_path)
+        cmd =[remote_exe_path]
 
-        # FIX: Remove manual quotes around the path. 
-        # subprocess.run handles spaces automatically.
         if current_ossl_path:
-            cmd.append(f'-osp:{current_ossl_path}') # <--- Changed
+            cmd.append(f'-osp:{current_ossl_path}')
+
+        PATH_SWITCHES =["-osp", "-mkw", "-xml", "-mkl", "-fmd", "-fml", "-rl", "-options", "--ossl-path", "--mock-workdir", "--xmlfile", "--mocklib-path", "--fastmmdebugdll", "--fastmmlogname", "--runlist", "--options"]
 
         for switch, value in final_params.items():
             if value:
                 try:
-                    # Apply substitution
                     formatted_value = value.format(**context)
-                    formatted_value = os.path.normpath(formatted_value)
-                    
-                    # FIX: Remove manual quotes here too
-                    cmd.append(f"{switch}:{formatted_value}") # <--- Changed
+                    is_path_param = any(switch == s or switch.startswith(s + ":") for s in PATH_SWITCHES)
+
+                    if is_path_param:
+                        if switch in["-mkw", "-xml", "--mock-workdir", "--xmlfile"] and hasattr(provider, "work_dir") and provider.work_dir:
+                            filename = os.path.basename(formatted_value)
+                            translated_value = f"{provider.work_dir.rstrip('/')}/{filename}"
+                        else:
+                            translated_value = provider.translate_path(formatted_value)
+                    else:
+                        translated_value = formatted_value
+                        
+                    cmd.append(f"{switch}:{translated_value}")
                 except KeyError as e:
                     log(f"    [WARN] Parameter '{switch}' missing variable {e}. Using raw value.", "WARN")
                     cmd.append(f"{switch}:{value}")
@@ -292,8 +504,22 @@ def run_test_project(project, output_dir, common_params, dependencies, build_id,
                 cmd.append(switch)
 
         # --- E. Execute ---
-        if not execute_test_process(cmd, log_file):
-            log(f"    [FAIL] Failed: {project['name']} {version_suffix}", "ERROR")
+        if provider.execute(cmd, log_file):
+            # --- F. Pull Results (Automated via parameters) ---
+            for switch, value in final_params.items():
+                if switch in ["-xml", "--xmlfile"]:
+                    formatted_value = value.format(**context)
+                    if hasattr(provider, "work_dir") and provider.work_dir:
+                         filename = os.path.basename(formatted_value)
+                         remote_result_path = f"{provider.work_dir.rstrip('/')}/{filename}"
+                    else:
+                         remote_result_path = provider.translate_path(formatted_value)
+                    
+                    local_result_path = os.path.abspath(formatted_value)
+                    provider.pull_results(remote_result_path, local_result_path, log_file)
+
+        else:
+            log(f"[FAIL] Failed: {project['name']} {version_suffix}", "ERROR")
             overall_success = False
 
     return overall_success
@@ -314,22 +540,14 @@ def main():
     
     args = parser.parse_args()    
 
-    # 1. Determine Config File Location
-    # We need absolute path to resolve the "root" setting correctly later
     config_file_path = args.config if args.config else DEFAULT_CONFIG_FILE
     if not os.path.isabs(config_file_path):
         config_file_path = os.path.abspath(config_file_path)
 
-    # Load Config
-    cfg = load_config(args) # Note: ensure load_config uses config_file_path if you modified it
+    cfg = load_config(args)
 
-    # 2. Handle Root Directory Switching
     original_cwd = os.getcwd()
-    
-    # Default to current dir if not set
     relative_root = cfg.get("root", ".") 
-    
-    # Resolve root relative to the CONFIG FILE, not the current execution dir
     config_dir = os.path.dirname(config_file_path)
     target_root = os.path.abspath(os.path.join(config_dir, relative_root))
 
@@ -341,7 +559,6 @@ def main():
     os.chdir(target_root)
 
     try:    
-
         cli_tags = set(args.tags.split(',')) if args.tags else set()
         build_id = generate_build_id(cfg["git_path"])
         root_dir = os.path.abspath(cfg["output_root"])
@@ -351,21 +568,16 @@ def main():
         if cli_tags:
             log(f"Filtering projects by tags: {cli_tags}")
 
-        report = []
+        report =[]
         overall_success = True
         common_params = cfg.get("common_params", {})
 
         dcc_config = cfg.get("dcc", {})
+        active_compilers = cfg.get("default_compilers",[])
         
-        # Determine Compilers to Run
-        dcc_config = cfg.get("dcc", {})
-        active_compilers = cfg.get("default_compilers", [])
-        
-        # If no specific list provided, use all active ones from config
         if not active_compilers:
-            active_compilers = [k for k, v in dcc_config.items() if v.get("active", False)]
+            active_compilers =[k for k, v in dcc_config.items() if v.get("active", False)]
             
-        # 1. Iterate Compilers
         for comp_id in active_compilers:
             comp_data = dcc_config.get(comp_id)
             
@@ -374,7 +586,6 @@ def main():
                 continue
                 
             if not comp_data.get("active", False) and not args.compilers:
-                 # Skip inactive unless explicitly requested via CLI
                  continue
             
             rsvars = comp_data["path"]
@@ -386,25 +597,19 @@ def main():
             log(f"--- Processing Delphi {comp_id} ---")
             comp_vars = comp_data.get("variables", {})
 
-            # 2. Iterate Targets
             for platform in cfg["platforms"]:
                 
-                target_out_dir = os.path.join(build_dir, "DCC", platform, cfg["default_config"])
+                target_out_dir = os.path.join(build_dir, f"DCC_{comp_id}", platform, cfg["default_config"])
                 log_file = os.path.join(build_dir, f"build_{comp_id}_{platform}.log")
                 
-                # We store successfully resolved/built projects here to iterate them for testing later
                 projects_for_execution = []
                 platform_build_failed = False
 
-                # ==================================================================
-                # PHASE 1: BUILD EVERYTHING
-                # ==================================================================
                 log(f"  [Phase 1] Building projects for {platform}...")
                 
                 for proj in cfg["projects"]:
-                    # --- PRE-CHECKS ---
                     if cli_tags:
-                        proj_tags = set(proj.get("tags", []))
+                        proj_tags = set(proj.get("tags",[]))
                         if not cli_tags.intersection(proj_tags):
                             continue
 
@@ -420,11 +625,9 @@ def main():
 
                     step_name = f"{comp_id} | {platform} | {proj['name']}"
                     
-                    # Create a resolved copy of the project config
                     resolved_proj = proj.copy()
                     resolved_proj["path"] = resolved_path
 
-                    # --- EXECUTE BUILD ---
                     success = run_msbuild(
                         rsvars, resolved_proj, platform, 
                         cfg["default_config"], target_out_dir, log_file, cfg
@@ -435,48 +638,41 @@ def main():
                         report.append({"step": step_name, "status": "Build Failed"})
                         overall_success = False
                         platform_build_failed = True
-                        # We continue building other projects to see all errors, 
-                        # but we flag the platform as 'dirty'.
                     else:
-                        # Store for Phase 2
                         projects_for_execution.append(resolved_proj)
 
-
-                # ==================================================================
-                # PHASE 2: RUN TESTS
-                # Only run tests if the build phase for this platform was clean.
-                # Running tests on partial builds often leads to misleading errors.
-                # ==================================================================
                 if not platform_build_failed and projects_for_execution:
                     log(f"  [Phase 2] Running tests for {platform}...")
+                    
+                    provider = get_execution_provider(platform, cfg)
+                    if not provider:
+                        log(f"    Skipping execution: No execution profile found for {platform}.", "INFO")
+                        continue
 
                     for proj in projects_for_execution:
                         if proj.get("type") == "test":
                             step_name = f"{comp_id} | {platform} | {proj['name']}"
 
-                            if "Win" in platform:
-                                test_success = run_test_project(
-                                    proj, 
-                                    target_out_dir, 
-                                    common_params, 
-                                    cfg.get("dependencies", {}), # <--- NEW ARGUMENT
-                                    build_id, 
-                                    platform, 
-                                    cfg["default_config"], 
-                                    log_file
-                                )                                
-                                if test_success:
-                                    report.append({"step": step_name, "status": "Passed"})
-                                else:
-                                    log(f"    Test Failed: {step_name}", "FAIL")
-                                    report.append({"step": step_name, "status": "Test Failed"})
-                                    overall_success = False
+                            test_success = run_test_project(
+                                proj, 
+                                target_out_dir, 
+                                common_params, 
+                                cfg.get("dependencies", {}),
+                                build_id, 
+                                platform, 
+                                cfg["default_config"], 
+                                log_file,
+                                provider
+                            )                                
+                            if test_success:
+                                report.append({"step": step_name, "status": "Passed"})
                             else:
-                                log(f"    Skipping execution for {platform} (Not supported locally)", "INFO")
+                                log(f"    Test Failed: {step_name}", "FAIL")
+                                report.append({"step": step_name, "status": "Test Failed"})
+                                overall_success = False
                 elif platform_build_failed:
                     log(f"  [Phase 2] Skipping tests for {platform} due to build failures.", "WARN")
 
-        # 3. Final Report
         print("\n" + "="*80)
         print(f"{'STEP':<60} | STATUS")
         print("-" * 80)
@@ -495,7 +691,6 @@ def main():
             sys.exit(1)
 
     finally:
-        # 3. Restore Directory
         os.chdir(original_cwd)
 
 if __name__ == "__main__":
