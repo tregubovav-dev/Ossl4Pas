@@ -37,9 +37,11 @@ type
 (*    TLibTypes = TOsslCustomLoader.TLibTypes; *)
 
   public const
-    cHandleCrypto = 1000+Ord(ltCrypto);
-    cHandleSsl    = 1000+Ord(ltSsl);
+    cHandleCrypto = TLibHandle.cDummyCryptoHandle;
+    cHandleSsl    = TLibHandle.cDummySslHandle;
+    cHandles      : array[TLibType] of TLibHandle = (cHandleCrypto, cHandleSsl);
     cVersion      = $30000F;
+
 
   private class var
     FRefCount: integer;
@@ -81,7 +83,7 @@ begin
   begin
     // Generate a fake non-zero handle (e.g., 1000+EnumValue)
     if not InstIsLibLoaded[lLibType] then
-      InstLibHandle[lLibType]:=TLibHandle(1000+Ord(lLibType));
+      InstLibHandle[lLibType]:=cHandles[lLibType];
   end;
 
   // Simulate version 3.0.0
