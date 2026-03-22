@@ -4,7 +4,7 @@
   "git_path": "git", 
   "clean_on_success": false,
   "default_config": "Debug",
-  "default_compilers": ["10.4.2","13.0"],  
+  "default_compilers": ["10.4.2","13.1"],  
 
   "dcc": {
     "10.4.2": { 
@@ -14,16 +14,35 @@
         "dcc_suffix": "D10_4"
       }
     },
-    "13.0": { 
+    "13.1": { 
       "path": "C:\\Program Files (x86)\\Embarcadero\\Studio\\37.0\\bin\\rsvars.bat", 
       "active": true,
       "variables": {
-        "dcc_suffix": "D13_0"
+        "dcc_suffix": "D13_1"
       }
     }
   },
 
-  "platforms": ["Win64", "Win32"],
+  "platforms": ["Win32", "Win64", "Linux64", "OSX64"],
+
+  "execution_profiles": {
+    "Win64": { "type": "local" },
+    "Win32": { "type": "local" },
+    "Linux64": { 
+      "type": "wsl", 
+      "distribution": "CI", 
+      "path_mapping": { "Y:\\": "/mnt/Y/" },
+      "work_dir": "/tmp/ossl4pas_tests"
+    },
+    "OSX64": { 
+      "type": "ssh", 
+      "host": "mac.local", 
+      "user": "ci", 
+      "identity_file": ".secrets\\id-ed25519",
+      "remote_root": "/tmp/CI/Ossl4Pas/",
+      "path_mapping": { "Y:\\Ossl4Pas\\": "/tmp/CI/Ossl4Pas/"}
+    }
+  },
 
   "build_options": {
     "common": {
@@ -44,12 +63,12 @@
     },
     "Release": {
       "search_paths": [],
-      "defines": []
+      "defines": ["Release"]
     }
   },
 
   "dependencies": {
-    "openssl_root": "lib\\openssl\\{version}\\{platform}\\shared",
+    "openssl_root": "lib\\openssl\\{version}\\{platform}",
     "openssl_versions": ["3.0.19", "3.6.1"]
   },
 
@@ -71,6 +90,7 @@
     {
       "name": "Mock_Library",
       "path": "Tests\\Mocks\\mockLibs\\mocklib.dproj",
+      "tags": ["core", "fast"],
       "env_vars": {}
     },
     { 
@@ -79,7 +99,7 @@
       "type": "test",
       "tags": ["core", "tests", "fast"],
       "params": {
-        "-mkl": "{output_dir}\\mocklib.dll"
+        "-mkl": "{output_dir}\\{lib_prefix}mocklib{lib_ext}"
       },
       "env_vars": {}
     },
@@ -89,7 +109,7 @@
       "type": "test",
       "tags": ["core", "tests", "fast"],
       "params": {
-        "-mkl": "{output_dir}\\mocklib.dll"
+        "-mkl": "{output_dir}\\{lib_prefix}mocklib{lib_ext}"
       },
       "env_vars": {}
     },

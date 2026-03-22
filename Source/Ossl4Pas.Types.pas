@@ -212,7 +212,10 @@ type
   TLibHandleHelper = record helper for TLibHandle
   public const
     cNilHandle = TLibHandle(0);
-
+    {$IFDEF UNITTEST}
+    cDummyCryptoHandle = HMODULE(-1);
+    cDummySslHandle = HMODULE(-2);
+    {$ENDIF}
   private
     function DoGetProcAddress(const AProcName: string): pointer;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -414,9 +417,19 @@ begin
   Result:=Self = cNilHandle;
 end;
 
+{$IFDEF UNITTEST}
+procedure DummyProc; cdecl;
+begin
+end;
+{$ENDIF}
+
 function TLibHandleHelper.DoGetProcAddress(
   const AProcName: string): pointer;
 begin
+{$IFDEF UNITTEST}
+  if (Self = cDummyCryptoHandle) or (Self = cDummySslHandle) then
+    Exit(@DummyProc);
+{$ENDIF}
   Result:=nil;
   if Self = 0 then
     Exit;

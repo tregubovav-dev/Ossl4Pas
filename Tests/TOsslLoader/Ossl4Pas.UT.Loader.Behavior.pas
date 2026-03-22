@@ -305,7 +305,7 @@ var
   lThreads: array of TThread;
 
 begin
-  Assert.IsTrue(ACount > 0, '''ACount must be greater than zero.');
+  Assert.IsTrue(ACount > 0, 'ACount must be greater than zero.');
 
   var lStartSignal: TSimpleEvent:=nil;
   var lCompleteSignal: TCountdownEvent:=nil;
@@ -357,7 +357,7 @@ begin
       'Singleton should be a ''TBehaviorLoader'' type.');
 
   finally
-    if not (lCompleteSignal.WaitFor(1000) = wrSignaled) then
+    if lCompleteSignal.WaitFor(1000) <> wrSignaled then
       for var i:=0 to ACount-1 do
         lThreads[i].Terminate;
 

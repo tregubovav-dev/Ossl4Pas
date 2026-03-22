@@ -406,7 +406,7 @@ type
       /// </summary>
       /// <param name="a">The record to modify.</param>
       /// <param name="b">The flag to include.</param>
-      class procedure Include(a: TLoaderFlagsRec; b: TLoaderFlag); overload;
+      class procedure Include(var a: TLoaderFlagsRec; b: TLoaderFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
@@ -421,7 +421,7 @@ type
       /// </summary>
       /// <param name="a">The record to modify.</param>
       /// <param name="b">The flag to exclude.</param>
-      class procedure Exclude(a: TLoaderFlagsRec; b: TLoaderFlag); overload;
+      class procedure Exclude(var a: TLoaderFlagsRec; b: TLoaderFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
@@ -1116,7 +1116,7 @@ begin
   Include(Self, AFlag); // calls a `class procedure Include`
 end;
 
-class procedure TOsslLoader.TLoaderFlagsRec.Include(a: TLoaderFlagsRec;
+class procedure TOsslLoader.TLoaderFlagsRec.Include(var a: TLoaderFlagsRec;
   b: TLoaderFlag);
 var
   lOld, lNew, lPrev: cardinal;
@@ -1163,7 +1163,7 @@ begin
   Exclude(Self, AFlag); // calls a `class procedure Include`
 end;
 
-class procedure TOsslLoader.TLoaderFlagsRec.Exclude(a: TLoaderFlagsRec;
+class procedure TOsslLoader.TLoaderFlagsRec.Exclude(var a: TLoaderFlagsRec;
   b: TLoaderFlag);
 var
   lOld, lNew, lPrev: cardinal;

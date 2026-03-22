@@ -223,7 +223,7 @@ type
       /// </summary>
       /// <param name="a">The record to modify.</param>
       /// <param name="b">The flag to include.</param>
-      class procedure Include(a: TErrorMessageFlagRec; b: TErrorMessageFlag); overload;
+      class procedure Include(var a: TErrorMessageFlagRec; b: TErrorMessageFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
@@ -238,7 +238,7 @@ type
       /// </summary>
       /// <param name="a">The record to modify.</param>
       /// <param name="b">The flag to exclude.</param>
-      class procedure Exclude(a: TErrorMessageFlagRec; b: TErrorMessageFlag); overload;
+      class procedure Exclude(var a: TErrorMessageFlagRec; b: TErrorMessageFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
@@ -469,7 +469,7 @@ begin
   Include(Self, AFlag); // calls a `class procedure Include`
 end;
 
-class procedure EOsslCustomError.TErrorMessageFlagRec.Include(a: TErrorMessageFlagRec;
+class procedure EOsslCustomError.TErrorMessageFlagRec.Include(var a: TErrorMessageFlagRec;
   b: TErrorMessageFlag);
 var
   lOld, lNew, lPrev: cardinal;
@@ -516,7 +516,7 @@ begin
   Exclude(Self, AFlag); // calls a `class procedure Include`
 end;
 
-class procedure EOsslCustomError.TErrorMessageFlagRec.Exclude(a: TErrorMessageFlagRec;
+class procedure EOsslCustomError.TErrorMessageFlagRec.Exclude(var a: TErrorMessageFlagRec;
   b: TErrorMessageFlag);
 var
   lOld, lNew, lPrev: cardinal;
