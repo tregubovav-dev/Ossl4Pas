@@ -340,6 +340,9 @@ type
     class property WindowsContext: string index TOsslApiCryptoVersion.OPENSSL_INFO_WINDOWS_CONTEXT read GetInfoStr;
   end;
 
+  /// <summary>
+  ///   API wrapper for OpenSSL library context management routines.
+  /// </summary>
   TOsslApiLibCtx = class sealed
   public type
    TRoutine_OSSL_LIB_CTX_new = function: POSSL_LIB_CTX; cdecl;
@@ -400,21 +403,51 @@ type
     class constructor Create;
   {$ENDIF}
 
+    /// <summary>
+    ///   Creates a new library context.
+    /// </summary>
     class function OSSL_LIB_CTX_new(): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Creates a new library context from a provider dispatch table.
+    /// </summary>
     class function OSSL_LIB_CTX_new_from_dispatch(const handle: POSSL_CORE_HANDLE;
       const &in: POSSL_DISPATCH): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Creates a child library context.
+    /// </summary>
     class function OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE;
       const &in: POSSL_DISPATCH): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Loads a configuration file into the specified library context.
+    /// </summary>
     class function OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX;
       const config_file: PAnsiChar): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Frees the specified library context.
+    /// </summary>
     class procedure OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX); static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the global default library context.
+    /// </summary>
     class function OSSL_LIB_CTX_get0_global_default: POSSL_LIB_CTX; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Sets the default library context for the current thread.
+    /// </summary>
     class function OSSL_LIB_CTX_set0_default(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
+  /// <summary>
+  ///   API wrapper for OpenSSL library context diagnostics and internal data access.
+  /// </summary>
   TOsslApiLibCtxDiag = class sealed
   public type
     TRoutine_OSSL_LIB_CTX_get_conf_diagnostics = function(ctx: POSSL_LIB_CTX): cint; cdecl;
@@ -451,10 +484,21 @@ type
     class constructor Create;
   {$ENDIF}
 
+    /// <summary>
+    ///   Gets the configuration diagnostics flag for the specified context.
+    /// </summary>
     class function OSSL_LIB_CTX_get_conf_diagnostics(ctx: POSSL_LIB_CTX): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Sets the configuration diagnostics flag for the specified context.
+    /// </summary>
     class procedure OSSL_LIB_CTX_set_conf_diagnostics(ctx: POSSL_LIB_CTX;
       value: cint); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Gets internal data from the library context by index.
+    /// </summary>
     class function OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX; index: cint): Pointer;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
