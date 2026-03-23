@@ -156,12 +156,19 @@ type
   // GROUP 1: READER (Essential)
   // Used for retrieving and formatting errors.
   // ---------------------------------------------------------------------------
+
+  /// <summary>
+  ///   API wrapper for retrieving OpenSSL error codes.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+  ///   ERR_get_error(3)</see> for details.
+  /// </remarks>
   TOsslApiErrCodes = class sealed
   public type
-    TRoutine_ERR_get_error           = function: culong; cdecl;
-    TRoutine_ERR_peek_error          = function: culong; cdecl;
-    TRoutine_ERR_peek_last_error     = function: culong; cdecl;
-    TRoutine_ERR_clear_error         = procedure; cdecl;
+    TRoutine_GET_ERROR               = function: culong; cdecl;
+    TRoutine_CLEAR_ERROR             = procedure; cdecl;
 
   private
     class function GetIntialized: boolean; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -170,10 +177,10 @@ type
   strict private class var
     FInitialized: boolean;
 
-    F_ERR_get_error:           TRoutine_ERR_get_error;
-    F_ERR_peek_error:          TRoutine_ERR_peek_error;
-    F_ERR_peek_last_error:     TRoutine_ERR_peek_last_error;
-    F_ERR_clear_error:         TRoutine_ERR_clear_error;
+    F_ERR_get_error:           TRoutine_GET_ERROR;
+    F_ERR_peek_error:          TRoutine_GET_ERROR;
+    F_ERR_peek_last_error:     TRoutine_GET_ERROR;
+    F_ERR_clear_error:         TRoutine_CLEAR_ERROR;
 
   strict private const
     cBindings: array[0..3] of TOsslBindEntry = (
@@ -194,11 +201,61 @@ type
     class constructor Create;
   {$ENDIF}
 
+    /// <summary>
+    ///   Retrieves the earliest error code from the thread's error queue and
+    ///   removes it.
+    /// </summary>
+    /// <returns>
+    ///   The error code, or 0 if the queue is empty.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_get_error(3)</see> for details.
+    /// </remarks>
     class function ERR_get_error: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves the earliest error code from the thread's error queue
+    ///   without removing it.
+    /// </summary>
+    /// <returns>
+    ///   The error code, or 0 if the queue is empty.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_error(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_error: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves the latest error code from the thread's error queue without
+    ///   removing it.
+    /// </summary>
+    /// <returns>
+    ///   The error code, or 0 if the queue is empty.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_last_error(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_last_error: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Clears the error queue for the current thread.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_clear_error.html">
+    ///   ERR_clear_error(3)</see> for details.
+    /// </remarks>
     class procedure ERR_clear_error; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Indicates whether the error API routines are bound and ready for use.
+    /// </summary>
     class property Initialized: boolean read GetIntialized;
   end;
 
@@ -206,6 +263,15 @@ type
   // GROUP 2: Textual error description
   // Used for retrieving and formatting error strings.
   // ---------------------------------------------------------------------------
+
+  /// <summary>
+  ///   API wrapper for retrieving textual descriptions of OpenSSL errors.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_error_string.html">
+  ///   ERR_error_string(3)</see> for details.
+  /// </remarks>
   TOsslApiErrStrings = class sealed
   public type
     TRoutine_ERR_error_string        = function(e: culong;
@@ -289,88 +355,326 @@ type
     class constructor Create;
   {$ENDIF}
 
-     // ERR_error_string Overloads
-
     /// <summary>
-    ///   Converts error code to string using a user-supplied buffer.
-    ///   Buffer must be at least 256 bytes.
+    ///   Converts an error code to a human-readable string.
     /// </summary>
+    /// <param name="e">
+    ///   The error code.
+    /// </param>
+    /// <param name="buf">
+    ///   A buffer to store the result (at least 256 bytes), or nil to use a
+    ///   static buffer.
+    /// </param>
+    /// <returns>
+    ///   A pointer to the error string.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_error_string.html">
+    ///   ERR_error_string(3)</see> for details.
+    /// </remarks>
     class function ERR_error_string(e: culong; buf: PAnsiChar): PAnsiChar; overload;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    // ERR_error_string_n (Thread Safe)
+    /// <summary>
+    ///   Converts an error code to a human-readable string (thread-safe).
+    /// </summary>
+    /// <param name="e">
+    ///   The error code.
+    /// </param>
+    /// <param name="buf">
+    ///   The buffer to store the string.
+    /// </param>
+    /// <param name="len">
+    ///   The size of the buffer.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_error_string.html">
+    ///   ERR_error_string_n(3)</see> for details.
+    /// </remarks>
     class procedure ERR_error_string_n(e: culong; buf: PAnsiChar; len: csize_t);
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns a string representing the library that generated the error.
+    /// </summary>
+    /// <param name="e">
+    ///   The error code.
+    /// </param>
+    /// <returns>
+    ///   The library name string.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_error_string.html">
+    ///   ERR_lib_error_string(3)</see> for details.
+    /// </remarks>
     class function ERR_lib_error_string(e: culong): PAnsiChar;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns a string representing the reason for the error.
+    /// </summary>
+    /// <param name="e">
+    ///   The error code.
+    /// </param>
+    /// <returns>
+    ///   The reason string.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_error_string.html">
+    ///   ERR_reason_error_string(3)</see> for details.
+    /// </remarks>
     class function ERR_reason_error_string(e: culong): PAnsiChar;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Retrieves the earliest error code and its function name.
+    /// </summary>
+    /// <param name="func">
+    ///   Output: A pointer to the function name string.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_error_func(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_error_func(func: PPAnsiChar): culong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves the latest error code and its function name.
+    /// </summary>
+    /// <param name="func">
+    ///   Output: A pointer to the function name string.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_last_error_func(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_last_error_func(func: PPAnsiChar): culong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Retrieves the earliest error code and its associated data.
+    /// </summary>
+    /// <param name="data">
+    ///   Output: A pointer to the data string.
+    /// </param>
+    /// <param name="flags">
+    ///   Output: Data flags (e.g., <see cref="ERR_TXT_STRING" />).
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_error_data(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_error_data(data: PPAnsiChar;
       flags: pcint): culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves the latest error code and its associated data.
+    /// </summary>
+    /// <param name="data">
+    ///   Output: A pointer to the data string.
+    /// </param>
+    /// <param name="flags">
+    ///   Output: Data flags.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_last_error_data(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_last_error_data(data: PPAnsiChar;
       flags: pcint): culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    // OpenSSL 3.0 "All" Routines
-    // Returns code, outputs pointers to internal strings (no copy needed)
+    /// <summary>
+    ///   Retrieves all information for the earliest error and removes it from
+    ///   the queue.
+    /// </summary>
+    /// <param name="file_">
+    ///   Output: Filename where error occurred.
+    /// </param>
+    /// <param name="line">
+    ///   Output: Line number where error occurred.
+    /// </param>
+    /// <param name="func">
+    ///   Output: Function name.
+    /// </param>
+    /// <param name="data">
+    ///   Output: Error data string.
+    /// </param>
+    /// <param name="flags">
+    ///   Output: Data flags.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_get_error_all(3)</see> for details.
+    /// </remarks>
     class function ERR_get_error_all(file_: PPAnsiChar; line: pcint;
       func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
       overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Retrieves all information for the earliest error without removing it.
+    /// </summary>
+    /// <param name="file_">
+    ///   Output: Filename.
+    /// </param>
+    /// <param name="line">
+    ///   Output: Line number.
+    /// </param>
+    /// <param name="func">
+    ///   Output: Function name.
+    /// </param>
+    /// <param name="data">
+    ///   Output: Data string.
+    /// </param>
+    /// <param name="flags">
+    ///   Output: Data flags.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_error_all(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_error_all(file_: PPAnsiChar; line: pcint;
       func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves all information for the latest error without removing it.
+    /// </summary>
+    /// <param name="file_">
+    ///   Output: Filename.
+    /// </param>
+    /// <param name="line">
+    ///   Output: Line number.
+    /// </param>
+    /// <param name="func">
+    ///   Output: Function name.
+    /// </param>
+    /// <param name="data">
+    ///   Output: Data string.
+    /// </param>
+    /// <param name="flags">
+    ///   Output: Data flags.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_get_error.html">
+    ///   ERR_peek_last_error_all(3)</see> for details.
+    /// </remarks>
     class function ERR_peek_last_error_all(file_: PPAnsiChar; line: pcint;
       func: PPAnsiChar; data: PPAnsiChar; flags: pcint): culong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Indicates whether the error string API routines are bound and ready
+    ///   for use.
+    /// </summary>
     class property Initialized: boolean read GetIntialized;
  end;
 
   TOsslApiErrStringsHelper = class helper for TOsslApiErrStrings
   public
+    /// <summary>
+    ///   Returns the library name as a <c>RawByteString</c>.
+    /// </summary>
     class function GetLibNameA(e: culong): RawByteString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the library name as a <c>UnicodeString</c>.
+    /// </summary>
     class function GetLibNameW(e: culong): UnicodeString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the library name as a native <c>string</c>.
+    /// </summary>
     class function GetLibName(e: culong): string;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the reason string as a <c>RawByteString</c>.
+    /// </summary>
     class function GetReasonA(e: culong): RawByteString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the reason string as a <c>UnicodeString</c>.
+    /// </summary>
     class function GetReasonW(e: culong): UnicodeString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the reason string as a native <c>string</c>.
+    /// </summary>
     class function GetReason(e: culong): string;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the full error string as a <c>RawByteString</c>.
+    /// </summary>
     class function GetErrorStringA(e: culong; AMaxlen: csize_t): RawByteString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the full error string as a <c>UnicodeString</c>.
+    /// </summary>
     class function GetErrorStringW(e: culong; AMaxlen: csize_t): UnicodeString;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the full error string as a native <c>string</c>.
+    /// </summary>
     class function GetErrorString(e: culong; AMaxlen: csize_t): string;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Retrieves all error info as <c>RawByteString</c>.
+    /// </summary>
     class function GetErrorStringsA(out AFileName, AFunc, AData: RawByteString;
       var line, flags: cint): culong;
       overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Retrieves all error info as <c>UnicodeString</c>.
+    /// </summary>
     class function GetErrorStringsW(out AFileName, AFunc, AData: UnicodeString;
       var line, flags: cint): culong;
       overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Retrieves all error info as native <c>string</c>.
+    /// </summary>
     class function GetErrorStrings(out AFileName, AFunc, AData: string;
       var line, flags: cint): culong;
       overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -380,6 +684,10 @@ type
   // GROUP 3: SYSTEM & ADVANCED (Stack, Print, Put)
   // Used for advanced error handling, printing to BIO, or custom errors.
   // ---------------------------------------------------------------------------
+
+  /// <summary>
+  ///   API wrapper for advanced OpenSSL error management and printing.
+  /// </summary>
   TOsslApiErrSystem = class sealed
   public type
     TRoutine_ERR_set_mark       = function: cint; cdecl;
@@ -416,11 +724,49 @@ type
     class constructor Create;
   {$ENDIF}
 
+    /// <summary>
+    ///   Sets a mark on the error queue.
+    /// </summary>
+    /// <returns>
+    ///   1 on success, 0 if no error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_set_mark.html">
+    ///   ERR_set_mark(3)</see> for details.
+    /// </remarks>
     class function ERR_set_mark: cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Pops errors from the queue until the last mark is reached.
+    /// </summary>
+    /// <returns>
+    ///   1 on success, 0 if no mark was found.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_set_mark.html">
+    ///   ERR_pop_to_mark(3)</see> for details.
+    /// </remarks>
     class function ERR_pop_to_mark: cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Prints all errors from the queue to a BIO.
+    /// </summary>
+    /// <param name="bp">
+    ///   The BIO to print to.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/ERR_print_errors.html">
+    ///   ERR_print_errors(3)</see> for details.
+    /// </remarks>
     class procedure ERR_print_errors(bp: PBIO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Indicates whether the advanced error API routines are bound and ready
+    ///   for use.
+    /// </summary>
     class property Initialized: boolean read GetIntialized;
   end;
 

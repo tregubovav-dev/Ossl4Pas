@@ -47,7 +47,9 @@ type
     Mapped directly to the constants defined in Ossl4Pas.Api.Err.
     ============================================================================ }
 
-  /// <summary>Identifies the subsystem that generated the error.</summary>
+  /// <summary>
+  ///   Identifies the subsystem that generated the error.
+  /// </summary>
   TOsslLibCode = (
     olcUnknown      = 0,
     olcNone         = ERR_LIB_NONE,           // 1
@@ -104,7 +106,9 @@ type
   );
 
 
-  /// <summary>Reason Flags extracted from the error code.</summary>
+  /// <summary>
+  ///   Reason Flags extracted from the error code.
+  /// </summary>
   TOsslReasonFlag = (
     orfFatal,   // Contains ERR_R_FATAL
     orfCommon  // Contains ERR_RFLAG_COMMON
@@ -151,8 +155,8 @@ type
   // ---------------------------------------------------------------------------
 
   /// <summary>
-  ///   Base exception class for OpenSSL errors.
-  ///   Automatically retrieves the error queue stack upon creation using TOsslAPIErrReader.
+  ///   Base exception class for OpenSSL errors. Automatically retrieves the
+  ///   error queue stack upon creation using TOsslAPIErrReader.
   /// </summary>
   EOsslCustomError = class(Exception)
   public type
@@ -185,6 +189,7 @@ type
 
     public
     {$IFDEF DCC}
+      /// <summary>
       ///   Atomically assigns the value of one flags record to another.
       ///   Implements the ":=" operator.
       /// </summary>
@@ -206,45 +211,60 @@ type
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Implicitly converts the thread-safe record back to a standard Pascal Set.
+      ///   Implicitly converts the thread-safe record back to a standard Pascal
+      ///   Set.
       /// </summary>
       class operator Implicit(a: TErrorMessageFlagRec): TErrorMessageFlags;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Checks if a specific flag is set within the record.
-      ///   Implements the standard "in" operator.
+      ///   Checks if a specific flag is set within the record. Implements the
+      ///   standard "in" operator.
       /// </summary>
       class operator In(a: TErrorMessageFlagRec; b: TErrorMessageFlag): boolean;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Atomically adds a flag to the specified record using a spin-lock strategy.
+      ///   Atomically adds a flag to the specified record using a spin-lock
+      ///   strategy.
       /// </summary>
-      /// <param name="a">The record to modify.</param>
-      /// <param name="b">The flag to include.</param>
+      /// <param name="a">
+      ///   The record to modify.
+      /// </param>
+      /// <param name="b">
+      ///   The flag to include.
+      /// </param>
       class procedure Include(var a: TErrorMessageFlagRec; b: TErrorMessageFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
       ///   Atomically adds a flag to the current instance.
       /// </summary>
-      /// <param name="AFLag">The flag to include.</param>
+      /// <param name="AFLag">
+      ///   The flag to include.
+      /// </param>
       procedure Include(AFLag: TErrorMessageFlag); overload;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Atomically removes a flag from the specified record using a spin-lock strategy.
+      ///   Atomically removes a flag from the specified record using a
+      ///   spin-lock strategy.
       /// </summary>
-      /// <param name="a">The record to modify.</param>
-      /// <param name="b">The flag to exclude.</param>
+      /// <param name="a">
+      ///   The record to modify.
+      /// </param>
+      /// <param name="b">
+      ///   The flag to exclude.
+      /// </param>
       class procedure Exclude(var a: TErrorMessageFlagRec; b: TErrorMessageFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
       ///   Atomically removes a flag from the current instance.
       /// </summary>
-      /// <param name="AFlag">The flag to exclude.</param>
+      /// <param name="AFlag">
+      ///   The flag to exclude.
+      /// </param>
       procedure Exclude(AFlag: TErrorMessageFlag); overload;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 

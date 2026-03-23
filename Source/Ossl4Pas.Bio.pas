@@ -34,8 +34,8 @@ This is preliminary implementtation.
 Needs to add more helper functions }
 
   /// <summary>
-  ///   Pascal-friendly extensions for BIO text operations.
-  ///   Provides explicit Ansi/Unicode handling and System.Format integration.
+  ///   Pascal-friendly extensions for BIO text operations. Provides explicit
+  ///   Ansi/Unicode handling and System.Format integration.
   /// </summary>
   TOsslApiBioTextHelper = class helper for TOsslApiBioText
   public
@@ -43,15 +43,21 @@ Needs to add more helper functions }
     // BIO_puts (Write String)
     // -------------------------------------------------------------------------
 
-    /// <summary>Writes a Raw/Ansi string to the BIO.</summary>
+    /// <summary>
+    ///   Writes a Raw/Ansi string to the BIO.
+    /// </summary>
     class function BIO_putsA(b: PBIO; const AStr: RawByteString): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Writes a Unicode string to the BIO (Converts to UTF-8).</summary>
+    /// <summary>
+    ///   Writes a Unicode string to the BIO (Converts to UTF-8).
+    /// </summary>
     class function BIO_putsW(b: PBIO; const AStr: UnicodeString): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Writes a string (Default encoding) to the BIO.</summary>
+    /// <summary>
+    ///   Writes a string (Default encoding) to the BIO.
+    /// </summary>
     class function BIO_puts(b: PBIO; const AStr: string): cint; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -59,15 +65,21 @@ Needs to add more helper functions }
     // BIO_gets (Read String)
     // -------------------------------------------------------------------------
 
-    /// <summary>Reads a line into a RawByteString.</summary>
+    /// <summary>
+    ///   Reads a line into a RawByteString.
+    /// </summary>
     class function BIO_getsA(b: PBIO; AMaxLen: cint; out AStr: RawByteString): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Reads a line into a UnicodeString (Assumes UTF-8 input).</summary>
+    /// <summary>
+    ///   Reads a line into a UnicodeString (Assumes UTF-8 input).
+    /// </summary>
     class function BIO_getsW(b: PBIO; AMaxLen: cint; out AStr: UnicodeString): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Reads a line into a string (Default encoding).</summary>
+    /// <summary>
+    ///   Reads a line into a string (Default encoding).
+    /// </summary>
     class function BIO_gets(b: PBIO; AMaxLen: cint; out AStr: string): cint;
       overload; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -75,15 +87,22 @@ Needs to add more helper functions }
     // BIO_printf (Format & Write)
     // -------------------------------------------------------------------------
 
-    /// <summary>Formats arguments using Ansi strings and writes to BIO.</summary>
+    /// <summary>
+    ///   Formats arguments using Ansi strings and writes to BIO.
+    /// </summary>
     class function BIO_printfA(b: PBIO; const AStr: RawByteString;
       const Args: array of const): cint; static;
 
-    /// <summary>Formats arguments using Unicode strings, converts to UTF-8, and writes to BIO.</summary>
+    /// <summary>
+    ///   Formats arguments using Unicode strings, converts to UTF-8, and writes
+    ///   to BIO.
+    /// </summary>
     class function BIO_printfW(b: PBIO; const AStr: UnicodeString;
       const Args: array of const): cint; static;
 
-    /// <summary>Formats arguments and writes to BIO (Default encoding).</summary>
+    /// <summary>
+    ///   Formats arguments and writes to BIO (Default encoding).
+    /// </summary>
     class function BIO_printf(b: PBIO; const AStr: string;
       const Args: array of const): cint; overload; static;
   end;
