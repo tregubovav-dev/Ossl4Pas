@@ -31,6 +31,16 @@ type
     Declared in: <openssl/crypto.h>, <openssl/core.h>, <openssl/types.h>
     ============================================================================ }
 
+  // Generic OpenSSL API handle
+  POSSL_CORE_HANDLE = ^OSSL_CORE_HANDLE;
+  OSSL_CORE_HANDLE = record end;
+
+  POSSL_DISPATCH = ^OSSL_DISPATCH;
+  OSSL_DISPATCH = record
+    function_id: cint;
+    &function: procedure;
+  end;
+
   // The library context (the "global" state replacement in OpenSSL 3.0+)
   POSSL_LIB_CTX = ^TOSSL_LIB_CTX;
   TOSSL_LIB_CTX = record end;
