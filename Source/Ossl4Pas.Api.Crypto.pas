@@ -340,6 +340,125 @@ type
     class property WindowsContext: string index TOsslApiCryptoVersion.OPENSSL_INFO_WINDOWS_CONTEXT read GetInfoStr;
   end;
 
+  TOsslApiLibCtx = class sealed
+  public type
+   TRoutine_OSSL_LIB_CTX_new = function: POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_new_from_dispatch = function(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_new_child = function(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_load_config = function(ctx: POSSL_LIB_CTX; const config_file: PAnsiChar): cint; cdecl;
+   TRoutine_OSSL_LIB_CTX_free = procedure(ctx: POSSL_LIB_CTX); cdecl;
+   TRoutine_OSSL_LIB_CTX_get0_global_default = function: POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_set0_default = function(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX; cdecl;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OSSL_LIB_CTX_new: TRoutine_OSSL_LIB_CTX_new;
+    F_OSSL_LIB_CTX_new_from_dispatch: TRoutine_OSSL_LIB_CTX_new_from_dispatch;
+    F_OSSL_LIB_CTX_new_child: TRoutine_OSSL_LIB_CTX_new_child;
+    F_OSSL_LIB_CTX_load_config: TRoutine_OSSL_LIB_CTX_load_config;
+    F_OSSL_LIB_CTX_free: TRoutine_OSSL_LIB_CTX_free;
+    F_OSSL_LIB_CTX_get0_global_default: TRoutine_OSSL_LIB_CTX_get0_global_default;
+    F_OSSL_LIB_CTX_set0_default: TRoutine_OSSL_LIB_CTX_set0_default;
+
+  strict private const
+    cBindings: array[0..6] of TOsslBindEntry = (
+      ( Name: 'OSSL_LIB_CTX_new';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_new;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_new_from_dispatch';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_new_from_dispatch;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_new_child';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_new_child;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_load_config';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_load_config;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_free';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_free;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_get0_global_default';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_get0_global_default;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_set0_default';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_set0_default;
+        MinVer: 0; FallBackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    class function OSSL_LIB_CTX_new(): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function OSSL_LIB_CTX_new_from_dispatch(const handle: POSSL_CORE_HANDLE;
+      const &in: POSSL_DISPATCH): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE;
+      const &in: POSSL_DISPATCH): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX;
+      const config_file: PAnsiChar): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class procedure OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX); static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function OSSL_LIB_CTX_get0_global_default: POSSL_LIB_CTX; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function OSSL_LIB_CTX_set0_default(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+  TOsslApiLibCtxDiag = class sealed
+  public type
+    TRoutine_OSSL_LIB_CTX_get_conf_diagnostics = function(ctx: POSSL_LIB_CTX): cint; cdecl;
+    TRoutine_OSSL_LIB_CTX_set_conf_diagnostics = procedure(ctx: POSSL_LIB_CTX; value: cint); cdecl;
+    TRoutine_OSSL_LIB_CTX_get_data = function(ctx: POSSL_LIB_CTX; index: cint): Pointer; cdecl;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OSSL_LIB_CTX_get_conf_diagnostics: TRoutine_OSSL_LIB_CTX_get_conf_diagnostics;
+    F_OSSL_LIB_CTX_set_conf_diagnostics: TRoutine_OSSL_LIB_CTX_set_conf_diagnostics;
+    F_OSSL_LIB_CTX_get_data: TRoutine_OSSL_LIB_CTX_get_data;
+
+  strict private const
+    cBindings: array[0..2] of TOsslBindEntry = (
+      ( Name: 'OSSL_LIB_CTX_get_conf_diagnostics';
+        VarPtr: @@TOsslApiLibCtxDiag.F_OSSL_LIB_CTX_get_conf_diagnostics;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_set_conf_diagnostics';
+        VarPtr: @@TOsslApiLibCtxDiag.F_OSSL_LIB_CTX_set_conf_diagnostics;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_get_data';
+        VarPtr: @@TOsslApiLibCtxDiag.F_OSSL_LIB_CTX_get_data;
+        MinVer: 0; FallBackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    class function OSSL_LIB_CTX_get_conf_diagnostics(ctx: POSSL_LIB_CTX): cint;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class procedure OSSL_LIB_CTX_set_conf_diagnostics(ctx: POSSL_LIB_CTX;
+      value: cint); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX; index: cint): Pointer;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
 implementation
 
 { TOsslApiCryptoVersion }
@@ -460,6 +579,121 @@ end;
 class function TOsslApiCryptoVersionHelper.GetVersion: TOsslVersion;
 begin
   Result:=TOsslVersion.Create(OpenSSL_version_num);
+end;
+
+{ TOsslApiLibCtx }
+
+{$IFDEF LINK_DYNAMIC}
+class constructor TOsslApiLibCtx.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiLibCtx.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiLibCtx.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OSSL_LIB_CTX_new(): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_new';
+function F_OSSL_LIB_CTX_new_from_dispatch(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_new_from_dispatch';
+function F_OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_new_child';
+function F_OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX; const config_file: PAnsiChar): cint; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_load_config';
+procedure F_OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX); cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_free';
+function F_OSSL_LIB_CTX_get0_global_default(): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_get0_global_default';
+function F_OSSL_LIB_CTX_set0_default(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_set0_default';
+{$ENDIF}
+
+class procedure TOsslApiLibCtx.OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX);
+begin
+  F_OSSL_LIB_CTX_free(ctx);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_get0_global_default: POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_get0_global_default;
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX;
+  const config_file: PAnsiChar): cint;
+begin
+  Result:=F_OSSL_LIB_CTX_load_config(ctx, config_file);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_new: POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_new();
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE;
+  const &in: POSSL_DISPATCH): POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_new_child(handle, &in);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_new_from_dispatch(
+  const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_new_from_dispatch(handle, &in);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_set0_default(
+  ctx: POSSL_LIB_CTX): POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_set0_default(ctx);
+end;
+
+{ TOsslApiLibCtxDiag }
+
+{$IFDEF LINK_DYNAMIC}
+class constructor TOsslApiLibCtxDiag.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiLibCtxDiag.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiLibCtxDiag.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OSSL_LIB_CTX_get_conf_diagnostics(ctx: POSSL_LIB_CTX): cint; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_get_conf_diagnostics';
+procedure F_OSSL_LIB_CTX_set_conf_diagnostics(ctx: POSSL_LIB_CTX; value: cint); cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_set_conf_diagnostics';
+function F_OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX; index: cint): Pointer; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_get_data';
+{$ENDIF}
+
+class function TOsslApiLibCtxDiag.OSSL_LIB_CTX_get_conf_diagnostics(
+  ctx: POSSL_LIB_CTX): cint;
+begin
+  Result:=F_OSSL_LIB_CTX_get_conf_diagnostics(ctx);
+end;
+
+class function TOsslApiLibCtxDiag.OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX;
+  index: cint): Pointer;
+begin
+  Result:=F_OSSL_LIB_CTX_get_data(ctx, index);
+end;
+
+class procedure TOsslApiLibCtxDiag.OSSL_LIB_CTX_set_conf_diagnostics(
+  ctx: POSSL_LIB_CTX; value: cint);
+begin
+  F_OSSL_LIB_CTX_set_conf_diagnostics(ctx, value);
 end;
 
 end.
