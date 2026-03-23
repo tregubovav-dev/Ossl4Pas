@@ -421,6 +421,11 @@ type
 
 type
   /// <summary>
+  ///   Metaclass type for BIO Methods, used for passing types to factories.
+  /// </summary>
+  TOsslApiBioMethodClass = class of TOsslApiBioCustomMethod;
+
+  /// <summary>
   ///   Abstract base class for OpenSSL BIO Methods (VMTs).
   /// </summary>
   /// <remarks>
