@@ -35,10 +35,17 @@ type
   POSSL_CORE_HANDLE = ^OSSL_CORE_HANDLE;
   OSSL_CORE_HANDLE = record end;
 
-  POSSL_DISPATCH = ^OSSL_DISPATCH;
-  OSSL_DISPATCH = record
+  POSSL_DISPATCH = ^OSSL_DISPATCH_st;
+  OSSL_DISPATCH_st = record
     function_id: cint;
     &function: procedure;
+  end;
+
+  POPENSSL_INIT_SETTINGS = ^OSSL_INIT_SETTINGS_st;
+  OSSL_INIT_SETTINGS_st = record
+    filename: PAnsiChar;
+    appname: PAnsiChar;
+    flags: culong;
   end;
 
   // The library context (the "global" state replacement in OpenSSL 3.0+)

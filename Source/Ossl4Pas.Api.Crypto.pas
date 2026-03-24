@@ -548,7 +548,7 @@ type
     /// <param name="handle">
     ///   The core handle to use.
     /// </param>
-    /// <param name="&amp;in">
+    /// <param name="in">
     ///   The dispatch table.
     /// </param>
     /// <remarks>
@@ -565,7 +565,7 @@ type
     /// <param name="handle">
     ///   The core handle to use.
     /// </param>
-    /// <param name="&amp;in">
+    /// <param name="in">
     ///   The dispatch table.
     /// </param>
     /// <remarks>
@@ -718,6 +718,129 @@ type
     /// </remarks>
     class function OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX; index: cint): Pointer;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+  /// <summary>
+  ///   API wrapper for OpenSSL library initialization and cleanup routines.
+  /// </summary>
+  /// <remarks>
+  ///   In OpenSSL 3.x, explicit initialization is often optional as it occurs
+  ///   automatically. However, this class allows for fine-grained control over
+  ///   subsystem initialization and is critical when disabling "atexit"
+  ///   registration to manage cleanup manually within the Pascal lifecycle.
+  /// </remarks>
+  TOsslApiInitCrypto = class sealed
+  public const
+    /// <summary>Do not load the crypto error strings.</summary>
+    OPENSSL_INIT_NO_LOAD_CRYPTO_STRINGS = $00000001;
+    /// <summary>Load the crypto error strings.</summary>
+    OPENSSL_INIT_LOAD_CRYPTO_STRINGS = $00000002;
+    /// <summary>Register all ciphers.</summary>
+    OPENSSL_INIT_ADD_ALL_CIPHERS = $00000004;
+    /// <summary>Register all digests.</summary>
+    OPENSSL_INIT_ADD_ALL_DIGESTS = $00000008;
+    /// <summary>Do not register all ciphers.</summary>
+    OPENSSL_INIT_NO_ADD_ALL_CIPHERS = $00000010;
+    /// <summary>Do not register all digests.</summary>
+    OPENSSL_INIT_NO_ADD_ALL_DIGESTS = $00000020;
+    /// <summary>Load the default configuration file.</summary>
+    OPENSSL_INIT_LOAD_CONFIG = $00000040;
+    /// <summary>Do not load the default configuration file.</summary>
+    OPENSSL_INIT_NO_LOAD_CONFIG = $00000080;
+    /// <summary>Initialize the asynchronous thread management.</summary>
+    OPENSSL_INIT_ASYNC = $00000100;
+    /// <summary>Initialize the RDRAND engine.</summary>
+    OPENSSL_INIT_ENGINE_RDRAND = $00000200;
+    /// <summary>Initialize the dynamic engine.</summary>
+    OPENSSL_INIT_ENGINE_DYNAMIC = $00000400;
+    /// <summary>Initialize the OpenSSL engine.</summary>
+    OPENSSL_INIT_ENGINE_OPENSSL = $00000800;
+    /// <summary>Initialize the cryptodev engine.</summary>
+    OPENSSL_INIT_ENGINE_CRYPTODEV = $00001000;
+    /// <summary>Initialize the CAPI engine.</summary>
+    OPENSSL_INIT_ENGINE_CAPI = $00002000;
+    /// <summary>Initialize the Padlock engine.</summary>
+    OPENSSL_INIT_ENGINE_PADLOCK = $00004000;
+    /// <summary>Initialize the AFALG engine.</summary>
+    OPENSSL_INIT_ENGINE_AFALG = $00008000;
+    /// <summary>Initialize at-fork handlers.</summary>
+    OPENSSL_INIT_ATFORK = $00020000;
+    /// <summary>Do not register the OpenSSL cleanup routine with atexit().</summary>
+    OPENSSL_INIT_NO_ATEXIT = $00080000;
+
+    /// <summary>
+    ///   Default Ossl4Pas initialization flags. Loads strings, ciphers, and
+    ///   digests while disabling automatic configuration loading and atexit
+    ///   registration.
+    /// </summary>
+    OSSL4PAS_INIT_DEFAULT = OPENSSL_INIT_LOAD_CRYPTO_STRINGS or
+                            OPENSSL_INIT_ADD_ALL_CIPHERS or
+                            OPENSSL_INIT_ADD_ALL_DIGESTS or
+                            OPENSSL_INIT_NO_LOAD_CONFIG or
+                            OPENSSL_INIT_ASYNC or
+                            OPENSSL_INIT_NO_ATEXIT;
+
+
+  public type
+    TRoutine_OPENSSL_init_crypto = function(opts: cuint64; const settings: POPENSSL_INIT_SETTINGS): cint; cdecl;
+    TRoutine_OPENSSL_cleanup = procedure; cdecl;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OPENSSL_init_crypto: TRoutine_OPENSSL_init_crypto;
+    F_OPENSSL_cleanup: TRoutine_OPENSSL_cleanup;
+
+  strict private const
+    cBindings: array[0..1] of TOsslBindEntry = (
+      ( Name: 'OPENSSL_init_crypto';
+        VarPtr: @@TOsslApiInitCrypto.F_OPENSSL_init_crypto;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OPENSSL_cleanup';
+        VarPtr: @@TOsslApiInitCrypto.F_OPENSSL_cleanup;
+        MinVer: 0; FallBackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    /// <summary>
+    ///   Explicitly initializes the OpenSSL crypto library with specified options.
+    /// </summary>
+    /// <param name="opts">
+    ///   Bitmask of initialization options (e.g., <c>OPENSSL_INIT_ADD_ALL_CIPHERS</c>).
+    /// </param>
+    /// <param name="settings">
+    ///   Optional pointer to global settings. Pass <c>nil</c> for defaults.
+    /// </param>
+    /// <returns>
+    ///   Returns 1 on success, 0 on failure.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OPENSSL_init_crypto.html">
+    ///   OPENSSL_init_crypto(3)</see> for details.
+    /// </remarks>
+    class function OPENSSL_init_crypto(opts: cuint64;
+      const settings: POPENSSL_INIT_SETTINGS): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Explicitly shuts down and cleans up the OpenSSL library resources.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OPENSSL_init_crypto.html">
+    ///   OPENSSL_cleanup(3)</see> for details. This should be called before
+    ///   application exit if <c>OPENSSL_INIT_NO_ATEXIT</c> was used during
+    ///   initialization.
+    /// </remarks>
+    class procedure OPENSSL_cleanup; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
 implementation
@@ -955,6 +1078,46 @@ class procedure TOsslApiLibCtxDiag.OSSL_LIB_CTX_set_conf_diagnostics(
   ctx: POSSL_LIB_CTX; value: cint);
 begin
   F_OSSL_LIB_CTX_set_conf_diagnostics(ctx, value);
+end;
+
+{ TOsslApiInitCrypto }
+
+{$IFDEF LINK_DYNAMIC}
+
+class constructor TOsslApiInitCrypto.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiInitCrypto.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiInitCrypto.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OPENSSL_init_crypto(opts: cuint64; const settings: POPENSSL_INIT_SETTINGS): cint; cdecl; external cLibCryptoLib name 'OPENSSL_init_crypto';
+procedure F_OPENSSL_cleanup; cdecl; external cLibCryptoLib name 'OPENSSL_cleanup';
+{$ENDIF}
+
+{ TOsslApiInitCrypto }
+
+class function TOsslApiInitCrypto.OPENSSL_init_crypto(opts: cuint64;
+  const settings: POPENSSL_INIT_SETTINGS): cint;
+begin
+  Result:=F_OPENSSL_init_crypto(opts, settings);
+end;
+
+class procedure TOsslApiInitCrypto.OPENSSL_cleanup;
+begin
+  F_OPENSSL_cleanup();
 end;
 
 end.
