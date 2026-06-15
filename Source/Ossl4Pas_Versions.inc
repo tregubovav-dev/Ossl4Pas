@@ -18,7 +18,19 @@
 
 
 // Ossl4Pas_Versions.inc
-{$IFDEF OSSL_3_7}
+{$IFDEF OSSL_4_3}
+  {$DEFINE OSSL_4_2}
+{$ENDIF}
+
+{$IFDEF OSSL_4_2}
+  {$DEFINE OSSL_4_1}
+{$ENDIF}
+
+{$IFDEF OSSL_4_1}
+  {$DEFINE OSSL_4_0}
+{$ENDIF}
+
+{$IFDEF OSSL_4_0}
   {$DEFINE OSSL_3_6}
 {$ENDIF}
 
