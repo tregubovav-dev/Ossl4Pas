@@ -43,11 +43,14 @@ const
   cLib1VersionProc = 'SSLeay';
 
 type
-  ///  <summary>Parent class for `Ossl4Pas` exceptions</summary>
+  /// <summary>
+  ///   Parent class for `Ossl4Pas` exceptions
+  /// </summary>
   EOsslCustomError = class(Exception);
 
   /// <summary>
-  ///   Represents an OpenSSL version number parsed from the C unsigned long format.
+  ///   Represents an OpenSSL version number parsed from the C unsigned long
+  ///   format.
   /// </summary>
   /// <remarks>
   ///   Encapsulates the OpenSSL versioning scheme (MNN00PP0) and provides
@@ -79,7 +82,8 @@ type
 
   public
     /// <summary>
-    ///   Initializes a new instance of the TOsslVersion record from a raw integer.
+    ///   Initializes a new instance of the TOsslVersion record from a raw
+    ///   integer.
     /// </summary>
     /// <param name="AVersion">
     ///   The raw version number (e.g., from OpenSSL_version_num).
@@ -89,11 +93,21 @@ type
     /// <summary>
     ///   Initializes a new instance of the TOsslVersion record from components.
     /// </summary>
-    /// <param name="AMajor">The major version number.</param>
-    /// <param name="AMinor">The minor version number.</param>
-    /// <param name="AFix">The fix level (usually 0 in OpenSSL 3.x).</param>
-    /// <param name="APatch">The patch level.</param>
-    /// <param name="AStatus">The status tag (default is $F for Release).</param>
+    /// <param name="AMajor">
+    ///   The major version number.
+    /// </param>
+    /// <param name="AMinor">
+    ///   The minor version number.
+    /// </param>
+    /// <param name="AFix">
+    ///   The fix level (usually 0 in OpenSSL 3.x).
+    /// </param>
+    /// <param name="APatch">
+    ///   The patch level.
+    /// </param>
+    /// <param name="AStatus">
+    ///   The status tag (default is $F for Release).
+    /// </param>
     constructor Create(AMajor, AMinor, AFix: cuint8;
       APatch: cuint8 = 0; AStatus: cuint8 = $F); overload;
 
@@ -150,16 +164,24 @@ type
     /// <summary>
     ///   Checks if the provided version is binary compatible with this version.
     /// </summary>
-    /// <param name="AVersion">The version to check against.</param>
-    /// <returns>True if Major and Minor versions match.</returns>
+    /// <param name="AVersion">
+    ///   The version to check against.
+    /// </param>
+    /// <returns>
+    ///   True if Major and Minor versions match.
+    /// </returns>
     function AreCompatible(AVersion: TOsslVersion): boolean; overload;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Checks if the provided version is binary compatible with this version.
     /// </summary>
-    /// <param name="AVersion">The version to check against.</param>
-    /// <returns>True if Major and Minor versions match.</returns>
+    /// <param name="AVersion">
+    ///   The version to check against.
+    /// </param>
+    /// <returns>
+    ///   True if Major and Minor versions match.
+    /// </returns>
     function AreCompatible(AVersion: culong): boolean; overload;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -168,19 +190,29 @@ type
     /// </summary>
     property Version: culong read FVersion;
 
-    /// <summary>The Major version component.</summary>
+    /// <summary>
+    ///   The Major version component.
+    /// </summary>
     property Major:   cuint8 read GetMajor;
 
-    /// <summary>The Minor version component.</summary>
+    /// <summary>
+    ///   The Minor version component.
+    /// </summary>
     property Minor:   cuint8 read GetMinor;
 
-    /// <summary>The Fix version component (rarely used in 3.x).</summary>
+    /// <summary>
+    ///   The Fix version component (rarely used in 3.x).
+    /// </summary>
     property Fix:     cuint8 read GetFix;
 
-    /// <summary>The Patch version component.</summary>
+    /// <summary>
+    ///   The Patch version component.
+    /// </summary>
     property Patch:   cuint8 read GetPatch;
 
-    /// <summary>The Status tag (0=Dev, $F=Release).</summary>
+    /// <summary>
+    ///   The Status tag (0=Dev, $F=Release).
+    /// </summary>
     property Status:  cuint8 read GetStatus;
 
     /// <summary>
@@ -199,16 +231,24 @@ type
     property AsString: string read GetAsString;
   end;
 
- /// <summary>Identifies the specific OpenSSL library (Crypto or SSL).</summary>
+ /// <summary>
+ ///   Identifies the specific OpenSSL library (Crypto or SSL).
+ /// </summary>
   TLibType    = (ltCrypto, ltSsl);
 
-  /// <summary>Set of library types.</summary>
+  /// <summary>
+  ///   Set of library types.
+  /// </summary>
   TLibTypes  = set of TLibType;
 
-  /// <summary>Platform-independent handle to a loaded dynamic library.</summary>
+  /// <summary>
+  ///   Platform-independent handle to a loaded dynamic library.
+  /// </summary>
   TLibHandle    = type HMODULE;
 
-  /// <summary>Helper methods for TLibHandle.</summary>
+  /// <summary>
+  ///   Helper methods for TLibHandle.
+  /// </summary>
   TLibHandleHelper = record helper for TLibHandle
   public const
     cNilHandle = TLibHandle(0);
@@ -222,30 +262,44 @@ type
     function DoGetFileName: string;
 
   public
-    /// <summary>Creates a new LibHandle.</summary>
+    /// <summary>
+    ///   Creates a new LibHandle.
+    /// </summary>
     constructor Create(AModuleHandle: HMODULE); overload;
 
-    /// <summary>Loads library and returns the loaded library handle.</summary>
+    /// <summary>
+    ///   Loads library and returns the loaded library handle.
+    /// </summary>
     constructor Create(const ALibName: string); overload;
 
-    /// <summary>True if the handle is 0/Nil.</summary>
+    /// <summary>
+    ///   True if the handle is 0/Nil.
+    /// </summary>
     function IsEmpty: boolean; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Retrieves the address of an exported function.</summary>
+    /// <summary>
+    ///   Retrieves the address of an exported function.
+    /// </summary>
     property ProcAddress[const AProcName: string]: pointer read DoGetProcAddress;
 
-    /// <summary>Retrieves the file name of the loaded module.</summary>
+    /// <summary>
+    ///   Retrieves the file name of the loaded module.
+    /// </summary>
     property FileName: string read DoGetFileName;
   end;
 
   TLibHandleList   = array[TLibType] of TLibHandle;
 (*  TLibVersionList  = array[TLibType] of TOsslVersion; *)
 
-  /// <summary>Callback signature for binding function pointers.</summary>
+  /// <summary>
+  ///   Callback signature for binding function pointers.
+  /// </summary>
   TBindProc = procedure(const ALibHandle: TLibHandle;
     const AVersion: TOsslVersion);
 
-  /// <summary>Callback signature for unbinding/cleanup.</summary>
+  /// <summary>
+  ///   Callback signature for unbinding/cleanup.
+  /// </summary>
   TUnBindProc = procedure;
 
   /// <summary>
@@ -261,11 +315,15 @@ type
     constructor Create(ALIbType: TLibType; ABindProc: TBindProc;
       AUnbindProc: TUnBindProc);
 
-    /// <summary>Executes the binding callback.</summary>
+    /// <summary>
+    ///   Executes the binding callback.
+    /// </summary>
     procedure DoBind(AHandle: TLibHandle; const AVersion: TOsslVersion);
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Executes the unbinding callback.</summary>
+    /// <summary>
+    ///   Executes the unbinding callback.
+    /// </summary>
     procedure DoUnBind;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
     property LibType:     TLibType read FLibType;

@@ -37,18 +37,25 @@ type
   end;
 
   /// <summary>
-  ///   Defines a mapping between an OpenSSL symbol name and a Pascal function variable.
+  ///   Defines a mapping between an OpenSSL symbol name and a Pascal function
+  ///   variable.
   /// </summary>
   TOsslBindEntry = record
-    /// <summary>The case-sensitive name of the exported function (e.g., 'BIO_new').</summary>
+    /// <summary>
+    ///   The case-sensitive name of the exported function (e.g., 'BIO_new').
+    /// </summary>
     Name: string;
-    /// <summary>Address of the function variable to assign.</summary>
+    /// <summary>
+    ///   Address of the function variable to assign.
+    /// </summary>
     VarPtr: PPointer;
-    /// <summary>Minimum OpenSSL version required. 0 = Any.</summary>
+    /// <summary>
+    ///   Minimum OpenSSL version required. 0 = Any.
+    /// </summary>
     MinVer: culong;
     /// <summary>
-    ///   Optional custom address to assign if the symbol is missing or incompatible.
-    ///   If nil, the default behavior (Stub or nil) is used.
+    ///   Optional custom address to assign if the symbol is missing or
+    ///   incompatible. If nil, the default behavior (Stub or nil) is used.
     /// </summary>
     FallbackPtr: Pointer;
   end;
@@ -59,16 +66,16 @@ type
   TOsslBinding = class
   public
     /// <summary>
-    ///   Iterates through the table and assigns function pointers.
-    ///   If a symbol is missing or version is too low, assigns a safe error stub.
+    ///   Iterates through the table and assigns function pointers. If a symbol
+    ///   is missing or version is too low, assigns a safe error stub.
     /// </summary>
     class procedure Bind(const ALibHandle: TLibHandle;
       const ACurrentVer: TOsslVersion; const AEntries:
       array of TOsslBindEntry; ASetStub: boolean = True); static;
 
     /// <summary>
-    ///   Resets all function pointers in the table to the safe Stub.
-    ///   Used for initialization and unbinding.
+    ///   Resets all function pointers in the table to the safe Stub. Used for
+    ///   initialization and unbinding.
     /// </summary>
     class procedure Reset(const AEntries: array of TOsslBindEntry;
       ASetStub: boolean = True); static;
@@ -77,8 +84,9 @@ type
     ///   The universal stub for missing functions. Raises EOsslLoader.
     /// </summary>
     /// <remarks>
-    ///   Since OpenSSL uses cdecl, the caller cleans the stack. Raising an exception
-    ///   here is safe for any function signature because it never returns to the call site.
+    ///   Since OpenSSL uses cdecl, the caller cleans the stack. Raising an
+    ///   exception here is safe for any function signature because it never
+    ///   returns to the call site.
     /// </remarks>
     class procedure Stub_FuncNotAvailable; cdecl; static;
   end;

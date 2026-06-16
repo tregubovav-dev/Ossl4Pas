@@ -1,0 +1,1123 @@
+{******************************************************************************}
+{                                                                              }
+{  Ossl4Pas : OpenSSL 3.x wrappers for Delphi & Free Pascal                    }
+{                                                                              }
+{  Copyright (c) 2026 [Your Name / Organization]                               }
+{                                                                              }
+{  Licensed under the Modified BSD License (3-Clause) or the Mozilla Public    }
+{  License v1.1 (MPL 1.1). You may obtain a copy of the licenses at:           }
+{                                                                              }
+{      https://opensource.org/licenses/BSD-3-Clause                            }
+{      https://www.mozilla.org/MPL/MPL-1.1.html                                }
+{                                                                              }
+{  Unless required by applicable law or agreed to in writing, software         }
+{  distributed under the License is distributed on an "AS IS" BASIS,           }
+{  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    }
+{                                                                              }
+{******************************************************************************}
+
+unit Ossl4Pas.Api.Crypto;
+
+{$INCLUDE 'Ossl4Pas_CompilerDefines.inc'}
+
+interface
+
+uses
+  Ossl4Pas.CTypes,
+  Ossl4Pas.Api.Types,
+  Ossl4Pas.Types,
+  Ossl4Pas.Loader,
+  Ossl4Pas.Binding,
+  Ossl4Pas.Static;
+
+
+type
+  /// <summary>
+  ///   API wrapper for OpenSSL version and build information routines.
+  /// </summary>
+  TOsslApiCryptoVersion = class sealed
+  public type
+    TRoutine_Crypto_VersionNum      = function: culong; cdecl;
+    TRoutine_Crypto_VersionPart     = function: cuint; cdecl;
+    TRoutine_Crypto_VersionCharVal  = function: PAnsiChar; cdecl;
+    TRoutine_Crypto_VersionInfo     = function(AType: cint): PAnsiChar; cdecl;
+
+  public const
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the full
+    ///   descriptive version text. Example: 'OpenSSL 3.0.0 7 Sep 2021'.
+    /// </summary>
+    OPENSSL_VERSION_ = 0;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the compiler
+    ///   flags set for the compilation process.
+    /// </summary>
+    OPENSSL_CFLAGS = 1;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the date of the
+    ///   build process.
+    /// </summary>
+    OPENSSL_BUILT_ON = 2;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the "Configure"
+    ///   target of the library build.
+    /// </summary>
+    OPENSSL_PLATFORM = 3;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the OPENSSLDIR
+    ///   setting of the library build.
+    /// </summary>
+    OPENSSL_DIR = 4;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the ENGINESDIR
+    ///   setting. Deprecated in OpenSSL 3.0.
+    /// </summary>
+    OPENSSL_ENGINES_DIR = 5;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the short version
+    ///   identifier string (e.g., '3.0.0').
+    /// </summary>
+    OPENSSL_VERSION_STRING = 6;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the longer
+    ///   version identifier string, combining version, pre-release, and build
+    ///   metadata.
+    /// </summary>
+    OPENSSL_FULL_VERSION_STRING = 7;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the MODULESDIR
+    ///   setting of the library build.
+    /// </summary>
+    OPENSSL_MODULES_DIR = 8;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the current
+    ///   OpenSSL CPU settings capability flags.
+    /// </summary>
+    OPENSSL_CPU_INFO = 9;
+
+    /// <summary>
+    ///   Constant for <see cref="OpenSSL_version" />. Returns the Windows
+    ///   install context used to compute the registry key name.
+    /// </summary>
+    OPENSSL_WINCTX = 10;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the configured
+    ///   OPENSSLDIR (default config file location).
+    /// </summary>
+    OPENSSL_INFO_CONFIG_DIR = 1001;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the configured
+    ///   ENGINESDIR (default engine location).
+    /// </summary>
+    OPENSSL_INFO_ENGINES_DIR = 1002;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the configured
+    ///   MODULESDIR (default dynamically loadable module location).
+    /// </summary>
+    OPENSSL_INFO_MODULES_DIR = 1003;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the configured
+    ///   dynamically loadable module extension (e.g., '.so', '.dll').
+    /// </summary>
+    OPENSSL_INFO_DSO_EXTENSION = 1004;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the separator
+    ///   between a directory specification and a filename.
+    /// </summary>
+    OPENSSL_INFO_DIR_FILENAME_SEPARATOR = 1005;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the OpenSSL list
+    ///   separator (e.g., ':' on Unix, ';' on Windows).
+    /// </summary>
+    OPENSSL_INFO_LIST_SEPARATOR = 1006;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the seed source
+    ///   (internal use).
+    /// </summary>
+    OPENSSL_INFO_SEED_SOURCE = 1007;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the current OpenSSL
+    ///   CPU settings.
+    /// </summary>
+    OPENSSL_INFO_CPU_SETTINGS = 1008;
+
+    /// <summary>
+    ///   Constant for <see cref="OPENSSL_info" />. Returns the Windows install
+    ///   context.
+    /// </summary>
+    OPENSSL_INFO_WINDOWS_CONTEXT = 1009;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OpenSSL_version_num: TOsslApiCryptoVersion.TRoutine_Crypto_VersionNum;
+    F_OPENSSL_version_major: TRoutine_Crypto_VersionPart;
+    F_OPENSSL_version_minor: TRoutine_Crypto_VersionPart;
+    F_OPENSSL_version_patch: TRoutine_Crypto_VersionPart;
+    F_OPENSSL_version_pre_release: TRoutine_Crypto_VersionCharVal;
+    F_OPENSSL_version_build_metadata: TRoutine_Crypto_VersionCharVal;
+    F_OpenSSL_version: TRoutine_Crypto_VersionInfo;
+    F_OPENSSL_info: TRoutine_Crypto_VersionInfo;
+
+  strict private const
+    cBindings: array[0..7] of TOsslBindEntry = (
+      ( Name: 'OpenSSL_version_num';
+        VarPtr: @@TOsslApiCryptoVersion.F_OpenSSL_version_num;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OPENSSL_version_major';
+        VarPtr: @@TOsslApiCryptoVersion.F_OPENSSL_version_major;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OPENSSL_version_minor';
+        VarPtr: @@TOsslApiCryptoVersion.F_OPENSSL_version_minor;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OPENSSL_version_patch';
+        VarPtr: @@TOsslApiCryptoVersion.F_OPENSSL_version_patch;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OPENSSL_version_pre_release';
+        VarPtr: @@TOsslApiCryptoVersion.F_OPENSSL_version_pre_release;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OPENSSL_version_build_metadata';
+        VarPtr: @@TOsslApiCryptoVersion.F_OPENSSL_version_build_metadata;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OpenSSL_version';
+        VarPtr: @@TOsslApiCryptoVersion.F_OpenSSL_version;
+        MinVer: 0; FallbackPtr: nil
+      ),
+      ( Name: 'OPENSSL_info';
+        VarPtr: @@TOsslApiCryptoVersion.F_OPENSSL_info;
+        MinVer: 0; FallbackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    /// <summary>
+    ///   Returns the OpenSSL version number as a single integer.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details. Format: 0xMNN00PP0L (Major,
+    ///   Minor, Patch).
+    /// </remarks>
+    class function OpenSSL_version_num: culong; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the Major part of the version identifier.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details.
+    /// </remarks>
+    class function OPENSSL_version_major: cuint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the Minor part of the version identifier.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details.
+    /// </remarks>
+    class function OPENSSL_version_minor: cuint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the Patch part of the version identifier.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details.
+    /// </remarks>
+    class function OPENSSL_version_patch: cuint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns text indicating a pre-release version (e.g., "-dev",
+    ///   "-alpha3").
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details. Returns an empty string if
+    ///   undefined.
+    /// </remarks>
+    class function OPENSSL_version_pre_release: PAnsiChar; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns extra build metadata information (e.g., "+fips").
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details. Returns an empty string if
+    ///   undefined.
+    /// </remarks>
+    class function OPENSSL_version_build_metadata: PAnsiChar; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns formatted version and build strings based on the provided type
+    ///   constant.
+    /// </summary>
+    /// <param name="AType">
+    ///   The type of information to retrieve. Use <c>OPENSSL_VERSION_</c>, <c>
+    ///   OPENSSL_CFLAGS</c>, <c>OPENSSL_BUILT_ON</c>, <c>OPENSSL_PLATFORM</c>,
+    ///   <c>OPENSSL_DIR</c>, <c>OPENSSL_ENGINES_DIR</c>, <c>OPENSSL_MODULES_DIR
+    ///   </c>, <c>OPENSSL_CPU_INFO</c>, or <c>OPENSSL_WINCTX</c> constants.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OpenSSL_version.html">
+    ///   OpenSSL_version(3)</see> for details.
+    /// </remarks>
+    class function OpenSSL_version(AType: cint): PAnsiChar; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns configuration and system path information based on the
+    ///   provided type constant.
+    /// </summary>
+    /// <param name="AType">
+    ///   The type of configuration info to retrieve. Use <c>
+    ///   OPENSSL_INFO_CONFIG_DIR</c>, <c>OPENSSL_INFO_ENGINES_DIR</c>, <c>
+    ///   OPENSSL_INFO_MODULES_DIR</c>, <c>OPENSSL_INFO_DSO_EXTENSION</c>, <c>
+    ///   OPENSSL_INFO_DIR_FILENAME_SEPARATOR</c>, <c>
+    ///   OPENSSL_INFO_LIST_SEPARATOR</c>, <c>OPENSSL_INFO_SEED_SOURCE</c>, <c>
+    ///   OPENSSL_INFO_CPU_SETTINGS</c>, or <c>OPENSSL_INFO_WINDOWS_CONTEXT</c>
+    ///   constants.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OPENSSL_info.html">
+    ///   OPENSSL_info(3)</see> for details. Returns NULL for unknown types.
+    /// </remarks>
+    class function OPENSSL_info(AType: cint): PAnsiChar; static; {$IFDEF INLINE_ON}inline;{$ENDIF}  end;
+
+  /// <summary>
+  ///   Pascal-friendly helper for OpenSSL version and info retrieval. Converts
+  ///   C-string returns into native Pascal strings and types.
+  /// </summary>
+  TOsslApiCryptoVersionHelper = class helper for TOsslApiCryptoVersion
+  private
+    class function GetVersion: TOsslVersion; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+    class function GetVersionStr(AType: integer): string; static;
+    class function GetInfoStr(AType: integer): string; static;
+    class function GetInfoChar(AType: integer): char; static;
+    class function GetBuildMetadata: string; static;
+    class function GetPreRelease: string; static;
+  public
+    /// <summary>
+    ///   Returns the parsed version object.
+    /// </summary>
+    class property Version: TOsslVersion read GetVersion;
+
+    /// <summary>
+    ///   Returns pre-release text (e.g., "-dev").
+    /// </summary>
+    class property PreRelease: string read GetPreRelease;
+
+    /// <summary>
+    ///   Returns build metadata (e.g., "+fips").
+    /// </summary>
+    class property BuildMetadata: string read GetBuildMetadata;
+
+    /// <summary>
+    ///   Full descriptive version text.
+    /// </summary>
+    class property VersionText: string index TOsslApiCryptoVersion.OPENSSL_VERSION_
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Compiler flags used to build the library.
+    /// </summary>
+    class property CFlags: string index TOsslApiCryptoVersion.OPENSSL_CFLAGS
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Date the library was built.
+    /// </summary>
+    class property BuiltOn: string index TOsslApiCryptoVersion.OPENSSL_BUILT_ON
+      read GetVersionStr;
+
+    /// <summary>
+    ///   The "Configure" target platform of the build.
+    /// </summary>
+    class property Platform: string index TOsslApiCryptoVersion.OPENSSL_PLATFORM
+      read GetVersionStr;
+
+    /// <summary>
+    ///   The configured OPENSSLDIR setting.
+    /// </summary>
+    class property DirectoryText: string index TOsslApiCryptoVersion.OPENSSL_DIR
+      read GetVersionStr;
+
+    /// <summary>
+    ///   The configured ENGINESDIR setting (Deprecated in 3.0).
+    /// </summary>
+    class property EnginesDirectoryText: string index TOsslApiCryptoVersion.OPENSSL_ENGINES_DIR
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Short version string (e.g., '3.0.0').
+    /// </summary>
+    class property VersionStr: string index TOsslApiCryptoVersion.OPENSSL_VERSION_STRING
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Full version string including pre-release and metadata.
+    /// </summary>
+    class property FullVersionStr: string index TOsslApiCryptoVersion.OPENSSL_FULL_VERSION_STRING
+      read GetVersionStr;
+
+    /// <summary>
+    ///   The configured MODULESDIR setting.
+    /// </summary>
+    class property ModulesDirectoryText: string index TOsslApiCryptoVersion.OPENSSL_MODULES_DIR
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Current CPU capability flags.
+    /// </summary>
+    class property CPUInfo: string index TOsslApiCryptoVersion.OPENSSL_CPU_INFO
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Windows install context string.
+    /// </summary>
+    class property WindowsCtx: string index TOsslApiCryptoVersion.OPENSSL_WINCTX
+      read GetVersionStr;
+
+    /// <summary>
+    ///   Default location for configuration files.
+    /// </summary>
+    class property ConfigDirectory: string index TOsslApiCryptoVersion.OPENSSL_INFO_CONFIG_DIR
+      read GetInfoStr;
+
+    /// <summary>
+    ///   Default location for engine modules.
+    /// </summary>
+    class property EnginesDirectory: string index TOsslApiCryptoVersion.OPENSSL_INFO_ENGINES_DIR
+      read GetInfoStr;
+
+    /// <summary>
+    ///   Default location for dynamically loadable modules.
+    /// </summary>
+    class property ModulesDirectory: string index TOsslApiCryptoVersion.OPENSSL_INFO_MODULES_DIR
+      read GetInfoStr;
+
+    /// <summary>
+    ///   Dynamically loadable module file extension.
+    /// </summary>
+    class property DSOExtention: string index TOsslApiCryptoVersion.OPENSSL_INFO_DSO_EXTENSION
+      read GetInfoStr;
+
+    /// <summary>
+    ///   OS-specific directory/filename separator.
+    /// </summary>
+    class property DirectorySeparatorChar: char index TOsslApiCryptoVersion.OPENSSL_INFO_DIR_FILENAME_SEPARATOR
+      read GetInfoChar;
+
+    /// <summary>
+    ///   OS-specific list separator (e.g., ':' or ';').
+    /// </summary>
+    class property PathSeparatorChar: char index TOsslApiCryptoVersion.OPENSSL_INFO_LIST_SEPARATOR
+      read GetInfoChar;
+
+    /// <summary>
+    ///   Seed source configuration.
+    /// </summary>
+    class property SeedSource: string index TOsslApiCryptoVersion.OPENSSL_INFO_SEED_SOURCE
+      read GetInfoStr;
+
+    /// <summary>
+    ///   Current CPU capability flags.
+    /// </summary>
+    class property CPUSettings: string index TOsslApiCryptoVersion.OPENSSL_INFO_CPU_SETTINGS
+      read GetInfoStr;
+
+    /// <summary>
+    ///   Windows install context string.
+    /// </summary>
+    class property WindowsContext: string index TOsslApiCryptoVersion.OPENSSL_INFO_WINDOWS_CONTEXT
+      read GetInfoStr;
+  end;
+
+  /// <summary>
+  ///   API wrapper for OpenSSL library context management routines.
+  /// </summary>
+  TOsslApiLibCtx = class sealed
+  public type
+   TRoutine_OSSL_LIB_CTX_new = function: POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_new_from_dispatch = function(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_new_child = function(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_load_config = function(ctx: POSSL_LIB_CTX; const config_file: PAnsiChar): cint; cdecl;
+   TRoutine_OSSL_LIB_CTX_free = procedure(ctx: POSSL_LIB_CTX); cdecl;
+   TRoutine_OSSL_LIB_CTX_get0_global_default = function: POSSL_LIB_CTX; cdecl;
+   TRoutine_OSSL_LIB_CTX_set0_default = function(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX; cdecl;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OSSL_LIB_CTX_new: TRoutine_OSSL_LIB_CTX_new;
+    F_OSSL_LIB_CTX_new_from_dispatch: TRoutine_OSSL_LIB_CTX_new_from_dispatch;
+    F_OSSL_LIB_CTX_new_child: TRoutine_OSSL_LIB_CTX_new_child;
+    F_OSSL_LIB_CTX_load_config: TRoutine_OSSL_LIB_CTX_load_config;
+    F_OSSL_LIB_CTX_free: TRoutine_OSSL_LIB_CTX_free;
+    F_OSSL_LIB_CTX_get0_global_default: TRoutine_OSSL_LIB_CTX_get0_global_default;
+    F_OSSL_LIB_CTX_set0_default: TRoutine_OSSL_LIB_CTX_set0_default;
+
+  strict private const
+    cBindings: array[0..6] of TOsslBindEntry = (
+      ( Name: 'OSSL_LIB_CTX_new';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_new;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_new_from_dispatch';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_new_from_dispatch;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_new_child';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_new_child;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_load_config';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_load_config;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_free';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_free;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_get0_global_default';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_get0_global_default;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_set0_default';
+        VarPtr: @@TOsslApiLibCtx.F_OSSL_LIB_CTX_set0_default;
+        MinVer: 0; FallBackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    /// <summary>
+    ///   Creates a new library context.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_new(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_new(): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Creates a new library context from a provider dispatch table.
+    /// </summary>
+    /// <param name="handle">
+    ///   The core handle to use.
+    /// </param>
+    /// <param name="in">
+    ///   The dispatch table.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_new_from_dispatch(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_new_from_dispatch(const handle: POSSL_CORE_HANDLE;
+      const &in: POSSL_DISPATCH): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Creates a child library context.
+    /// </summary>
+    /// <param name="handle">
+    ///   The core handle to use.
+    /// </param>
+    /// <param name="in">
+    ///   The dispatch table.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_new_child(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE;
+      const &in: POSSL_DISPATCH): POSSL_LIB_CTX; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Loads a configuration file into the specified library context.
+    /// </summary>
+    /// <param name="ctx">
+    ///   The library context to load into.
+    /// </param>
+    /// <param name="config_file">
+    ///   The path to the configuration file.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_load_config(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX;
+      const config_file: PAnsiChar): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Frees the specified library context.
+    /// </summary>
+    /// <param name="ctx">
+    ///   The library context to free.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_free(3)</see> for details.
+    /// </remarks>
+    class procedure OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX); static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the global default library context.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_get0_global_default(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_get0_global_default: POSSL_LIB_CTX; static;
+      {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Sets the default library context for the current thread.
+    /// </summary>
+    /// <param name="ctx">
+    ///   The library context to set as default.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_set0_default(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_set0_default(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+  /// <summary>
+  ///   API wrapper for OpenSSL library context diagnostics and internal data
+  ///   access.
+  /// </summary>
+  TOsslApiLibCtxDiag = class sealed
+  public type
+    TRoutine_OSSL_LIB_CTX_get_conf_diagnostics = function(ctx: POSSL_LIB_CTX): cint; cdecl;
+    TRoutine_OSSL_LIB_CTX_set_conf_diagnostics = procedure(ctx: POSSL_LIB_CTX; value: cint); cdecl;
+    TRoutine_OSSL_LIB_CTX_get_data = function(ctx: POSSL_LIB_CTX; index: cint): Pointer; cdecl;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OSSL_LIB_CTX_get_conf_diagnostics: TRoutine_OSSL_LIB_CTX_get_conf_diagnostics;
+    F_OSSL_LIB_CTX_set_conf_diagnostics: TRoutine_OSSL_LIB_CTX_set_conf_diagnostics;
+    F_OSSL_LIB_CTX_get_data: TRoutine_OSSL_LIB_CTX_get_data;
+
+  strict private const
+    cBindings: array[0..2] of TOsslBindEntry = (
+      ( Name: 'OSSL_LIB_CTX_get_conf_diagnostics';
+        VarPtr: @@TOsslApiLibCtxDiag.F_OSSL_LIB_CTX_get_conf_diagnostics;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_set_conf_diagnostics';
+        VarPtr: @@TOsslApiLibCtxDiag.F_OSSL_LIB_CTX_set_conf_diagnostics;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OSSL_LIB_CTX_get_data';
+        VarPtr: @@TOsslApiLibCtxDiag.F_OSSL_LIB_CTX_get_data;
+        MinVer: 0; FallBackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    /// <summary>
+    ///   Gets the configuration diagnostics flag for the specified context.
+    /// </summary>
+    /// <param name="ctx">
+    ///   The library context.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_get_conf_diagnostics(3)</see> for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_get_conf_diagnostics(ctx: POSSL_LIB_CTX): cint;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Sets the configuration diagnostics flag for the specified context.
+    /// </summary>
+    /// <param name="ctx">
+    ///   The library context.
+    /// </param>
+    /// <param name="value">
+    ///   The diagnostics flag value.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OSSL_LIB_CTX.html">
+    ///   OSSL_LIB_CTX_set_conf_diagnostics(3)</see> for details.
+    /// </remarks>
+    class procedure OSSL_LIB_CTX_set_conf_diagnostics(ctx: POSSL_LIB_CTX;
+      value: cint); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Gets internal data from the library context by index.
+    /// </summary>
+    /// <param name="ctx">
+    ///   The library context.
+    /// </param>
+    /// <param name="index">
+    ///   The index of the data to retrieve.
+    /// </param>
+    /// <remarks>
+    ///   This is an internal OpenSSL routine. See OpenSSL sources for details.
+    /// </remarks>
+    class function OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX; index: cint): Pointer;
+      static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+  /// <summary>
+  ///   API wrapper for OpenSSL library initialization and cleanup routines.
+  /// </summary>
+  /// <remarks>
+  ///   In OpenSSL 3.x, explicit initialization is often optional as it occurs
+  ///   automatically. However, this class allows for fine-grained control over
+  ///   subsystem initialization and is critical when disabling "atexit"
+  ///   registration to manage cleanup manually within the Pascal lifecycle.
+  /// </remarks>
+  TOsslApiInitCrypto = class sealed
+  public const
+    /// <summary>Do not load the crypto error strings.</summary>
+    OPENSSL_INIT_NO_LOAD_CRYPTO_STRINGS = $00000001;
+    /// <summary>Load the crypto error strings.</summary>
+    OPENSSL_INIT_LOAD_CRYPTO_STRINGS = $00000002;
+    /// <summary>Register all ciphers.</summary>
+    OPENSSL_INIT_ADD_ALL_CIPHERS = $00000004;
+    /// <summary>Register all digests.</summary>
+    OPENSSL_INIT_ADD_ALL_DIGESTS = $00000008;
+    /// <summary>Do not register all ciphers.</summary>
+    OPENSSL_INIT_NO_ADD_ALL_CIPHERS = $00000010;
+    /// <summary>Do not register all digests.</summary>
+    OPENSSL_INIT_NO_ADD_ALL_DIGESTS = $00000020;
+    /// <summary>Load the default configuration file.</summary>
+    OPENSSL_INIT_LOAD_CONFIG = $00000040;
+    /// <summary>Do not load the default configuration file.</summary>
+    OPENSSL_INIT_NO_LOAD_CONFIG = $00000080;
+    /// <summary>Initialize the asynchronous thread management.</summary>
+    OPENSSL_INIT_ASYNC = $00000100;
+    /// <summary>Initialize the RDRAND engine.</summary>
+    OPENSSL_INIT_ENGINE_RDRAND = $00000200;
+    /// <summary>Initialize the dynamic engine.</summary>
+    OPENSSL_INIT_ENGINE_DYNAMIC = $00000400;
+    /// <summary>Initialize the OpenSSL engine.</summary>
+    OPENSSL_INIT_ENGINE_OPENSSL = $00000800;
+    /// <summary>Initialize the cryptodev engine.</summary>
+    OPENSSL_INIT_ENGINE_CRYPTODEV = $00001000;
+    /// <summary>Initialize the CAPI engine.</summary>
+    OPENSSL_INIT_ENGINE_CAPI = $00002000;
+    /// <summary>Initialize the Padlock engine.</summary>
+    OPENSSL_INIT_ENGINE_PADLOCK = $00004000;
+    /// <summary>Initialize the AFALG engine.</summary>
+    OPENSSL_INIT_ENGINE_AFALG = $00008000;
+    /// <summary>Initialize at-fork handlers.</summary>
+    OPENSSL_INIT_ATFORK = $00020000;
+    /// <summary>Do not register the OpenSSL cleanup routine with atexit().</summary>
+    OPENSSL_INIT_NO_ATEXIT = $00080000;
+
+    /// <summary>
+    ///   Default Ossl4Pas initialization flags. Loads strings, ciphers, and
+    ///   digests while disabling automatic configuration loading and atexit
+    ///   registration.
+    /// </summary>
+    OSSL4PAS_INIT_DEFAULT = OPENSSL_INIT_LOAD_CRYPTO_STRINGS or
+                            OPENSSL_INIT_ADD_ALL_CIPHERS or
+                            OPENSSL_INIT_ADD_ALL_DIGESTS or
+                            OPENSSL_INIT_NO_LOAD_CONFIG or
+                            OPENSSL_INIT_ASYNC or
+                            OPENSSL_INIT_NO_ATEXIT;
+
+
+  public type
+    TRoutine_OPENSSL_init_crypto = function(opts: cuint64; const settings: POPENSSL_INIT_SETTINGS): cint; cdecl;
+    TRoutine_OPENSSL_cleanup = procedure; cdecl;
+
+  {$IFDEF LINK_DYNAMIC}
+  private class var
+    F_OPENSSL_init_crypto: TRoutine_OPENSSL_init_crypto;
+    F_OPENSSL_cleanup: TRoutine_OPENSSL_cleanup;
+
+  strict private const
+    cBindings: array[0..1] of TOsslBindEntry = (
+      ( Name: 'OPENSSL_init_crypto';
+        VarPtr: @@TOsslApiInitCrypto.F_OPENSSL_init_crypto;
+        MinVer: 0; FallBackPtr: nil
+      ),
+      ( Name: 'OPENSSL_cleanup';
+        VarPtr: @@TOsslApiInitCrypto.F_OPENSSL_cleanup;
+        MinVer: 0; FallBackPtr: nil
+      )
+    );
+
+    class procedure Bind(const ALibHandle: TLibHandle; const AVersion: TOsslVersion); static;
+    class procedure UnBind; static;
+  {$ENDIF}
+  public
+  {$IFDEF LINK_DYNAMIC}
+    class constructor Create;
+  {$ENDIF}
+
+    /// <summary>
+    ///   Explicitly initializes the OpenSSL crypto library with specified options.
+    /// </summary>
+    /// <param name="opts">
+    ///   Bitmask of initialization options (e.g., <c>OPENSSL_INIT_ADD_ALL_CIPHERS</c>).
+    /// </param>
+    /// <param name="settings">
+    ///   Optional pointer to global settings. Pass <c>nil</c> for defaults.
+    /// </param>
+    /// <returns>
+    ///   Returns 1 on success, 0 on failure.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OPENSSL_init_crypto.html">
+    ///   OPENSSL_init_crypto(3)</see> for details.
+    /// </remarks>
+    class function OPENSSL_init_crypto(opts: cuint64;
+      const settings: POPENSSL_INIT_SETTINGS): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Explicitly shuts down and cleans up the OpenSSL library resources.
+    /// </summary>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/OPENSSL_init_crypto.html">
+    ///   OPENSSL_cleanup(3)</see> for details. This should be called before
+    ///   application exit if <c>OPENSSL_INIT_NO_ATEXIT</c> was used during
+    ///   initialization.
+    /// </remarks>
+    class procedure OPENSSL_cleanup; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+  end;
+
+implementation
+
+{ TOsslApiCryptoVersion }
+
+{$IFDEF LINK_DYNAMIC}
+
+class constructor TOsslApiCryptoVersion.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiCryptoVersion.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiCryptoVersion.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OPENSSL_version_major: cuint; cdecl; external cLibCryptoLib name 'OPENSSL_version_major';
+function F_OPENSSL_version_minor: cuint; cdecl; external cLibCryptoLib name 'OPENSSL_version_minor';
+function F_OPENSSL_version_patch: cuint; cdecl; external cLibCryptoLib name 'OPENSSL_version_patch';
+function F_OPENSSL_version_pre_release: PAnsiChar; cdecl; external cLibCryptoLib name 'OPENSSL_version_pre_release';
+function F_OPENSSL_version_build_metadata: PAnsiChar; cdecl; external cLibCryptoLib name 'OPENSSL_version_build_metadata';
+function F_OpenSSL_version_num: culong; cdecl; external cLibCryptoLib name 'OpenSSL_version_num';
+function F_OpenSSL_version(AType: cint): PAnsiChar; cdecl; external cLibCryptoLib name 'OpenSSL_version';
+function F_OPENSSL_info(AType: cint): PAnsiChar; cdecl; external cLibCryptoLib name 'OPENSSL_info';
+{$ENDIF}
+
+class function TOsslApiCryptoVersion.OPENSSL_version_major: cuint;
+begin
+  Result:=F_OPENSSL_version_major();
+end;
+
+class function TOsslApiCryptoVersion.OPENSSL_version_minor: cuint;
+begin
+  Result:=F_OPENSSL_version_minor();
+end;
+
+class function TOsslApiCryptoVersion.OPENSSL_version_patch: cuint;
+begin
+  Result:=F_OPENSSL_version_patch();
+end;
+
+class function TOsslApiCryptoVersion.OPENSSL_version_pre_release: PAnsiChar;
+begin
+  Result:=F_OPENSSL_version_pre_release();
+end;
+
+class function TOsslApiCryptoVersion.OPENSSL_version_build_metadata: PAnsiChar;
+begin
+  Result:=F_OPENSSL_version_build_metadata();
+end;
+
+class function TOsslApiCryptoVersion.OpenSSL_version_num: culong;
+begin
+  Result:=F_OpenSSL_version_num();
+end;
+
+class function TOsslApiCryptoVersion.OPENSSL_info(AType: cint): PAnsiChar;
+begin
+  Result:=F_OPENSSL_info(AType);
+end;
+
+class function TOsslApiCryptoVersion.OpenSSL_version(AType: cint): PAnsiChar;
+begin
+  Result:=F_OpenSSL_version(AType);
+end;
+
+
+{ TOsslApiCryptoVersionHelper }
+
+// Note on String Conversions:
+// OpenSSL version and info routines return static, 7-bit ASCII C-strings.
+// Therefore, we rely on the RTL's fast implicit PAnsiChar -> [Unicode]String
+// conversion (which also safely handles nil pointers), bypassing the explicit
+// UTF8String casting required for most other OpenSSL string APIs.
+
+class function TOsslApiCryptoVersionHelper.GetPreRelease: string;
+begin
+  Result:=string(OPENSSL_version_pre_release);
+end;
+
+class function TOsslApiCryptoVersionHelper.GetBuildMetadata: string;
+begin
+  Result:=string(OPENSSL_version_build_metadata);
+end;
+
+class function TOsslApiCryptoVersionHelper.GetVersionStr(
+  AType: integer): string;
+begin
+  Result:=string(OpenSSL_version(AType));
+end;
+
+class function TOsslApiCryptoVersionHelper.GetInfoStr(AType: integer): string;
+begin
+  Result:=string(OPENSSL_info(AType));
+end;
+
+class function TOsslApiCryptoVersionHelper.GetInfoChar(AType: integer): char;
+var
+  lResult: PAnsiChar;
+
+begin
+  lResult:=OPENSSL_info(AType);
+  if Assigned(lResult) then
+    Result:=Char(lResult^)
+  else
+    Result:=#0;
+end;
+
+class function TOsslApiCryptoVersionHelper.GetVersion: TOsslVersion;
+begin
+  Result:=TOsslVersion.Create(OpenSSL_version_num);
+end;
+
+{ TOsslApiLibCtx }
+
+{$IFDEF LINK_DYNAMIC}
+class constructor TOsslApiLibCtx.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiLibCtx.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiLibCtx.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OSSL_LIB_CTX_new(): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_new';
+function F_OSSL_LIB_CTX_new_from_dispatch(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_new_from_dispatch';
+function F_OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_new_child';
+function F_OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX; const config_file: PAnsiChar): cint; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_load_config';
+procedure F_OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX); cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_free';
+function F_OSSL_LIB_CTX_get0_global_default(): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_get0_global_default';
+function F_OSSL_LIB_CTX_set0_default(ctx: POSSL_LIB_CTX): POSSL_LIB_CTX; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_set0_default';
+{$ENDIF}
+
+class procedure TOsslApiLibCtx.OSSL_LIB_CTX_free(ctx: POSSL_LIB_CTX);
+begin
+  F_OSSL_LIB_CTX_free(ctx);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_get0_global_default: POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_get0_global_default;
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_load_config(ctx: POSSL_LIB_CTX;
+  const config_file: PAnsiChar): cint;
+begin
+  Result:=F_OSSL_LIB_CTX_load_config(ctx, config_file);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_new: POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_new();
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_new_child(const handle: POSSL_CORE_HANDLE;
+  const &in: POSSL_DISPATCH): POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_new_child(handle, &in);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_new_from_dispatch(
+  const handle: POSSL_CORE_HANDLE; const &in: POSSL_DISPATCH): POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_new_from_dispatch(handle, &in);
+end;
+
+class function TOsslApiLibCtx.OSSL_LIB_CTX_set0_default(
+  ctx: POSSL_LIB_CTX): POSSL_LIB_CTX;
+begin
+  Result:=F_OSSL_LIB_CTX_set0_default(ctx);
+end;
+
+{ TOsslApiLibCtxDiag }
+
+{$IFDEF LINK_DYNAMIC}
+class constructor TOsslApiLibCtxDiag.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiLibCtxDiag.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiLibCtxDiag.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OSSL_LIB_CTX_get_conf_diagnostics(ctx: POSSL_LIB_CTX): cint; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_get_conf_diagnostics';
+procedure F_OSSL_LIB_CTX_set_conf_diagnostics(ctx: POSSL_LIB_CTX; value: cint); cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_set_conf_diagnostics';
+function F_OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX; index: cint): Pointer; cdecl; external cLibCryptoLib name 'OSSL_LIB_CTX_get_data';
+{$ENDIF}
+
+class function TOsslApiLibCtxDiag.OSSL_LIB_CTX_get_conf_diagnostics(
+  ctx: POSSL_LIB_CTX): cint;
+begin
+  Result:=F_OSSL_LIB_CTX_get_conf_diagnostics(ctx);
+end;
+
+class function TOsslApiLibCtxDiag.OSSL_LIB_CTX_get_data(ctx: POSSL_LIB_CTX;
+  index: cint): Pointer;
+begin
+  Result:=F_OSSL_LIB_CTX_get_data(ctx, index);
+end;
+
+class procedure TOsslApiLibCtxDiag.OSSL_LIB_CTX_set_conf_diagnostics(
+  ctx: POSSL_LIB_CTX; value: cint);
+begin
+  F_OSSL_LIB_CTX_set_conf_diagnostics(ctx, value);
+end;
+
+{ TOsslApiInitCrypto }
+
+{$IFDEF LINK_DYNAMIC}
+
+class constructor TOsslApiInitCrypto.Create;
+begin
+  UnBind;
+  TOsslLoader.RegisterBinding(ltCrypto, @Bind, @UnBind);
+end;
+
+class procedure TOsslApiInitCrypto.Bind(const ALibHandle: TLibHandle;
+  const AVersion: TOsslVersion);
+begin
+  TOsslBinding.Bind(ALibHandle, AVersion, cBindings);
+end;
+
+class procedure TOsslApiInitCrypto.UnBind;
+begin
+  TOsslBinding.Reset(cBindings);
+end;
+{$ENDIF}
+
+{$IFDEF LINK_STATIC}
+function F_OPENSSL_init_crypto(opts: cuint64; const settings: POPENSSL_INIT_SETTINGS): cint; cdecl; external cLibCryptoLib name 'OPENSSL_init_crypto';
+procedure F_OPENSSL_cleanup; cdecl; external cLibCryptoLib name 'OPENSSL_cleanup';
+{$ENDIF}
+
+{ TOsslApiInitCrypto }
+
+class function TOsslApiInitCrypto.OPENSSL_init_crypto(opts: cuint64;
+  const settings: POPENSSL_INIT_SETTINGS): cint;
+begin
+  Result:=F_OPENSSL_init_crypto(opts, settings);
+end;
+
+class procedure TOsslApiInitCrypto.OPENSSL_cleanup;
+begin
+  F_OPENSSL_cleanup();
+end;
+
+end.

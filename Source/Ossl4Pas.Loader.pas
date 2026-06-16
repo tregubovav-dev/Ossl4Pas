@@ -52,16 +52,24 @@ type
 
 {$REGION 'TOsslLoader declaration'}
 
-  /// <summary>Base exception class for all OpenSSL Loader errors.</summary>
+  /// <summary>
+  ///   Base exception class for all OpenSSL Loader errors.
+  /// </summary>
   EOsslLoader = class(Exception);
 
-  /// <summary>Exception raised when an OS-level library loading error occurs.</summary>
+  /// <summary>
+  ///   Exception raised when an OS-level library loading error occurs.
+  /// </summary>
   EOsslLib  = class(EOSError)
     /// <summary>
     ///   Raises an EOsslLib exception with the last OS error code.
     /// </summary>
-    /// <param name="LastError">The OS error code (optional).</param>
-    /// <param name="AdditionalInfo">Extra context for the error message.</param>
+    /// <param name="LastError">
+    ///   The OS error code (optional).
+    /// </param>
+    /// <param name="AdditionalInfo">
+    ///   Extra context for the error message.
+    /// </param>
     class procedure RaiseLastOSError(LastError: Integer = 0;
       const AdditionalInfo: string = ''); static;
   end;
@@ -72,9 +80,9 @@ type
   ///   Abstract base class for OpenSSL Library Loaders.
   /// </summary>
   /// <remarks>
-  ///   Provides the infrastructure for Singleton management, binding registration,
-  ///   and thread-safe state access. Concrete loading logic must be implemented
-  ///   by descendants.
+  ///   Provides the infrastructure for Singleton management, binding
+  ///   registration, and thread-safe state access. Concrete loading logic must
+  ///   be implemented by descendants.
   /// </remarks>
   TOsslCustomLoader = class abstract
   public const
@@ -124,13 +132,13 @@ type
 
   protected
     ///  <summary>
-    ///    Raises <see cref="EOsslLoader"> exception with a message
+    ///    Raises <see cref="EOsslLoader" /> exception with a message
     ///  </summary>
     ///  <param name="AMessage">A message string</param>
     class procedure RaiseException(AMessage: string); static;
 
     ///  <summary>
-    ///    Raises <see cref="EOsslLoader"> exception with a formatted message
+    ///    Raises <see cref="EOsslLoader" />  exception with a formatted message
     ///  </summary>
     ///  <param name="AMessage">
     ///    A message string containing format specifier(s) to be replaced
@@ -145,14 +153,14 @@ type
 
 
     ///  <summary>
-    ///    Raises <see cref="EOsslLoader"> exception with a message that is
+    ///    Raises <see cref="EOsslLoader" /> exception with a message that is
     ///    loaded from a library resources.
     ///  </summary>
     ///  <param name="ResStringRec">Is a pointer to resource string.</param>
     class procedure RaiseExceptionRes(ResStringRec: PResStringRec); static;
 
     ///  <summary>
-    ///    Raises <see cref="EOsslLoader"> exception with a message that is
+    ///    Raises <see cref="EOsslLoader" /> exception with a message that is
     ///    loaded from a library resources.
     ///  </summary>
     ///  <param name="ResStringRec">
@@ -167,14 +175,15 @@ type
       const Args: array of const); static;
 
     /// <summary>
-    ///   Atomically registers the class type to be used for the Singleton instance.
+    ///   Atomically registers the class type to be used for the Singleton
+    ///   instance.
     /// </summary>
     class function SetLoaderClass(ALoaderClass: TOsslCustomLoaderClass): boolean;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
-    ///   Factory method to create a new instance of the loader.
-    ///   Can be overridden by concrete descendants.
+    ///   Factory method to create a new instance of the loader. Can be
+    ///   overridden by concrete descendants.
     /// </summary>
     class function NewLoader: TOsslCustomLoader; virtual;
 
@@ -205,7 +214,9 @@ type
     /// <summary>
     ///   Executes the binding callback defined in the parameter.
     /// </summary>
-    /// <param name="AParam">The binding parameter record.</param>
+    /// <param name="AParam">
+    ///   The binding parameter record.
+    /// </param>
     /// <remarks>
     ///   This method checks if the library is loaded before calling the proc.
     ///   It does NOT acquire the lock; the caller must ensure thread safety.
@@ -216,15 +227,19 @@ type
     /// <summary>
     ///   Executes the binding callback within a thread-safe lock.
     /// </summary>
-    /// <param name="AParam">The binding parameter record.</param>
+    /// <param name="AParam">
+    ///   The binding parameter record.
+    /// </param>
     procedure DoSafeBind(const AParam: TBindParam); overload;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
-    ///   Iterates through all registered bindings for the specified types
-    ///   and executes them.
+    ///   Iterates through all registered bindings for the specified types and
+    ///   executes them.
     /// </summary>
-    /// <param name="ALibTypes">The set of libraries to bind.</param>
+    /// <param name="ALibTypes">
+    ///   The set of libraries to bind.
+    /// </param>
     procedure DoBind(ALibTypes: TLibTypes); overload;
 
     /// <summary>
@@ -234,8 +249,8 @@ type
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
-    ///   Iterates through all registered bindings for the specified types
-    ///   and executes their unbind procedures.
+    ///   Iterates through all registered bindings for the specified types and
+    ///   executes their unbind procedures.
     /// </summary>
     procedure DoUnBind(ALibTypes: TLibTypes); overload;
 
@@ -285,7 +300,8 @@ type
     class function SetLoader: boolean;
 
     /// <summary>
-    ///   Registers a binding callback to be executed when the specified library loads.
+    ///   Registers a binding callback to be executed when the specified library
+    ///   loads.
     /// </summary>
     class procedure RegisterBinding(const ALibType: TLibType;
       ABindProc: TBindProc; AUnBindProc: TUnBindProc);
@@ -313,15 +329,25 @@ type
     class procedure ResetSingleton;
     {$ENDIF}
 
-    /// <summary>Checks if a loader instance is initialized.</summary>
+    /// <summary>
+    ///   Checks if a loader instance is initialized.
+    /// </summary>
     class property IsLoaderSet: boolean read GetIsLoaderSet;
-    /// <summary>The class type currently registered as the Loader.</summary>
+    /// <summary>
+    ///   The class type currently registered as the Loader.
+    /// </summary>
     class property LoaderClass: TOsslCustomLoaderClass read FLoaderClass;
-    /// <summary>Checks if a specific library is currently loaded.</summary>
+    /// <summary>
+    ///   Checks if a specific library is currently loaded.
+    /// </summary>
     class property IsLibLoaded[ALibType: TLibType]: boolean read GetIsLibLoaded;
-    /// <summary>Returns the set of currently loaded libraries.</summary>
+    /// <summary>
+    ///   Returns the set of currently loaded libraries.
+    /// </summary>
     class property LibsLoaded: TLibTypes read GetLibsLoaded;
-    /// <summary>Returns the version of a loaded library.</summary>
+    /// <summary>
+    ///   Returns the version of a loaded library.
+    /// </summary>
     class property LibVersion: TOsslVersion read GetLibVersion;
 
     constructor Create; virtual;
@@ -354,8 +380,8 @@ type
     /// </summary>
     /// <remarks>
     ///   Standard Pascal Sets are not thread-safe. This record encapsulates the
-    ///   bitmask storage and provides Interlocked operations for assignment
-    ///   and bit manipulation (Include/Exclude).
+    ///   bitmask storage and provides Interlocked operations for assignment and
+    ///   bit manipulation (Include/Exclude).
     /// </remarks>
     TLoaderFlagsRec = record
     private type
@@ -371,8 +397,12 @@ type
       ///   Atomically assigns the value of one flags record to another.
       ///   Implements the ":=" operator.
       /// </summary>
-      /// <param name="Dest">The destination record to be updated.</param>
-      /// <param name="Src">The source record.</param>
+      /// <param name="Dest">
+      ///   The destination record to be updated.
+      /// </param>
+      /// <param name="Src">
+      ///   The source record.
+      /// </param>
       class operator Assign(var Dest: TLoaderFlagsRec;
         const [ref] Src: TLoaderFlagsRec); {$IFDEF INLINE_ON}inline;{$ENDIF}
     {$ENDIF}
@@ -389,45 +419,60 @@ type
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Implicitly converts the thread-safe record back to a standard Pascal Set.
+      ///   Implicitly converts the thread-safe record back to a standard Pascal
+      ///   Set.
       /// </summary>
       class operator Implicit(a: TLoaderFlagsRec): TLoaderFlags;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Checks if a specific flag is set within the record.
-      ///   Implements the standard "in" operator.
+      ///   Checks if a specific flag is set within the record. Implements the
+      ///   standard "in" operator.
       /// </summary>
       class operator In(a: TLoaderFlagsRec; b: TLoaderFlag): boolean;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Atomically adds a flag to the specified record using a spin-lock strategy.
+      ///   Atomically adds a flag to the specified record using a spin-lock
+      ///   strategy.
       /// </summary>
-      /// <param name="a">The record to modify.</param>
-      /// <param name="b">The flag to include.</param>
+      /// <param name="a">
+      ///   The record to modify.
+      /// </param>
+      /// <param name="b">
+      ///   The flag to include.
+      /// </param>
       class procedure Include(var a: TLoaderFlagsRec; b: TLoaderFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
       ///   Atomically adds a flag to the current instance.
       /// </summary>
-      /// <param name="AFLag">The flag to include.</param>
+      /// <param name="AFLag">
+      ///   The flag to include.
+      /// </param>
       procedure Include(AFLag: TLoaderFlag); overload;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
-      ///   Atomically removes a flag from the specified record using a spin-lock strategy.
+      ///   Atomically removes a flag from the specified record using a
+      ///   spin-lock strategy.
       /// </summary>
-      /// <param name="a">The record to modify.</param>
-      /// <param name="b">The flag to exclude.</param>
+      /// <param name="a">
+      ///   The record to modify.
+      /// </param>
+      /// <param name="b">
+      ///   The flag to exclude.
+      /// </param>
       class procedure Exclude(var a: TLoaderFlagsRec; b: TLoaderFlag); overload;
         static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
       /// <summary>
       ///   Atomically removes a flag from the current instance.
       /// </summary>
-      /// <param name="AFlag">The flag to exclude.</param>
+      /// <param name="AFlag">
+      ///   The flag to exclude.
+      /// </param>
       procedure Exclude(AFlag: TLoaderFlag); overload;
         {$IFDEF INLINE_ON}inline;{$ENDIF}
     end;
@@ -479,12 +524,12 @@ type
 protected
 
     /// <summary>
-    ///   Retrieves the Singleton instance cast to <c>TOsslLoader</c>,
-    ///   creating it if necessary.
+    ///   Retrieves the Singleton instance cast to <c>TOsslLoader</c>, creating
+    ///   it if necessary.
     /// </summary>
     /// <remarks>
-    ///   This method enforces type safety. If the currently registered loader class
-    ///   is not compatible with <c>TOsslLoader</c>, an <see cref="EOsslLoader" />
+    ///   This method enforces type safety. If the currently registered loader
+    ///   class is not compatible with <c>TOsslLoader</c>, an <see cref="EOsslLoader" />
     ///   exception is raised.
     /// </remarks>
     class function GetLoader: TOsslLoader; reintroduce;
@@ -493,23 +538,32 @@ protected
     /// <summary>
     ///   Creates a TStringList configured for parsing delimited path strings.
     /// </summary>
-    /// <param name="APaths">The delimited string of paths.</param>
-    /// <returns>A TStringList instance (User is responsible for freeing).</returns>
+    /// <param name="APaths">
+    ///   The delimited string of paths.
+    /// </param>
+    /// <returns>
+    ///   A TStringList instance (User is responsible for freeing).
+    /// </returns>
     class function NewPathStringList(APaths: string): TStringList; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Retrieves the OpenSSL version from a loaded library handle.
     /// </summary>
-    /// <param name="ALibHandle">The handle to check.</param>
-    /// <param name="AVersion">Return The parsed version structure.</param>
+    /// <param name="ALibHandle">
+    ///   The handle to check.
+    /// </param>
+    /// <param name="AVersion">
+    ///   Return The parsed version structure.
+    /// </param>
     /// <returns>
-    ///   Returns <c>True</c> if version is found and parsed,
-    ///  otherwise <c>False</c>
-    ///  </returns>
-    ///  <remark>
-    ///   <c>AVersion</c> return value may be undefined if method return <c>False</c>
-    ///  </remark>
+    ///   Returns <c>True</c> if version is found and parsed, otherwise <c>False
+    ///   </c>
+    /// </returns>
+    /// <remark>
+    ///   <c>AVersion</c> return value may be undefined if method return <c>
+    ///   False</c>
+    /// </remark>
     class function CheckLibVersion(ALibHandle: TLibHandle;
       out AVersion: TOsslVersion): boolean; overload; static;
 
@@ -519,7 +573,8 @@ protected
     procedure InternalLoad(ALibTypes: TLibTypes); overload; override;
 
     /// <summary>
-    ///   Orchestrates the loading of specified libraries using a specific search path.
+    ///   Orchestrates the loading of specified libraries using a specific
+    ///   search path.
     /// </summary>
     procedure InternalLoad(ALibTypes: TLibTypes; ASearchPath: string);
       overload;
@@ -535,42 +590,57 @@ protected
     procedure DoSetSearchPaths(ALibPaths: string); overload;
 
     /// <summary>
-    ///   Performs the low-level search and load operation for a specific library type.
+    ///   Performs the low-level search and load operation for a specific
+    ///   library type.
     /// </summary>
     /// <remarks>
-    ///   Implements the logic for iterating search paths, checking file existence,
-    ///   verifying versions, and ensuring the SSL library loads from the same
-    ///   location as the Crypto library.
+    ///   Implements the logic for iterating search paths, checking file
+    ///   existence, verifying versions, and ensuring the SSL library loads from
+    ///   the same location as the Crypto library.
     /// </remarks>
     function DoLoadLibrary(ALibType: TLibType): TLibHandle; overload; virtual;
 
-    /// <summary>Instance backing property for Flags.</summary>
+    /// <summary>
+    ///   Instance backing property for Flags.
+    /// </summary>
     property InstanceFlags: TLoaderFlags read DoGetFlags write DoSetFlags;
 
-    /// <summary>Instance backing property for SearchPath.</summary>
+    /// <summary>
+    ///   Instance backing property for SearchPath.
+    /// </summary>
     property InstanceSearchPath: string read FSearchPath write DoSetSearchPaths;
 
-    /// <summary>Instance backing property for LoadedPath.</summary>
+    /// <summary>
+    ///   Instance backing property for LoadedPath.
+    /// </summary>
     property InstanceLoadedPath: string read FLoadedPath;
 
   public
     /// <summary>
     ///   Loads the specified libraries using a custom search path.
     /// </summary>
-    /// <param name="ALibTypes">The set of libraries to load.</param>
+    /// <param name="ALibTypes">
+    ///   The set of libraries to load.
+    /// </param>
     /// <param name="ALibPaths">
     ///   A delimited string of paths to search (Overrides defaults).
     /// </param>
     class procedure Load(ALibTypes: TLibTypes; ALibPaths: string);
        overload; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Returns the platform-specific filename of the library.</summary>
+    /// <summary>
+    ///   Returns the platform-specific filename of the library.
+    /// </summary>
     class property LibName[ALibType: TLibType]: string read GetLibName;
 
-    /// <summary>Configuration flags for the loader (Strict paths, Normalization).</summary>
+    /// <summary>
+    ///   Configuration flags for the loader (Strict paths, Normalization).
+    /// </summary>
     class property Flags: TLoaderFlags read GetFlags write SetFlags;
 
-    /// <summary>The currently configured search path(s).</summary>
+    /// <summary>
+    ///   The currently configured search path(s).
+    /// </summary>
     class property SearchPath: string read GetSearchPath write SetSearchPaths;
 
     /// <summary>

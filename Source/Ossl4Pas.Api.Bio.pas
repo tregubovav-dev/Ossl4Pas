@@ -429,8 +429,10 @@ type
   ///   Abstract base class for OpenSSL BIO Methods (VMTs).
   /// </summary>
   /// <remarks>
-  ///   Specific implementations (Memory, File, Socket) inherit from this
-  ///   and bind their own factory functions.
+  ///   Specific implementations (Memory, File, Socket) inherit from this and
+  ///   bind their own factory functions. See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_meth_new.html">
+  ///   BIO_METHOD(3)</see> for details.
   /// </remarks>
   TOsslApiBioCustomMethod = class abstract
   protected type
@@ -439,8 +441,11 @@ type
     class function NilMethod: PBIO_METHOD; static; cdecl;
   public
     /// <summary>
-    ///   Returns the raw OpenSSL BIO_METHOD pointer.
+    ///   Returns the raw OpenSSL <c>BIO_METHOD</c> pointer.
     /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> structure.
+    /// </returns>
     class function GetMethodHandle: PBIO_METHOD; virtual; abstract;
   end;
 
@@ -452,7 +457,13 @@ type
   // SOURCE / SINK METHODS (BIO_s_*)
   // ---------------------------------------------------------------------------
 
-  /// <summary>Wrapper for BIO_s_file(). Standard file stream I/O.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_file()</c>. Standard file stream I/O.
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_file.html">
+  ///   BIO_s_file(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodFile = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -470,10 +481,23 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the file BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for file I/O.
+    /// </returns>
     class function BIO_s_file: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_mem(). Read/Write to memory buffer.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_mem()</c>. Read/Write to memory buffer.
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_mem.html">
+  ///   BIO_s_mem(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodMem = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -491,10 +515,23 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the memory BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for memory I/O.
+    /// </returns>
     class function BIO_s_mem: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_secmem(). Like Mem, but uses secure heap.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_secmem()</c>. Memory BIO using the secure heap.
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_mem.html">
+  ///   BIO_s_secmem(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodSecMem = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -512,10 +549,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the secure memory BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for secure memory I/O.
+    /// </returns>
     class function BIO_s_secmem: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_socket(). Raw OS socket I/O.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_socket()</c>. Raw OS socket I/O.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_socket.html">
+  ///   BIO_s_socket(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodSocket = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -533,10 +584,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the socket BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for socket I/O.
+    /// </returns>
     class function BIO_s_socket: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_connect(). TCP Client connection.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_connect()</c>. TCP Client connection.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_connect.html">
+  ///   BIO_s_connect(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodConnect = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -554,10 +619,25 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the connect BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for TCP client
+    ///   connections.
+    /// </returns>
     class function BIO_s_connect: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_accept(). TCP Server acceptor.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_accept()</c>. TCP Server acceptor.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_accept.html">
+  ///   BIO_s_accept(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodAccept = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -575,10 +655,23 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the accept BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for TCP server acceptors.
+    /// </returns>
     class function BIO_s_accept: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_fd(). Raw File Descriptor I/O.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_fd()</c>. Raw File Descriptor I/O.
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_fd.html">
+  ///   BIO_s_fd(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodFd = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -596,10 +689,23 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the file descriptor BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for file descriptor I/O.
+    /// </returns>
     class function BIO_s_fd: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_log(). System logging (syslog/eventlog).</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_log()</c>. System logging (syslog/eventlog).
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_log.html">
+  ///   BIO_s_log(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodLog = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -617,10 +723,23 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the log BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for system logging.
+    /// </returns>
     class function BIO_s_log: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_bio(). Internal BIO pair (pipe).</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_bio()</c>. Internal BIO pair (pipe).
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+  ///   BIO_s_bio(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodBio = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -638,10 +757,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the internal BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for internal BIO pairs.
+    /// </returns>
     class function BIO_s_bio: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_null(). Discards data (Sink) / EOF (Source).</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_null()</c>. Discards data (Sink) / EOF
+  ///   (Source).
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_null.html">
+  ///   BIO_s_null(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodNull = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -659,10 +792,23 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the null BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for the null BIO.
+    /// </returns>
     class function BIO_s_null: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_core(). OpenSSL 3.0 Core Provider integration.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_core()</c>. OpenSSL 3.0 Core Provider
+  ///   integration.
+  /// </summary>
+  /// <remarks>
+  ///   See OpenSSL sources for details on core provider integration.
+  /// </remarks>
   TOsslApiBioMethodCore = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -680,10 +826,26 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the core BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for core provider
+    ///   integration.
+    /// </returns>
     class function BIO_s_core: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_dgram_pair(). UDP support.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_dgram_pair()</c>. UDP pair support (OpenSSL
+  ///   3.2+).
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.2/man3/BIO_s_dgram_pair.html">
+  ///   BIO_s_dgram_pair(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodDatagramPair = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -701,10 +863,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the datagram pair BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for datagram pairs.
+    /// </returns>
     class function BIO_s_dgram_pair: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_datagram(). UDP support.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_datagram()</c>. UDP support.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_datagram.html">
+  ///   BIO_s_datagram(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodDatagram = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -722,11 +898,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the datagram BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for datagram I/O.
+    /// </returns>
     class function BIO_s_datagram: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_s_datagram_sctp(). SCTP support.</summary>
-  /// <remarks>This <c>OpenSsl BIO method</c> is not available in Windows</remarks>
+  /// <summary>
+  ///   API wrapper for <c>BIO_s_datagram_sctp()</c>. SCTP support.
+  /// </summary>
+  /// <remarks>
+  ///   This BIO method is typically not available on Windows. See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_datagram_sctp.html">
+  ///   BIO_s_datagram_sctp(3)</see> for details.
+  /// </remarks>
   TOsslApiBioMethodDatagramSctp = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -744,6 +933,13 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the SCTP datagram BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for SCTP datagram I/O.
+    /// </returns>
     class function BIO_s_datagram_sctp: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
@@ -751,7 +947,13 @@ type
   // FILTER METHODS (BIO_f_*)
   // ---------------------------------------------------------------------------
 
-  /// <summary>Wrapper for BIO_f_null(). Transparent filter (does nothing).</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_f_null()</c>. Transparent filter (does nothing).
+  /// </summary>
+  /// <remarks>
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_f_null.html">
+  ///   BIO_f_null(3)</see> for details.
+  /// </remarks>
   TOsslApiBioFilterNull = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -769,10 +971,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the null filter BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for the null filter.
+    /// </returns>
     class function BIO_f_null: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_f_buffer(). Buffering filter.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_f_buffer()</c>. Buffering filter.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_f_buffer.html">
+  ///   BIO_f_buffer(3)</see> for details.
+  /// </remarks>
   TOsslApiBioFilterBuffer = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -790,10 +1006,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the buffering filter BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for buffering.
+    /// </returns>
     class function BIO_f_buffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_f_readbuffer(). Read-only buffering filter.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_f_readbuffer()</c>. Read-only buffering filter.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_f_readbuffer.html">
+  ///   BIO_f_readbuffer(3)</see> for details.
+  /// </remarks>
   TOsslApiBioFilterReadBuffer = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -811,10 +1041,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the read-only buffering filter BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for read-only buffering.
+    /// </returns>
     class function BIO_f_readbuffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_f_linebuffer(). Line-oriented buffering.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_f_linebuffer()</c>. Line-oriented buffering.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_f_linebuffer.html">
+  ///   BIO_f_linebuffer(3)</see> for details.
+  /// </remarks>
   TOsslApiBioFilterLineBuffer = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -832,10 +1076,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the line buffering filter BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for line buffering.
+    /// </returns>
     class function BIO_f_linebuffer: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_f_nbio_test(). Non-blocking I/O test filter.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_f_nbio_test()</c>. Non-blocking I/O test filter.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_f_nbio_test.html">
+  ///   BIO_f_nbio_test(3)</see> for details.
+  /// </remarks>
   TOsslApiBioFilterNbioTest = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -853,10 +1111,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the non-blocking I/O test filter BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for NBIO testing.
+    /// </returns>
     class function BIO_f_nbio_test: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
-  /// <summary>Wrapper for BIO_f_prefix(). Prefix/Indentation filter.</summary>
+  /// <summary>
+  ///   API wrapper for <c>BIO_f_prefix()</c>. Prefix/Indentation filter.
+  /// </summary>
+  /// <remarks>
+  ///   See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_f_prefix.html">
+  ///   BIO_f_prefix(3)</see> for details.
+  /// </remarks>
   TOsslApiBioFilterPrefix = class(TOsslApiBioCustomMethod)
   {$IFDEF LINK_DYNAMIC}
   private class var
@@ -874,14 +1146,24 @@ type
     class constructor Create;
   {$ENDIF}
     class function GetMethodHandle: PBIO_METHOD; override;
+
+    /// <summary>
+    ///   Returns the prefix filter BIO method.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the <see cref="PBIO_METHOD" /> for prefixing.
+    /// </returns>
     class function BIO_f_prefix: PBIO_METHOD; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
 type
-/// <summary>
-  ///   Base API wrapper for OpenSSL BIO routines (Lifecycle & Core).
-  ///   Contains static methods mapping directly to C functions and common macros.
+  /// <summary>
+  ///   Base API wrapper for OpenSSL BIO routines (Lifecycle &amp; Core).
   /// </summary>
+  /// <remarks>
+  ///   Contains static methods mapping directly to C functions and common macros.
+  ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">BIO(3)</see> for details.
+  /// </remarks>
   TOsslApiBioBase = class
   public type
     // -------------------------------------------------------------------------
@@ -1003,30 +1285,195 @@ type
     // LIFECYCLE
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    ///   Creates a new BIO using the specified method.
+    /// </summary>
+    /// <param name="Method">
+    ///   The BIO method to use.
+    /// </param>
+    /// <returns>
+    ///   A pointer to the new <see cref="PBIO" />, or nil on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">
+    ///   BIO_new(3)</see> for details.
+    /// </remarks>
     class function BIO_new(Method: PBIO_METHOD): PBIO; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Creates a BIO associated with a specific Library Context (OpenSSL 3.0+).</summary>
+    /// <summary>
+    ///   Creates a BIO associated with a specific Library Context (OpenSSL
+    ///   3.0+).
+    /// </summary>
+    /// <param name="libctx">
+    ///   The library context to use.
+    /// </param>
+    /// <param name="propq">
+    ///   Property query string (can be nil).
+    /// </param>
+    /// <param name="Method">
+    ///   The BIO method to use.
+    /// </param>
+    /// <returns>
+    ///   A pointer to the new <see cref="PBIO" />, or nil on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">
+    ///   BIO_new_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_new_ex(libctx: POSSL_LIB_CTX; propq: PAnsiChar;
       Method: PBIO_METHOD): PBIO; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Frees a BIO.
+    /// </summary>
+    /// <param name="a">
+    ///   The BIO to free.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">
+    ///   BIO_free(3)</see> for details.
+    /// </remarks>
     class function BIO_free(a: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Frees an entire BIO chain.
+    /// </summary>
+    /// <param name="a">
+    ///   The first BIO in the chain.
+    /// </param>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">
+    ///   BIO_free_all(3)</see> for details.
+    /// </remarks>
     class procedure BIO_free_all(a: PBIO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Frees a BIO, similar to <see cref="BIO_free" /> but doesn't return a
+    ///   value.
+    /// </summary>
+    /// <param name="a">
+    ///   The BIO to free.
+    /// </param>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">
+    ///   BIO_vfree(3)</see> for details.
+    /// </remarks>
     class procedure BIO_vfree(a: PBIO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Increments the reference count of a BIO.
+    /// </summary>
+    /// <param name="a">
+    ///   The BIO whose reference count should be increased.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_new.html">
+    ///   BIO_up_ref(3)</see> for details.
+    /// </remarks>
     class function BIO_up_ref(a: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // -------------------------------------------------------------------------
     // BASIC I/O
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    ///   Reads data from a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to read from.
+    /// </param>
+    /// <param name="data">
+    ///   The buffer to read into.
+    /// </param>
+    /// <param name="dlen">
+    ///   The number of bytes to read.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes read, or a negative value on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+    ///   BIO_read(3)</see> for details.
+    /// </remarks>
     class function BIO_read(b: PBIO; data: pointer; dlen: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Writes data to a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to write to.
+    /// </param>
+    /// <param name="data">
+    ///   The buffer containing the data to write.
+    /// </param>
+    /// <param name="dlen">
+    ///   The number of bytes to write.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes written, or a negative value on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+    ///   BIO_write(3)</see> for details.
+    /// </remarks>
     class function BIO_write(b: PBIO; data: pointer; dlen: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    // Extended I/O (Preferred for 3.0)
+    /// <summary>
+    ///   Reads data from a BIO (preferred for OpenSSL 3.0+).
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to read from.
+    /// </param>
+    /// <param name="data">
+    ///   The buffer to read into.
+    /// </param>
+    /// <param name="dlen">
+    ///   The number of bytes to read.
+    /// </param>
+    /// <param name="readbytes">
+    ///   Output: The number of bytes actually read.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+    ///   BIO_read_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_read_ex(b: PBIO; data: pointer; dlen: csize_t;
       readbytes: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Writes data to a BIO (preferred for OpenSSL 3.0+).
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to write to.
+    /// </param>
+    /// <param name="data">
+    ///   The buffer containing the data to write.
+    /// </param>
+    /// <param name="dlen">
+    ///   The number of bytes to write.
+    /// </param>
+    /// <param name="written">
+    ///   Output: The number of bytes actually written.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+    ///   BIO_write_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_write_ex(b: PBIO; data: pointer; dlen: csize_t;
       written: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1034,22 +1481,164 @@ type
     // CONTROL & INFO
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    ///   Performs a control operation on a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="cmd">
+    ///   The control command.
+    /// </param>
+    /// <param name="larg">
+    ///   Command-specific long argument.
+    /// </param>
+    /// <param name="parg">
+    ///   Command-specific pointer argument.
+    /// </param>
+    /// <returns>
+    ///   Command-specific return value.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ctrl.html">
+    ///   BIO_ctrl(3)</see> for details.
+    /// </remarks>
     class function BIO_ctrl(b: PBIO; cmd: cint; larg: clong; parg: pointer): clong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Performs a callback control operation on a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="cmd">
+    ///   The command.
+    /// </param>
+    /// <param name="fp">
+    ///   The callback function pointer.
+    /// </param>
+    /// <returns>
+    ///   Command-specific return value.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ctrl.html">
+    ///   BIO_callback_ctrl(3)</see> for details.
+    /// </remarks>
     class function BIO_callback_ctrl(b: PBIO; cmd: cint; fp: pointer): clong;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the name of the BIO method.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The method name string.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_find_type.html">
+    ///   BIO_method_name(3)</see> for details.
+    /// </remarks>
     class function BIO_method_name(b: PBIO): PAnsiChar; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the type of the BIO method.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The method type constant.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_find_type.html">
+    ///   BIO_method_type(3)</see> for details.
+    /// </remarks>
     class function BIO_method_type(b: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Sets the extended callback for a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="cb">
+    ///   The callback function.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_set_callback.html">
+    ///   BIO_set_callback_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_set_callback_ex(b: PBIO; cb: TBIO_callback_fn_ex): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves the extended callback for a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The callback function pointer.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_set_callback.html">
+    ///   BIO_get_callback_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_get_callback_ex(b: PBIO): TBIO_callback_fn_ex;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Sets application-specific data in a BIO.
+    /// </summary>
+    /// <param name="bio">
+    ///   The BIO.
+    /// </param>
+    /// <param name="idx">
+    ///   The data index.
+    /// </param>
+    /// <param name="data">
+    ///   The data pointer.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_get_ex_new_index.html">
+    ///   BIO_set_ex_data(3)</see> for details.
+    /// </remarks>
     class function BIO_set_ex_data(bio: PBIO; idx: cint; data: pointer): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves application-specific data from a BIO.
+    /// </summary>
+    /// <param name="bio">
+    ///   The BIO.
+    /// </param>
+    /// <param name="idx">
+    ///   The data index.
+    /// </param>
+    /// <returns>
+    ///   The data pointer.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_get_ex_new_index.html">
+    ///   BIO_get_ex_data(3)</see> for details.
+    /// </remarks>
     class function BIO_get_ex_data(bio: PBIO; idx: cint): pointer;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1057,12 +1646,74 @@ type
     // CHAIN MANAGEMENT
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    ///   Pushes a BIO onto a BIO chain.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO chain.
+    /// </param>
+    /// <param name="append">
+    ///   The BIO to push.
+    /// </param>
+    /// <returns>
+    ///   The new head of the chain.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_push.html">
+    ///   BIO_push(3)</see> for details.
+    /// </remarks>
     class function BIO_push(b: PBIO; append: PBIO): PBIO; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Pops a BIO from a BIO chain.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO chain head.
+    /// </param>
+    /// <returns>
+    ///   The popped BIO.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_push.html">
+    ///   BIO_pop(3)</see> for details.
+    /// </remarks>
     class function BIO_pop(b: PBIO): PBIO; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the next BIO in a chain.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The next BIO pointer, or nil.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_push.html">
+    ///   BIO_next(3)</see> for details.
+    /// </remarks>
     class function BIO_next(b: PBIO): PBIO; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Finds a BIO of a specific type in a chain.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO chain head.
+    /// </param>
+    /// <param name="bio_type">
+    ///   The BIO type to find.
+    /// </param>
+    /// <returns>
+    ///   The found BIO pointer, or nil.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_find_type.html">
+    ///   BIO_find_type(3)</see> for details.
+    /// </remarks>
     class function BIO_find_type(b: PBIO; bio_type: cint): PBIO; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1071,28 +1722,138 @@ type
     // Common operations implemented via BIO_ctrl
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    ///   Resets a BIO to its initial state.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   Command-specific return value.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_reset</c> macro.
+    /// </remarks>
     class function BIO_reset(b: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Flushes buffered data in a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 or negative on error.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_flush</c> macro.
+    /// </remarks>
     class function BIO_flush(b: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Checks if a BIO is at the end of the file/stream.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   1 if at EOF, 0 otherwise.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_eof</c> macro.
+    /// </remarks>
     class function BIO_eof(b: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Sets the close flag of a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="flag">
+    ///   The close flag (e.g., <see cref="BIO_CLOSE" />).
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_set_close</c> macro.
+    /// </remarks>
     class function BIO_set_close(b: PBIO; flag: clong): cint;
       static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Retrieves the close flag of a BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The close flag value.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_get_close</c> macro.
+    /// </remarks>
     class function BIO_get_close(b: PBIO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the number of bytes pending in a BIO's read buffer.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The number of pending bytes.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_pending</c> macro.
+    /// </remarks>
     class function BIO_pending(b: PBIO): csize_t; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the number of bytes pending in a BIO's write buffer.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The number of pending bytes.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_wpending</c> macro.
+    /// </remarks>
     class function BIO_wpending(b: PBIO): csize_t; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Retrieves the internal buffer pointer from a Memory BIO.
-    ///   Wraps BIO_get_mem_data.
     /// </summary>
+    /// <param name="b">
+    ///   The memory BIO.
+    /// </param>
+    /// <param name="pp">
+    ///   Output: A pointer to the internal buffer pointer.
+    /// </param>
+    /// <returns>
+    ///   The length of the data in the buffer.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_get_mem_data</c> macro. See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_mem.html">
+    ///   BIO_get_mem_data(3)</see> for details.
+    /// </remarks>
     class function BIO_get_mem_data(b: PBIO; pp: PPointer): clong; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
 type
   /// <summary>
-  ///   API wrapper for OpenSSL BIO Pair routines (BIO_s_bio).
-  ///   Used for internal buffering, pipes, and testing.
+  ///   API wrapper for OpenSSL BIO Pair routines (<c>BIO_s_bio</c>).
   /// </summary>
+  /// <remarks>
+  ///   Used for internal buffering, pipes, and testing. See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+  ///   BIO_s_bio(3)</see> for details.
+  /// </remarks>
   TOsslApiBioPair = class sealed(TOsslApiBioBase)
   public type
     TRoutine_BIO_new_bio_pair             = function(bio1: PPBIO; writebuf1: csize_t;
@@ -1140,15 +1901,84 @@ type
     // PAIR LIFECYCLE
     // -------------------------------------------------------------------------
 
-    /// <summary>Creates two connected BIOs (a pipe).</summary>
+    /// <summary>
+    ///   Creates two connected BIOs (a pipe).
+    /// </summary>
+    /// <param name="bio1">
+    ///   Output: The first BIO of the pair.
+    /// </param>
+    /// <param name="writebuf1">
+    ///   The write buffer size for bio1.
+    /// </param>
+    /// <param name="bio2">
+    ///   Output: The second BIO of the pair.
+    /// </param>
+    /// <param name="writebuf2">
+    ///   The write buffer size for bio2.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_new_bio_pair.html">
+    ///   BIO_new_bio_pair(3)</see> for details.
+    /// </remarks>
     class function BIO_new_bio_pair(bio1: PPBIO; writebuf1: csize_t;
       bio2: PPBIO; writebuf2: csize_t): cint; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Connects two existing BIOs into a pair.
+    /// </summary>
+    /// <param name="b1">
+    ///   The first BIO.
+    /// </param>
+    /// <param name="b2">
+    ///   The second BIO.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+    ///   BIO_make_bio_pair(3)</see> for details.
+    /// </remarks>
     class function BIO_make_bio_pair(b1: PBIO; b2: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Destroys a BIO pair.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO from the pair to destroy.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+    ///   BIO_destroy_bio_pair(3)</see> for details.
+    /// </remarks>
     class function BIO_destroy_bio_pair(b: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Shuts down the write half of a BIO pair.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to shut down.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+    ///   BIO_shutdown_wr(3)</see> for details.
+    /// </remarks>
     class function BIO_shutdown_wr(b: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1156,10 +1986,55 @@ type
     // RING BUFFER METRICS (Direct API)
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    ///   Returns the number of bytes that can be written to the BIO pair
+    ///   without blocking.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes guaranteed to be written.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+    ///   BIO_ctrl_get_write_guarantee(3)</see> for details.
+    /// </remarks>
     class function BIO_ctrl_get_write_guarantee(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the number of bytes requested to be read from the BIO pair.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes requested.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+    ///   BIO_ctrl_get_read_request(3)</see> for details.
+    /// </remarks>
     class function BIO_ctrl_get_read_request(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Resets the read request size for a BIO pair.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_bio.html">
+    ///   BIO_ctrl_reset_read_request(3)</see> for details.
+    /// </remarks>
     class function BIO_ctrl_reset_read_request(b: PBIO): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1167,24 +2042,84 @@ type
     // MACRO WRAPPERS (Helpers via BIO_ctrl)
     // -------------------------------------------------------------------------
 
-    /// <summary>Sets the size of the write buffer.</summary>
+    /// <summary>
+    ///   Sets the size of the write buffer for a BIO pair.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="size">
+    ///   The new buffer size.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 or negative on error.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_set_write_buf_size</c> macro.
+    /// </remarks>
     class function BIO_set_write_buf_size(b: PBIO; size: clong): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Gets the size of the write buffer.</summary>
+    /// <summary>
+    ///   Gets the size of the write buffer for a BIO pair.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The buffer size.
+    /// </returns>
+    /// <remarks>
+    ///   Wraps the <c>BIO_get_write_buf_size</c> macro.
+    /// </remarks>
     class function BIO_get_write_buf_size(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Alias for BIO_ctrl_get_write_guarantee.</summary>
+    /// <summary>
+    ///   Alias for <see cref="BIO_ctrl_get_write_guarantee" />.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes guaranteed to be written.
+    /// </returns>
     class function BIO_get_write_guarantee(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Alias for BIO_ctrl_get_read_request.</summary>
+    /// <summary>
+    ///   Alias for <see cref="BIO_ctrl_get_read_request" />.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes requested.
+    /// </returns>
     class function BIO_get_read_request(b: PBIO): csize_t; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
   TOsslApiBioPairHelper = class helper for TOsslApiBioPair
+    /// <summary>
+    ///   Overload for <see cref="BIO_new_bio_pair" /> using <c>var</c>
+    ///   parameters.
+    /// </summary>
+    /// <param name="bio1">
+    ///   Output: The first BIO of the pair.
+    /// </param>
+    /// <param name="writebuf1">
+    ///   The write buffer size for bio1.
+    /// </param>
+    /// <param name="bio2">
+    ///   Output: The second BIO of the pair.
+    /// </param>
+    /// <param name="writebuf2">
+    ///   The write buffer size for bio2.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
     class function BIO_new_bio_pair(var bio1: PBIO; writebuf1: csize_t;
       var bio2: PBIO; writebuf2: csize_t): cint; overload; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
@@ -1193,8 +2128,14 @@ type
 type
   /// <summary>
   ///   API wrapper for OpenSSL BIO Text and Formatting routines.
-  ///   Includes String I/O (gets/puts) and Hex Dumping.
   /// </summary>
+  /// <remarks>
+  ///   Includes String I/O (gets/puts) and Hex Dumping. See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+  ///   BIO_gets(3)</see> and <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_dump.html">
+  ///   BIO_dump(3)</see> for details.
+  /// </remarks>
   TOsslApiBioText = class sealed(TOsslApiBioBase)
   public type
     // String I/O
@@ -1243,19 +2184,66 @@ type
 
     /// <summary>
     ///   Reads a line of text from the BIO.
-    ///   <para>
-    ///     Reads up to <c>size-1</c> bytes, or until a newline is found.
-    ///     The buffer is always null-terminated.
-    ///   </para>
     /// </summary>
+    /// <param name="b">
+    ///   The BIO to read from.
+    /// </param>
+    /// <param name="buf">
+    ///   The buffer to read into.
+    /// </param>
+    /// <param name="size">
+    ///   The size of the buffer.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes read, or a negative value on error.
+    /// </returns>
+    /// <remarks>
+    ///   Reads up to <c>size-1</c> bytes, or until a newline is found. The
+    ///   buffer is always null-terminated. See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+    ///   BIO_gets(3)</see> for details.
+    /// </remarks>
     class function BIO_gets(b: PBIO; buf: PAnsiChar; size: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Writes a null-terminated string to the BIO.</summary>
+    /// <summary>
+    ///   Writes a null-terminated string to the BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to write to.
+    /// </param>
+    /// <param name="buf">
+    ///   The null-terminated string buffer.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes written, or a negative value on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_read.html">
+    ///   BIO_puts(3)</see> for details.
+    /// </remarks>
     class function BIO_puts(b: PBIO; buf: PAnsiChar): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Writes indentation (spaces) to the BIO.</summary>
+    /// <summary>
+    ///   Writes indentation (spaces) to the BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO to write to.
+    /// </param>
+    /// <param name="indent">
+    ///   The number of spaces to write.
+    /// </param>
+    /// <param name="max">
+    ///   The maximum number of spaces allowed.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 or negative on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ctrl.html">
+    ///   BIO_indent(3)</see> for details.
+    /// </remarks>
     class function BIO_indent(b: PBIO; indent, max: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1265,25 +2253,77 @@ type
 
     /// <summary>
     ///   Hex dumps data to the BIO.
-    ///   Useful for debugging buffer contents.
     /// </summary>
+    /// <param name="b">
+    ///   The BIO to write the dump to.
+    /// </param>
+    /// <param name="data">
+    ///   The buffer containing the data to dump.
+    /// </param>
+    /// <param name="len">
+    ///   The number of bytes to dump.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes written to the BIO, or a negative value on error.
+    /// </returns>
+    /// <remarks>
+    ///   Useful for debugging buffer contents. See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_dump.html">
+    ///   BIO_dump(3)</see> for details.
+    /// </remarks>
     class function BIO_dump(b: PBIO; data: pointer; len: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Hex dumps data to the BIO with indentation.
     /// </summary>
+    /// <param name="b">
+    ///   The BIO to write the dump to.
+    /// </param>
+    /// <param name="data">
+    ///   The buffer containing the data to dump.
+    /// </param>
+    /// <param name="len">
+    ///   The number of bytes to dump.
+    /// </param>
+    /// <param name="indent">
+    ///   The number of spaces to indent each line.
+    /// </param>
+    /// <returns>
+    ///   The number of bytes written to the BIO, or a negative value on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_dump.html">
+    ///   BIO_dump_indent(3)</see> for details.
+    /// </remarks>
     class function BIO_dump_indent(b: PBIO; data: pointer; len: cint; indent: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Outputs data as a hex string (e.g., "0A:1B:2C").
     /// </summary>
-    /// <param name="out_">The output BIO.</param>
-    /// <param name="indent">Indentation level.</param>
-    /// <param name="width">Hex bytes per line.</param>
-    /// <param name="data">Data buffer.</param>
-    /// <param name="len">Length of data.</param>
+    /// <param name="out_">
+    ///   The output BIO.
+    /// </param>
+    /// <param name="indent">
+    ///   Indentation level.
+    /// </param>
+    /// <param name="width">
+    ///   Hex bytes per line.
+    /// </param>
+    /// <param name="data">
+    ///   Data buffer.
+    /// </param>
+    /// <param name="len">
+    ///   Length of data.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_dump.html">
+    ///   BIO_hex_string(3)</see> for details.
+    /// </remarks>
     class function BIO_hex_string(out_: PBIO; indent, width: cint; data: pointer; len: cint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
@@ -1295,8 +2335,13 @@ type
 
   /// <summary>
   ///   API wrapper for OpenSSL Network Address and DNS lookup routines.
-  ///   Manages BIO_ADDR and BIO_ADDRINFO structures.
   /// </summary>
+  /// <remarks>
+  ///   Manages <see cref="PBIO_ADDR" /> and <see cref="PBIO_ADDRINFO" />
+  ///   structures. See <see
+  ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_ADDR.html">
+  ///   BIO_ADDR(3)</see> for details.
+  /// </remarks>
   TOsslApiBioAddr = class sealed(TOsslApiBioBase)
   public type
     TRoutine_BIO_addr_new       = function: PBIO_ADDR; cdecl;
@@ -1356,34 +2401,186 @@ type
     class constructor Create;
   {$ENDIF}
 
+    /// <summary>
+    ///   Allocates a new <see cref="PBIO_ADDR" /> structure.
+    /// </summary>
+    /// <returns>
+    ///   A pointer to the new structure, or nil on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ADDR.html">
+    ///   BIO_ADDR_new(3)</see> for details.
+    /// </remarks>
     class function BIO_addr_new: PBIO_ADDR; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Frees a <see cref="PBIO_ADDR" /> structure.
+    /// </summary>
+    /// <param name="ap">
+    ///   The structure to free.
+    /// </param>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ADDR.html">
+    ///   BIO_ADDR_free(3)</see> for details.
+    /// </remarks>
     class procedure BIO_addr_free(ap: PBIO_ADDR); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Clears a <see cref="PBIO_ADDR" /> structure.
+    /// </summary>
+    /// <param name="ap">
+    ///   The structure to clear.
+    /// </param>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ADDR.html">
+    ///   BIO_ADDR_clear(3)</see> for details.
+    /// </remarks>
     class procedure BIO_addr_clear(ap: PBIO_ADDR); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the address family of a <see cref="PBIO_ADDR" />.
+    /// </summary>
+    /// <param name="ap">
+    ///   The address structure.
+    /// </param>
+    /// <returns>
+    ///   The address family (e.g., AF_INET).
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.0/man3/BIO_ADDR.html">
+    ///   BIO_ADDR_family(3)</see> for details.
+    /// </remarks>
     class function BIO_addr_family(ap: PBIO_ADDR): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     /// <summary>
     ///   Looks up an address (DNS resolution).
     /// </summary>
-    /// <param name="host">The hostname or literal IP address string.</param>
-    /// <param name="service">The service name (e.g. "http") or port number string.</param>
-    /// <param name="lookup_type">BIO_LOOKUP_CLIENT or BIO_LOOKUP_SERVER.</param>
-    /// <param name="family">BIO_FAMILY_IPV4, BIO_FAMILY_IPV6, or BIO_FAMILY_IPANY.</param>
-    /// <param name="socktype">Socket type (e.g. SOCK_STREAM or SOCK_DGRAM).</param>
-    /// <param name="protocol">Protocol to use (usually 0).</param>
-    /// <param name="res">Output: A pointer to the linked list of results.</param>
-    /// <returns>1 on success, 0 on error.</returns>
+    /// <param name="host">
+    ///   The hostname or literal IP address string.
+    /// </param>
+    /// <param name="service">
+    ///   The service name (e.g. "http") or port number string.
+    /// </param>
+    /// <param name="lookup_type">
+    ///   <see cref="BIO_LOOKUP_CLIENT" /> or <see cref="BIO_LOOKUP_SERVER" />.
+    /// </param>
+    /// <param name="family">
+    ///   <see cref="BIO_FAMILY_IPV4" />, <see cref="BIO_FAMILY_IPV6" />, or
+    ///   <see cref="BIO_FAMILY_IPANY" />.
+    /// </param>
+    /// <param name="socktype">
+    ///   Socket type (e.g. SOCK_STREAM or SOCK_DGRAM).
+    /// </param>
+    /// <param name="protocol">
+    ///   Protocol to use (usually 0).
+    /// </param>
+    /// <param name="res">
+    ///   Output: A pointer to the linked list of results.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_lookup_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_lookup_ex(host: PAnsiChar; service: PAnsiChar;
                                  lookup_type: cint; family: cint; socktype: cint;
                                  protocol: cint; out res: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the next entry in a linked list of <see cref="PBIO_ADDRINFO" />.
+    /// </summary>
+    /// <param name="bai">
+    ///   The current entry.
+    /// </param>
+    /// <returns>
+    ///   The next entry, or nil.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_ADDRINFO_next(3)</see> for details.
+    /// </remarks>
     class function BIO_addrinfo_next(bai: PBIO_ADDRINFO): PBIO_ADDRINFO; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Frees a linked list of <see cref="PBIO_ADDRINFO" />.
+    /// </summary>
+    /// <param name="bai">
+    ///   The head of the list to free.
+    /// </param>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_ADDRINFO_free(3)</see> for details.
+    /// </remarks>
     class procedure BIO_addrinfo_free(bai: PBIO_ADDRINFO); static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
+    /// <summary>
+    ///   Returns the address family from a <see cref="PBIO_ADDRINFO" />.
+    /// </summary>
+    /// <param name="bai">
+    ///   The entry.
+    /// </param>
+    /// <returns>
+    ///   The address family.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_ADDRINFO_family(3)</see> for details.
+    /// </remarks>
     class function BIO_addrinfo_family(bai: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the socket type from a <see cref="PBIO_ADDRINFO" />.
+    /// </summary>
+    /// <param name="bai">
+    ///   The entry.
+    /// </param>
+    /// <returns>
+    ///   The socket type.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_ADDRINFO_socktype(3)</see> for details.
+    /// </remarks>
     class function BIO_addrinfo_socktype(bai: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
+
+    /// <summary>
+    ///   Returns the protocol from a <see cref="PBIO_ADDRINFO" />.
+    /// </summary>
+    /// <param name="bai">
+    ///   The entry.
+    /// </param>
+    /// <returns>
+    ///   The protocol.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_ADDRINFO_protocol(3)</see> for details.
+    /// </remarks>
     class function BIO_addrinfo_protocol(bai: PBIO_ADDRINFO): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Returns the BIO_ADDR pointer contained within the info structure.</summary>
+    /// <summary>
+    ///   Returns the <see cref="PBIO_ADDR" /> pointer contained within the info
+    ///   structure.
+    /// </summary>
+    /// <param name="bai">
+    ///   The entry.
+    /// </param>
+    /// <returns>
+    ///   The address pointer.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_lookup_ex.html">
+    ///   BIO_ADDRINFO_address(3)</see> for details.
+    /// </remarks>
     class function BIO_addrinfo_address(bai: PBIO_ADDRINFO): PBIO_ADDR; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
@@ -1394,8 +2591,12 @@ type
 
   /// <summary>
   ///   API wrapper for OpenSSL Low-Level Socket routines.
-  ///   Handles socket creation, connection, binding, and error checking.
   /// </summary>
+  /// <remarks>
+  ///   Handles socket creation, connection, binding, and error checking. See
+  ///   <see href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+  ///   BIO_socket(3)</see> for details.
+  /// </remarks>
   TOsslApiBioSock = class sealed(TOsslApiBioBase)
   public type
     TRoutine_BIO_socket          = function(domain: cint; socktype: cint; protocol: cint; options: cint): cint; cdecl;
@@ -1445,39 +2646,187 @@ type
     class constructor Create;
   {$ENDIF}
 
-    /// <summary>Creates a raw socket.</summary>
-    /// <param name="domain">Address family (e.g. BIO_FAMILY_IPV4).</param>
-    /// <param name="socktype">Socket type (e.g. SOCK_STREAM).</param>
-    /// <param name="protocol">Protocol (0 for default).</param>
-    /// <param name="options">Combination of BIO_SOCK_* flags.</param>
-    /// <returns>Socket handle (int) or INVALID_SOCKET (-1) on error.</returns>
+    /// <summary>
+    ///   Creates a raw socket.
+    /// </summary>
+    /// <param name="domain">
+    ///   Address family (e.g. <see cref="BIO_FAMILY_IPV4" />).
+    /// </param>
+    /// <param name="socktype">
+    ///   Socket type (e.g. SOCK_STREAM).
+    /// </param>
+    /// <param name="protocol">
+    ///   Protocol (0 for default).
+    /// </param>
+    /// <param name="options">
+    ///   Combination of BIO_SOCK_* flags.
+    /// </param>
+    /// <returns>
+    ///   Socket handle (int) or INVALID_SOCKET (-1) on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_socket(3)</see> for details.
+    /// </remarks>
     class function BIO_socket(domain, socktype, protocol, options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Connects a socket to an address.</summary>
+    /// <summary>
+    ///   Connects a socket to an address.
+    /// </summary>
+    /// <param name="sock">
+    ///   The socket handle.
+    /// </param>
+    /// <param name="addr">
+    ///   The peer address structure.
+    /// </param>
+    /// <param name="options">
+    ///   Combination of BIO_SOCK_* flags.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_connect(3)</see> for details.
+    /// </remarks>
     class function BIO_connect(sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Binds a socket to a local address.</summary>
+    /// <summary>
+    ///   Binds a socket to a local address.
+    /// </summary>
+    /// <param name="sock">
+    ///   The socket handle.
+    /// </param>
+    /// <param name="addr">
+    ///   The local address structure.
+    /// </param>
+    /// <param name="options">
+    ///   Combination of BIO_SOCK_* flags.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_bind(3)</see> for details.
+    /// </remarks>
     class function BIO_bind(sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Listens on a bound socket.</summary>
+    /// <summary>
+    ///   Listens on a bound socket.
+    /// </summary>
+    /// <param name="sock">
+    ///   The socket handle.
+    /// </param>
+    /// <param name="addr">
+    ///   The address structure (unused, but must be provided).
+    /// </param>
+    /// <param name="options">
+    ///   Combination of BIO_SOCK_* flags.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_listen(3)</see> for details.
+    /// </remarks>
     class function BIO_listen(sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Accepts a connection on a listening socket.</summary>
-    /// <param name="accept_sock">The listening socket.</param>
-    /// <param name="addr">Returns the peer address (optional).</param>
-    /// <param name="options">Combination of BIO_SOCK_* flags.</param>
+    /// <summary>
+    ///   Accepts a connection on a listening socket.
+    /// </summary>
+    /// <param name="accept_sock">
+    ///   The listening socket.
+    /// </param>
+    /// <param name="addr">
+    ///   Returns the peer address (optional).
+    /// </param>
+    /// <param name="options">
+    ///   Combination of BIO_SOCK_* flags.
+    /// </param>
+    /// <returns>
+    ///   The new socket handle, or INVALID_SOCKET (-1) on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_accept_ex(3)</see> for details.
+    /// </remarks>
     class function BIO_accept_ex(accept_sock: cint; addr: PBIO_ADDR; options: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Closes the socket.</summary>
+    /// <summary>
+    ///   Closes the socket.
+    /// </summary>
+    /// <param name="sock">
+    ///   The socket handle to close.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_closesocket(3)</see> for details.
+    /// </remarks>
     class function BIO_closesocket(sock: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Retrieves info about the socket (type, family, etc).</summary>
+    /// <summary>
+    ///   Retrieves info about the socket.
+    /// </summary>
+    /// <param name="sock">
+    ///   The socket handle.
+    /// </param>
+    /// <param name="type_">
+    ///   The info type to retrieve.
+    /// </param>
+    /// <param name="info">
+    ///   The buffer to store the info.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_sock_info(3)</see> for details.
+    /// </remarks>
     class function BIO_sock_info(sock: cint; type_: cint; info: pointer): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Returns the last socket error code.</summary>
+    /// <summary>
+    ///   Returns the last socket error code.
+    /// </summary>
+    /// <param name="sock">
+    ///   The socket handle.
+    /// </param>
+    /// <returns>
+    ///   The error code.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_sock_error(3)</see> for details.
+    /// </remarks>
     class function BIO_sock_error(sock: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Checks if the error is recoverable (e.g. EWOULDBLOCK).</summary>
+    /// <summary>
+    ///   Checks if the error is recoverable (e.g. EWOULDBLOCK).
+    /// </summary>
+    /// <param name="error">
+    ///   The error code to check.
+    /// </param>
+    /// <returns>
+    ///   1 if recoverable, 0 otherwise.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_socket.html">
+    ///   BIO_sock_non_fatal_error(3)</see> for details.
+    /// </remarks>
     class function BIO_sock_non_fatal_error(error: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;
 
@@ -1488,8 +2837,14 @@ type
 
   /// <summary>
   ///   API wrapper for OpenSSL Datagram (UDP) and Polling routines.
-  ///   Includes high-performance mmsg I/O and async polling (OpenSSL 3.2+).
   /// </summary>
+  /// <remarks>
+  ///   Includes high-performance mmsg I/O and async polling (OpenSSL 3.2+). See
+  ///   <see href="https://www.openssl.org/docs/man3.0/man3/BIO_s_datagram.html">
+  ///   BIO_s_datagram(3)</see> and <see
+  ///   href="https://www.openssl.org/docs/man3.2/man3/BIO_sendmmsg.html">
+  ///   BIO_sendmmsg(3)</see> for details.
+  /// </remarks>
   TOsslApiBioDgram = class sealed(TOsslApiBioBase)
   public type
     TRoutine_BIO_dgram_non_fatal_error = function(error: cint): cint; cdecl;
@@ -1541,18 +2896,87 @@ type
     // DATAGRAM UTILITIES
     // -------------------------------------------------------------------------
 
-    /// <summary>Checks if a UDP error is recoverable (e.g. EWOULDBLOCK).</summary>
+    /// <summary>
+    ///   Checks if a UDP error is recoverable (e.g. EWOULDBLOCK).
+    /// </summary>
+    /// <param name="error">
+    ///   The error code to check.
+    /// </param>
+    /// <returns>
+    ///   1 if recoverable, 0 otherwise.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.0/man3/BIO_s_datagram.html">
+    ///   BIO_dgram_non_fatal_error(3)</see> for details.
+    /// </remarks>
     class function BIO_dgram_non_fatal_error(error: cint): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
     // -------------------------------------------------------------------------
     // BATCH I/O (OpenSSL 3.2+)
     // -------------------------------------------------------------------------
 
-    /// <summary>Sends multiple datagrams in a single system call.</summary>
+    /// <summary>
+    ///   Sends multiple datagrams in a single system call.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="msg">
+    ///   An array of <see cref="PBIO_MSG" /> structures.
+    /// </param>
+    /// <param name="stride">
+    ///   The size of each message structure.
+    /// </param>
+    /// <param name="num_msg">
+    ///   The number of messages to send.
+    /// </param>
+    /// <param name="flags">
+    ///   Send flags.
+    /// </param>
+    /// <param name="msgs_processed">
+    ///   Output: The number of messages actually sent.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.2/man3/BIO_sendmmsg.html">
+    ///   BIO_sendmmsg(3)</see> for details.
+    /// </remarks>
     class function BIO_sendmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t;
       num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Receives multiple datagrams in a single system call.</summary>
+    /// <summary>
+    ///   Receives multiple datagrams in a single system call.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="msg">
+    ///   An array of <see cref="PBIO_MSG" /> structures.
+    /// </param>
+    /// <param name="stride">
+    ///   The size of each message structure.
+    /// </param>
+    /// <param name="num_msg">
+    ///   The maximum number of messages to receive.
+    /// </param>
+    /// <param name="flags">
+    ///   Receive flags.
+    /// </param>
+    /// <param name="msgs_processed">
+    ///   Output: The number of messages actually received.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.2/man3/BIO_sendmmsg.html">
+    ///   BIO_recvmmsg(3)</see> for details.
+    /// </remarks>
     class function BIO_recvmmsg(b: PBIO; msg: PBIO_MSG; stride: csize_t;
       num_msg: csize_t; flags: UInt64; msgs_processed: pcsize_t): cint; static; {$IFDEF INLINE_ON}inline;{$ENDIF}
 
@@ -1560,15 +2984,65 @@ type
     // POLLING (OpenSSL 3.2+)
     // -------------------------------------------------------------------------
 
-    /// <summary>Retrieves the Read Poll Descriptor for the BIO.</summary>
+    /// <summary>
+    ///   Retrieves the Read Poll Descriptor for the BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="desc">
+    ///   Output: The poll descriptor structure.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.2/man3/BIO_get_rpoll_descriptor.html">
+    ///   BIO_get_rpoll_descriptor(3)</see> for details.
+    /// </remarks>
     class function BIO_get_rpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Retrieves the Write Poll Descriptor for the BIO.</summary>
+    /// <summary>
+    ///   Retrieves the Write Poll Descriptor for the BIO.
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="desc">
+    ///   Output: The poll descriptor structure.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see
+    ///   href="https://www.openssl.org/docs/man3.2/man3/BIO_get_rpoll_descriptor.html">
+    ///   BIO_get_wpoll_descriptor(3)</see> for details.
+    /// </remarks>
     class function BIO_get_wpoll_descriptor(b: PBIO; desc: PBIO_POLL_DESCRIPTOR): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
 
-    /// <summary>Waits for activity on the BIO (blocks until timeout or event).</summary>
+    /// <summary>
+    ///   Waits for activity on the BIO (blocks until timeout or event).
+    /// </summary>
+    /// <param name="b">
+    ///   The BIO.
+    /// </param>
+    /// <param name="max_time">
+    ///   The maximum time to wait (absolute time).
+    /// </param>
+    /// <param name="flags">
+    ///   Wait flags.
+    /// </param>
+    /// <returns>
+    ///   1 on success, 0 on timeout, negative on error.
+    /// </returns>
+    /// <remarks>
+    ///   See <see href="https://www.openssl.org/docs/man3.2/man3/BIO_wait.html">
+    ///   BIO_wait(3)</see> for details.
+    /// </remarks>
     class function BIO_wait(b: PBIO; max_time: time_t; flags: cuint): cint; static;
       {$IFDEF INLINE_ON}inline;{$ENDIF}
   end;

@@ -31,6 +31,23 @@ type
     Declared in: <openssl/crypto.h>, <openssl/core.h>, <openssl/types.h>
     ============================================================================ }
 
+  // Generic OpenSSL API handle
+  POSSL_CORE_HANDLE = ^OSSL_CORE_HANDLE;
+  OSSL_CORE_HANDLE = record end;
+
+  POSSL_DISPATCH = ^OSSL_DISPATCH_st;
+  OSSL_DISPATCH_st = record
+    function_id: cint;
+    &function: procedure;
+  end;
+
+  POPENSSL_INIT_SETTINGS = ^OSSL_INIT_SETTINGS_st;
+  OSSL_INIT_SETTINGS_st = record
+    filename: PAnsiChar;
+    appname: PAnsiChar;
+    flags: culong;
+  end;
+
   // The library context (the "global" state replacement in OpenSSL 3.0+)
   POSSL_LIB_CTX = ^TOSSL_LIB_CTX;
   TOSSL_LIB_CTX = record end;
@@ -96,17 +113,25 @@ type
   TBIO_f_buffer_ctx = record end;
 
   /// <summary>
-  ///   Message structure for BIO_sendmmsg/BIO_recvmmsg (OpenSSL 3.2+).
-  ///   Used to pass multiple datagrams in a single system call.
+  ///   Message structure for BIO_sendmmsg/BIO_recvmmsg (OpenSSL 3.2+). Used to
+  ///   pass multiple datagrams in a single system call.
   /// </summary>
   TBIO_MSG = record
-    /// <summary>Pointer to the data buffer.</summary>
+    /// <summary>
+    ///   Pointer to the data buffer.
+    /// </summary>
     data: Pointer;
-    /// <summary>Length of the data buffer.</summary>
+    /// <summary>
+    ///   Length of the data buffer.
+    /// </summary>
     data_len: csize_t;
-    /// <summary>Destination (send) or Source (recv) address.</summary>
+    /// <summary>
+    ///   Destination (send) or Source (recv) address.
+    /// </summary>
     peer: PBIO_ADDR;
-    /// <summary>Flags (OS specific or OpenSSL specific).</summary>
+    /// <summary>
+    ///   Flags (OS specific or OpenSSL specific).
+    /// </summary>
     flags: UInt64;
   end;
   PBIO_MSG = ^TBIO_MSG;
@@ -115,7 +140,9 @@ type
   ///   Descriptor for BIO_get_rpoll_descriptor / BIO_wait (OpenSSL 3.2+).
   /// </summary>
   TBIO_POLL_DESCRIPTOR = record
-    /// <summary>BIO_POLL_DESCRIPTOR_TYPE_* constant.</summary>
+    /// <summary>
+    ///   BIO_POLL_DESCRIPTOR_TYPE_* constant.
+    /// </summary>
     type_: cuint32;
     case Integer of
       0: (fd: cint);          // File descriptor / Socket handle
